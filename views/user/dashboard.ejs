@@ -1,131 +1,299 @@
-<div class="bg-light py-5">
-    <div class="container">
-        <div class="row">
-            <%- include('../partials/user/sidebar') %>
-            
-            <div class="col-lg-9">
-                <div class="row g-3 mb-4">
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100 bg-primary text-white">
-                            <div class="card-body p-4">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-0 opacity-75">Total Trips</h6>
-                                        <h2 class="fw-bold mb-0 mt-2"><%= stats.total_trips || 0 %></h2>
-                                    </div>
-                                    <i class="fas fa-plane fa-2x opacity-50"></i>
-                                </div>
-                            </div>
-                        </div>
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | Casalinga Tours</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
+                extend: {
+                    fontFamily: { sans: ['DM Sans', 'sans-serif'], serif: ['Playfair Display', 'serif'] },
+                    colors: {
+                        background: "#faf8f5",
+                        foreground: "#1a1a1a",
+                        primary: { DEFAULT: "#1e6b38", foreground: "#ffffff" },
+                        secondary: { DEFAULT: "#f2eadd", foreground: "#1a1a1a" },
+                        muted: "#6b7280",
+                        border: "#e5e7eb",
+                        success: "#22c55e",
+                        warning: "#eab308",
+                        danger: "#ef4444"
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="font-sans antialiased bg-background text-foreground min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <a href="/" class="flex items-center gap-2">
+                    <i data-lucide="mountain" class="h-8 w-8 text-primary"></i>
+                    <span class="font-serif text-2xl font-bold text-gray-900">Casalinga</span>
+                </a>
+                
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex items-center gap-6 mr-4">
+                        <a href="/" class="text-sm font-medium text-muted hover:text-primary transition-colors">Home</a>
+                        <a href="/tours" class="text-sm font-medium text-muted hover:text-primary transition-colors">Tours</a>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100 bg-white">
-                            <div class="card-body p-4">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-0 text-muted">Pending</h6>
-                                        <h2 class="fw-bold mb-0 mt-2 text-warning"><%= stats.pending_trips || 0 %></h2>
-                                    </div>
-                                    <i class="fas fa-clock fa-2x text-warning opacity-25"></i>
-                                </div>
-                            </div>
+                    
+                    <div class="flex items-center gap-3 pl-6 border-l border-gray-200">
+                        <div class="text-right hidden md:block">
+                            <p class="text-sm font-bold text-gray-900"><%= user.name %></p>
+                            <!-- <p class="text-xs text-muted">Traveler</p> -->
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm h-100 bg-white">
-                            <div class="card-body p-4">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-0 text-muted">Total Spent</h6>
-                                        <h2 class="fw-bold mb-0 mt-2 text-success">R<%= parseFloat(stats.total_spent || 0).toLocaleString() %></h2>
-                                    </div>
-                                    <i class="fas fa-wallet fa-2x text-success opacity-25"></i>
-                                </div>
-                            </div>
+                        <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden border border-primary/20">
+                            <% if(user.avatar) { %>
+                                <img src="<%= user.avatar %>" alt="<%= user.name %>" class="h-full w-full object-cover">
+                            <% } else { %>
+                                <%= user.name.charAt(0).toUpperCase() %>
+                            <% } %>
                         </div>
+                        <a href="/auth/logout" class="p-2 rounded-full hover:bg-gray-100 text-muted hover:text-danger transition-colors" title="Logout">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                        </a>
                     </div>
                 </div>
-
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3">
-                        <h5 class="fw-bold mb-0">Upcoming Trips</h5>
-                    </div>
-                    <div class="card-body">
-                        <% if (upcomingBookings.length === 0) { %>
-                            <div class="text-center py-4">
-                                <img src="/images/no-data.svg" alt="No bookings" width="100" class="mb-3 opacity-50">
-                                <p class="text-muted">You have no upcoming trips.</p>
-                                <a href="/tours" class="btn btn-outline-primary rounded-pill btn-sm">Browse Tours</a>
-                            </div>
-                        <% } else { %>
-                            <% upcomingBookings.forEach(booking => { %>
-                            <div class="d-flex align-items-center border-bottom pb-3 mb-3">
-                                <img src="<%= booking.image %>" class="rounded" width="80" height="60" style="object-fit: cover;">
-                                <div class="ms-3 flex-grow-1">
-                                    <h6 class="fw-bold mb-1"><%= booking.title %></h6>
-                                    <small class="text-muted"><i class="fas fa-calendar me-1"></i> <%= moment(booking.start_date).format('MMM D, YYYY') %></small>
-                                </div>
-                                <div class="text-end">
-                                    <span class="badge bg-success mb-1">Confirmed</span>
-                                    <a href="/user/bookings/<%= booking.id %>" class="btn btn-sm btn-light d-block mt-1">Details</a>
-                                </div>
-                            </div>
-                            <% }) %>
-                        <% } %>
-                    </div>
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-header bg-white py-3">
-                                <h6 class="fw-bold mb-0">Recent Bookings</h6>
-                            </div>
-                            <div class="list-group list-group-flush">
-                                <% recentBookings.forEach(booking => { %>
-                                <a href="/user/bookings/<%= booking.id %>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-4 py-3">
-                                    <div>
-                                        <div class="fw-bold small"><%= booking.title %></div>
-                                        <small class="text-muted"><%= moment(booking.booked_at).format('MMM D') %></small>
-                                    </div>
-                                    <span class="badge rounded-pill bg-<%= booking.status === 'confirmed' ? 'success' : (booking.status === 'cancelled' ? 'danger' : 'warning text-dark') %>">
-                                        <%= booking.status %>
-                                    </span>
-                                </a>
-                                <% }) %>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                                <h6 class="fw-bold mb-0">Saved Tours</h6>
-                                <a href="/user/favorites" class="small text-decoration-none">View All</a>
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-2">
-                                    <% favoriteTours.forEach(tour => { %>
-                                    <div class="col-6">
-                                        <a href="/tours/<%= tour.slug %>" class="text-decoration-none text-dark">
-                                            <div class="position-relative rounded overflow-hidden">
-                                                <img src="<%= tour.image %>" class="w-100" style="height: 100px; object-fit: cover;">
-                                                <div class="position-absolute bottom-0 start-0 w-100 p-2 bg-gradient-dark text-white small">
-                                                    <%= tour.title %>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <% }) %>
-                                    <% if(favoriteTours.length === 0) { %>
-                                        <p class="text-muted small text-center w-100">No saved tours yet.</p>
-                                    <% } %>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
-    </div>
-</div>
+    </header>
+
+    <main class="flex-grow py-8 md:py-12">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            
+            <div class="mb-10">
+                <h1 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-2">Welcome back, <%= user.name.split(' ')[0] %>! 👋</h1>
+                <p class="text-muted">Here's what's happening with your adventures.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                        <i data-lucide="map" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted font-medium">Total Trips</p>
+                        <p class="text-2xl font-bold text-gray-900"><%= stats.total_trips || 0 %></p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                        <i data-lucide="clock" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted font-medium">Pending Requests</p>
+                        <p class="text-2xl font-bold text-gray-900"><%= stats.pending_trips || 0 %></p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-green-50 text-green-600 rounded-xl">
+                        <i data-lucide="wallet" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted font-medium">Total Invested</p>
+                        <p class="text-2xl font-bold text-gray-900">R<%= parseFloat(stats.total_spent || 0).toLocaleString() %></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <div class="lg:col-span-2 space-y-10">
+                    
+                    <section>
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="font-serif text-2xl font-bold text-gray-900">Upcoming Adventures</h2>
+                            <% if (upcomingBookings && upcomingBookings.length > 0) { %>
+                                <a href="/user/bookings" class="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1">
+                                    View All <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </a>
+                            <% } %>
+                        </div>
+
+                        <% if (upcomingBookings && upcomingBookings.length > 0) { %>
+                            <div class="space-y-6">
+                                <% upcomingBookings.forEach(booking => { %>
+                                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col md:flex-row group hover:shadow-md transition-shadow">
+                                        <div class="md:w-1/3 relative h-48 md:h-auto">
+                                            <img src="<%= booking.image || '/images/placeholder-tour.jpg' %>" alt="<%= booking.title %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                            <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-primary shadow-sm">
+                                                <%= booking.booking_number %>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="p-6 md:w-2/3 flex flex-col justify-between">
+                                            <div>
+                                                <div class="flex justify-between items-start mb-2">
+                                                    <h3 class="font-serif text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
+                                                        <a href="/user/bookings/<%= booking.id %>"><%= booking.title %></a>
+                                                    </h3>
+                                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200 uppercase tracking-wide">
+                                                        Confirmed
+                                                    </span>
+                                                </div>
+                                                
+                                                <div class="flex items-center gap-4 text-sm text-muted mb-4">
+                                                    <div class="flex items-center gap-1.5">
+                                                        <i data-lucide="calendar" class="w-4 h-4 text-primary"></i>
+                                                        <%= moment(booking.start_date).format('MMMM Do, YYYY') %>
+                                                    </div>
+                                                    <div class="flex items-center gap-1.5">
+                                                        <i data-lucide="map-pin" class="w-4 h-4 text-primary"></i>
+                                                        <%= booking.location %>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center justify-between pt-4 border-t border-gray-50 mt-2">
+                                                <div class="text-sm">
+                                                    <span class="text-muted">Travelers:</span> <span class="font-semibold text-gray-900"><%= booking.people_count %></span>
+                                                </div>
+                                                <a href="/user/bookings/<%= booking.id %>" class="text-sm font-bold text-primary hover:underline">Manage Booking</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="bg-white rounded-2xl border border-dashed border-gray-300 p-10 text-center">
+                                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i data-lucide="compass" class="w-8 h-8 text-gray-400"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-900 mb-1">No upcoming trips</h3>
+                                <p class="text-muted mb-6">You haven't booked any adventures yet.</p>
+                                <a href="/tours" class="inline-flex items-center px-6 py-2.5 rounded-full bg-primary text-white font-medium hover:bg-primary/90 transition-colors">
+                                    Browse Tours
+                                </a>
+                            </div>
+                        <% } %>
+                    </section>
+
+                    <section>
+                        <h2 class="font-serif text-2xl font-bold text-gray-900 mb-6">Recent History</h2>
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="bg-gray-50 text-gray-500 font-medium border-b border-gray-100">
+                                        <tr>
+                                            <th class="px-6 py-4">Tour</th>
+                                            <th class="px-6 py-4">Date Booked</th>
+                                            <th class="px-6 py-4">Amount</th>
+                                            <th class="px-6 py-4">Status</th>
+                                            <th class="px-6 py-4 text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        <% if (recentBookings && recentBookings.length > 0) { %>
+                                            <% recentBookings.forEach(booking => { %>
+                                                <tr class="hover:bg-gray-50/50 transition-colors">
+                                                    <td class="px-6 py-4 font-medium text-gray-900"><%= booking.title %></td>
+                                                    <td class="px-6 py-4 text-muted"><%= moment(booking.booked_at).format('MMM D, YYYY') %></td>
+                                                    <td class="px-6 py-4 font-medium">R<%= parseFloat(booking.total_price).toLocaleString() %></td>
+                                                    <td class="px-6 py-4">
+                                                        <% if (booking.status === 'confirmed') { %>
+                                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                                                                <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span> Confirmed
+                                                            </span>
+                                                        <% } else if (booking.status === 'pending') { %>
+                                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">
+                                                                <span class="w-1.5 h-1.5 rounded-full bg-yellow-600"></span> Pending
+                                                            </span>
+                                                        <% } else { %>
+                                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                                                                <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span> Cancelled
+                                                            </span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-right">
+                                                        <a href="/user/bookings/<%= booking.id %>" class="text-gray-400 hover:text-primary">
+                                                            <i data-lucide="chevron-right" class="w-5 h-5 ml-auto"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="5" class="px-6 py-8 text-center text-muted">No booking history available.</td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="space-y-8">
+                    
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-serif text-xl font-bold text-gray-900">Saved Experiences</h3>
+                            <a href="/user/favorites" class="text-xs font-bold text-primary hover:underline">View All</a>
+                        </div>
+
+                        <% if (favoriteTours && favoriteTours.length > 0) { %>
+                            <div class="space-y-4">
+                                <% favoriteTours.forEach(tour => { %>
+                                    <div class="flex gap-4 group">
+                                        <div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                                            <img src="<%= tour.image || '/images/placeholder-tour.jpg' %>" alt="<%= tour.title %>" class="w-full h-full object-cover transition-transform group-hover:scale-110">
+                                        </div>
+                                        <div class="flex flex-col justify-center">
+                                            <h4 class="font-bold text-gray-900 text-sm line-clamp-1 group-hover:text-primary transition-colors">
+                                                <a href="/tours/<%= tour.slug %>"><%= tour.title %></a>
+                                            </h4>
+                                            <p class="text-xs text-muted mb-2"><%= tour.duration_days %> Days • <%= tour.location %></p>
+                                            <span class="text-sm font-bold text-primary">R<%= parseFloat(tour.price).toLocaleString() %></span>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="text-center py-6">
+                                <p class="text-sm text-muted mb-4">No saved tours yet.</p>
+                                <a href="/tours" class="text-sm font-medium text-primary hover:underline">Explore & Save</a>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="bg-secondary/30 p-6 rounded-2xl border border-secondary">
+                        <h3 class="font-serif text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
+                        <ul class="space-y-3">
+                            <li>
+                                <a href="/user/profile" class="flex items-center gap-3 p-3 bg-white rounded-xl hover:shadow-md transition-all text-sm font-medium text-gray-700">
+                                    <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600"><i data-lucide="user" class="w-4 h-4"></i></div>
+                                    Edit Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/contact" class="flex items-center gap-3 p-3 bg-white rounded-xl hover:shadow-md transition-all text-sm font-medium text-gray-700">
+                                    <div class="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-600"><i data-lucide="help-circle" class="w-4 h-4"></i></div>
+                                    Get Support
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

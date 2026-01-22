@@ -1,49 +1,171 @@
-<div class="card auth-card">
-    <div class="auth-header">
-        <a href="/" class="brand-logo">Casalinga Tours</a>
-        <p class="mb-0 mt-2 opacity-75">Welcome Back</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Casalinga Tours</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                container: {
+                    center: true,
+                    padding: "2rem",
+                    screens: { "2xl": "1400px" },
+                },
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        border: "oklch(0.922 0 0)",
+                        input: "oklch(0.922 0 0)",
+                        ring: "oklch(0.708 0 0)",
+                        background: "#faf8f5",
+                        foreground: "oklch(0.145 0 0)",
+                        primary: {
+                            DEFAULT: "#1e6b38",
+                            foreground: "oklch(0.985 0 0)",
+                        },
+                        secondary: {
+                            DEFAULT: "#f2eadd",
+                            foreground: "oklch(0.205 0 0)",
+                        },
+                        muted: {
+                            DEFAULT: "oklch(0.97 0 0)",
+                            foreground: "oklch(0.556 0 0)",
+                        },
+                        accent: {
+                            DEFAULT: "oklch(0.97 0 0)",
+                            foreground: "oklch(0.205 0 0)",
+                        },
+                        destructive: {
+                            DEFAULT: "oklch(0.577 0.245 27.325)",
+                            foreground: "oklch(0.577 0.245 27.325)",
+                        },
+                        card: {
+                            DEFAULT: "oklch(1 0 0)",
+                            foreground: "oklch(0.145 0 0)",
+                        }
+                    },
+                    borderRadius: {
+                        lg: "0.625rem",
+                        md: "calc(0.625rem - 2px)",
+                        sm: "calc(0.625rem - 4px)",
+                    }
+                },
+            },
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { font-feature-settings: "rlig" 1, "calt" 1; }
+        .reveal { opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s ease-out forwards; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="font-sans antialiased bg-background text-foreground min-h-screen flex flex-col relative overflow-hidden">
+
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-secondary/50 rounded-full blur-3xl"></div>
     </div>
-    <div class="auth-body">
-        
-        <% if (success) { %>
-            <div class="alert alert-success text-center mb-4 border-0 bg-success-subtle text-success">
-                <%= success %>
-            </div>
-        <% } %>
-        <% if (error) { %>
-            <div class="alert alert-danger text-center mb-4 border-0 bg-danger-subtle text-danger">
-                <%= error %>
-            </div>
-        <% } %>
 
-        <form action="/auth/login" method="POST">
-            <div class="mb-3">
-                <label class="form-label text-muted small fw-bold">Email Address</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-envelope text-muted"></i></span>
-                    <input type="email" name="email" class="form-control border-start-0 bg-light" required placeholder="name@example.com">
+    <nav class="absolute top-0 left-0 right-0 p-6 z-20">
+        <div class="max-w-7xl mx-auto">
+            <a href="/" class="flex items-center gap-2 group w-fit">
+                <i data-lucide="arrow-left" class="h-5 w-5 text-foreground transition-transform group-hover:-translate-x-1"></i>
+                <span class="font-medium text-foreground">Back to Home</span>
+            </a>
+        </div>
+    </nav>
+
+    <main class="flex-1 flex items-center justify-center p-4 relative z-10">
+        <div class="w-full max-w-md bg-card rounded-3xl shadow-xl border border-border p-8 sm:p-10 reveal">
+            
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 mb-4">
+                    <i data-lucide="mountain" class="h-6 w-6 text-primary"></i>
                 </div>
+                <h1 class="font-serif text-3xl font-semibold text-foreground mb-2">Welcome Back</h1>
+                <p class="text-muted-foreground">Sign in to continue your adventure</p>
             </div>
 
-            <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <label class="form-label text-muted small fw-bold">Password</label>
-                    <a href="/auth/forgot-password" class="small text-decoration-none text-primary">Forgot?</a>
+            <% if (success && success.length > 0) { %>
+                <div class="mb-6 p-4 rounded-2xl bg-green-50 text-green-700 border border-green-100 flex items-start gap-3">
+                    <i data-lucide="check-circle" class="h-5 w-5 flex-shrink-0 mt-0.5"></i>
+                    <span class="text-sm font-medium"><%= success %></span>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
-                    <input type="password" name="password" class="form-control border-start-0 bg-light" required placeholder="••••••••">
+            <% } %>
+
+            <% if (error && error.length > 0) { %>
+                <div class="mb-6 p-4 rounded-2xl bg-red-50 text-red-700 border border-red-100 flex items-start gap-3">
+                    <i data-lucide="alert-circle" class="h-5 w-5 flex-shrink-0 mt-0.5"></i>
+                    <span class="text-sm font-medium"><%= error %></span>
                 </div>
-            </div>
+            <% } %>
 
-            <div class="d-grid mb-4">
-                <button type="submit" class="btn btn-primary">Sign In</button>
-            </div>
+            <form action="/auth/login" method="POST" class="space-y-5">
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium ml-4 text-foreground">Email Address</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                            <i data-lucide="mail" class="h-5 w-5 text-muted-foreground"></i>
+                        </div>
+                        <input 
+                            type="email" 
+                            name="email" 
+                            required 
+                            placeholder="name@example.com"
+                            class="flex h-14 w-full rounded-full border border-border bg-background px-12 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground transition-all duration-300"
+                        >
+                    </div>
+                </div>
 
-            <div class="text-center">
-                <span class="text-muted small">Don't have an account?</span>
-                <a href="/auth/register" class="fw-bold text-decoration-none ms-1">Create Account</a>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center ml-4 mr-1">
+                        <label class="text-sm font-medium text-foreground">Password</label>
+                        <a href="/auth/forgot-password" class="text-sm font-medium text-primary hover:text-primary/80 transition-colors">Forgot?</a>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                            <i data-lucide="lock" class="h-5 w-5 text-muted-foreground"></i>
+                        </div>
+                        <input 
+                            type="password" 
+                            name="password" 
+                            required 
+                            placeholder="••••••••"
+                            class="flex h-14 w-full rounded-full border border-border bg-background px-12 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground transition-all duration-300"
+                        >
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full inline-flex items-center justify-center whitespace-nowrap text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-14 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] transition-all duration-300 mt-2">
+                    Sign In
+                    <i data-lucide="arrow-right" class="ml-2 h-5 w-5"></i>
+                </button>
+            </form>
+
+            <div class="text-center mt-8 pt-6 border-t border-border">
+                <span class="text-muted-foreground text-sm">Don't have an account?</span>
+                <a href="/auth/register" class="font-semibold text-primary hover:text-primary/80 transition-colors ml-1 text-sm">Create Account</a>
             </div>
-        </form>
-    </div>
-</div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

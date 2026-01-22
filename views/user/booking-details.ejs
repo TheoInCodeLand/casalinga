@@ -1,142 +1,337 @@
-<div class="bg-light py-5">
-    <div class="container">
-        <div class="row">
-            <%- include('../partials/user/sidebar') %>
-            
-            <div class="col-lg-9">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold">Booking Details</h4>
-                    <a href="/user/bookings" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i> Back</a>
-                </div>
-
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="text-muted small">Booking Reference</span>
-                            <h5 class="fw-bold mb-0 font-monospace text-primary"><%= booking.booking_number %></h5>
-                        </div>
-                        <span class="badge bg-<%= booking.status === 'confirmed' ? 'success' : (booking.status === 'cancelled' ? 'danger' : 'warning text-dark') %> fs-6 px-3 py-2 rounded-pill">
-                            <%= booking.status.toUpperCase() %>
-                        </span>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h5 class="fw-bold mb-3">Tour Information</h5>
-                                <div class="d-flex mb-4">
-                                    <img src="<%= booking.tour_image %>" class="rounded me-3" width="100" height="100" style="object-fit: cover;">
-                                    <div>
-                                        <h6 class="fw-bold"><a href="/tours/<%= booking.slug %>" class="text-dark text-decoration-none"><%= booking.title %></a></h6>
-                                        <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i> <%= booking.location %></p>
-                                        <div class="d-flex gap-3 small text-muted">
-                                            <span><i class="fas fa-calendar-alt me-1"></i> <%= moment(booking.start_date).format('MMM D') %> - <%= moment(booking.end_date).format('MMM D, YYYY') %></span>
-                                            <span><i class="fas fa-clock me-1"></i> <%= booking.duration_days %> Days</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <h6 class="fw-bold mb-2">Amenities Included</h6>
-                                <div class="row g-2 mb-4">
-                                    <% amenities.forEach(am => { %>
-                                    <div class="col-6 col-md-4">
-                                        <div class="d-flex align-items-center text-muted small">
-                                            <i class="<%= am.icon %> me-2 text-success"></i> <%= am.name %>
-                                        </div>
-                                    </div>
-                                    <% }) %>
-                                </div>
-
-                                <h6 class="fw-bold mb-2">Special Requests</h6>
-                                <p class="text-muted small bg-light p-3 rounded fst-italic">
-                                    <%= booking.special_requests || 'No special requests made.' %>
-                                </p>
-                            </div>
-
-                            <div class="col-md-4 border-start">
-                                <h6 class="fw-bold mb-3">Payment Summary</h6>
-                                <div class="d-flex justify-content-between mb-2 small">
-                                    <span class="text-muted">Guests</span>
-                                    <span class="fw-bold"><%= booking.people_count %> Person(s)</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-3 small">
-                                    <span class="text-muted">Price per person</span>
-                                    <span class="fw-bold">R<%= (booking.total_price / booking.people_count).toFixed(2) %></span>
-                                </div>
-                                <div class="border-top pt-3 d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold">Total Amount</span>
-                                    <span class="fs-4 fw-bold text-primary">R<%= parseFloat(booking.total_price).toLocaleString() %></span>
-                                </div>
-
-                                <% if (booking.status === 'pending' || booking.status === 'confirmed') { %>
-                                <div class="mt-4 pt-4 border-top">
-                                    <button class="btn btn-outline-danger w-100 btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal">
-                                        Cancel Booking
-                                    </button>
-                                    <small class="text-muted d-block text-center mt-2" style="font-size: 0.75rem;">
-                                        Cancellation fees may apply based on our policy.
-                                    </small>
-                                </div>
-                                <% } %>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="cancelModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Cancel Booking</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to cancel this booking? This action cannot be undone.</p>
-                <form id="cancelForm">
-                    <div class="mb-3">
-                        <label class="form-label">Reason for cancellation</label>
-                        <select name="reason" class="form-select" required>
-                            <option value="">Select a reason...</option>
-                            <option value="Change of plans">Change of plans</option>
-                            <option value="Found a better option">Found a better option</option>
-                            <option value="Personal emergency">Personal emergency</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Booking</button>
-                <button type="button" class="btn btn-danger" onclick="cancelBooking()">Confirm Cancellation</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-async function cancelBooking() {
-    const reason = document.querySelector('[name="reason"]').value;
-    if(!reason) return alert('Please select a reason');
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking <%= booking.booking_number %> | Casalinga Tours</title>
     
-    try {
-        const res = await fetch('/user/bookings/<%= booking.id %>/cancel', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ reason })
-        });
-        const data = await res.json();
-        
-        if(data.success) {
-            window.location.reload();
-        } else {
-            alert(data.message || 'Error cancelling booking');
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
+                extend: {
+                    fontFamily: { sans: ['DM Sans', 'sans-serif'], serif: ['Playfair Display', 'serif'] },
+                    colors: {
+                        background: "#faf8f5",
+                        foreground: "#1a1a1a",
+                        primary: { DEFAULT: "#1e6b38", foreground: "#ffffff" },
+                        secondary: { DEFAULT: "#f2eadd", foreground: "#1a1a1a" },
+                        muted: "#6b7280",
+                        border: "#e5e7eb",
+                        success: "#22c55e",
+                        warning: "#eab308",
+                        danger: "#ef4444"
+                    }
+                }
+            }
         }
-    } catch(err) {
-        console.error(err);
-        alert('An error occurred');
-    }
-}
-</script>
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="font-sans antialiased bg-background text-foreground min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <a href="/" class="flex items-center gap-2">
+                    <i data-lucide="mountain" class="h-8 w-8 text-primary"></i>
+                    <span class="font-serif text-2xl font-bold text-gray-900">Casalinga</span>
+                </a>
+                
+                <nav class="hidden md:flex items-center gap-6">
+                    <a href="/user/dashboard" class="text-sm font-medium text-muted hover:text-primary transition-colors flex items-center gap-2">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow py-8 md:py-12">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 text-sm text-muted mb-2">
+                        <span>My Bookings</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        <span>Details</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <h1 class="font-serif text-3xl font-bold text-gray-900">
+                            <%= booking.booking_number %>
+                        </h1>
+                        <% if (booking.status === 'confirmed') { %>
+                            <span class="px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700 border border-green-200">
+                                Confirmed
+                            </span>
+                        <% } else if (booking.status === 'pending') { %>
+                            <span class="px-3 py-1 rounded-full text-sm font-bold bg-yellow-100 text-yellow-700 border border-yellow-200">
+                                Pending Approval
+                            </span>
+                        <% } else if (booking.status === 'cancelled') { %>
+                            <span class="px-3 py-1 rounded-full text-sm font-bold bg-red-100 text-red-700 border border-red-200">
+                                Cancelled
+                            </span>
+                        <% } else { %>
+                            <span class="px-3 py-1 rounded-full text-sm font-bold bg-gray-100 text-gray-700 border border-gray-200">
+                                <%= booking.status %>
+                            </span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <% if (booking.status !== 'cancelled' && booking.status !== 'completed') { %>
+                        <button onclick="openCancelModal()" class="px-4 py-2 rounded-full border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 hover:text-danger hover:border-danger transition-colors text-sm">
+                            Cancel Booking
+                        </button>
+                    <% } %>
+                    
+                    <% if (booking.status === 'confirmed') { %>
+                        <button class="px-6 py-2 rounded-full bg-primary text-white font-medium hover:bg-primary/90 transition-all shadow-md text-sm flex items-center gap-2">
+                            <i data-lucide="download" class="w-4 h-4"></i> Download Ticket
+                        </button>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <div class="lg:col-span-2 space-y-8">
+                    
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col md:flex-row">
+                        <div class="md:w-2/5 relative h-64 md:h-auto">
+                            <img src="<%= booking.tour_image || '/images/placeholder-tour.jpg' %>" alt="<%= booking.title %>" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6 md:w-3/5 flex flex-col justify-center">
+                            <h2 class="font-serif text-2xl font-bold text-gray-900 mb-2">
+                                <a href="/tours/<%= booking.slug %>" class="hover:text-primary transition-colors"><%= booking.title %></a>
+                            </h2>
+                            <div class="flex items-center gap-2 text-muted mb-6">
+                                <i data-lucide="map-pin" class="w-4 h-4"></i> <%= booking.location %>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-gray-50 p-3 rounded-xl">
+                                    <span class="text-xs text-muted uppercase font-bold">Check-in</span>
+                                    <p class="font-medium text-gray-900"><%= moment(booking.start_date).format('MMM D, YYYY') %></p>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-xl">
+                                    <span class="text-xs text-muted uppercase font-bold">Check-out</span>
+                                    <p class="font-medium text-gray-900"><%= moment(booking.end_date).format('MMM D, YYYY') %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+                        <h3 class="font-serif text-xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-4">Trip Details</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                            <div>
+                                <span class="block text-sm text-muted mb-1">Total Guests</span>
+                                <div class="flex items-center gap-2 font-medium text-gray-900">
+                                    <i data-lucide="users" class="w-5 h-5 text-primary"></i>
+                                    <%= booking.people_count %> People
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <span class="block text-sm text-muted mb-1">Duration</span>
+                                <div class="flex items-center gap-2 font-medium text-gray-900">
+                                    <i data-lucide="clock" class="w-5 h-5 text-primary"></i>
+                                    <%= booking.duration_days %> Days
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <span class="block text-sm text-muted mb-2">Included Amenities</span>
+                                <div class="flex flex-wrap gap-3">
+                                    <% if (amenities && amenities.length > 0) { %>
+                                        <% amenities.forEach(am => { %>
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/30 text-sm font-medium text-gray-700">
+                                                <% if(am.icon.includes('fa-')) { %>
+                                                    <i class="<%= am.icon %> text-primary text-xs"></i>
+                                                <% } else { %>
+                                                    <i data-lucide="check-circle" class="w-3 h-3 text-primary"></i>
+                                                <% } %>
+                                                <%= am.name %>
+                                            </span>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <span class="text-sm text-gray-400">No specific amenities listed.</span>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <% if (booking.special_requests) { %>
+                                <div class="md:col-span-2 bg-yellow-50 p-4 rounded-xl border border-yellow-100">
+                                    <span class="block text-xs font-bold text-yellow-800 uppercase mb-1">Your Special Requests</span>
+                                    <p class="text-sm text-yellow-900"><%= booking.special_requests %></p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <% if (locals.isAdmin || locals.isManager) { %>
+                        <div class="bg-gray-900 text-white rounded-2xl shadow-sm p-6 md:p-8">
+                            <div class="flex items-center gap-3 mb-6 border-b border-gray-700 pb-4">
+                                <i data-lucide="shield-alert" class="w-6 h-6 text-yellow-400"></i>
+                                <h3 class="font-serif text-xl font-bold">Staff Controls</h3>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <span class="block text-xs text-gray-400 uppercase mb-1">Customer Name</span>
+                                    <p class="font-medium"><%= booking.user_name %></p>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-400 uppercase mb-1">Contact Email</span>
+                                    <p class="font-medium"><%= booking.user_email %></p>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-gray-400 uppercase mb-1">Phone</span>
+                                    <p class="font-medium"><%= booking.user_phone || 'N/A' %></p>
+                                </div>
+                            </div>
+
+                            <% if (booking.status === 'pending') { %>
+                                <form action="/admin/bookings/<%= booking.id %>/confirm" method="POST" class="inline-block">
+                                    <button type="submit" class="px-6 py-2 rounded-full bg-green-600 hover:bg-green-500 text-white font-bold transition-colors">
+                                        Confirm Booking
+                                    </button>
+                                </form>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                </div>
+
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 p-6 sticky top-24">
+                        <h3 class="font-serif text-lg font-bold text-gray-900 mb-6">Payment Summary</h3>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-muted">Price per person</span>
+                                <span class="font-medium text-gray-900">R<%= (booking.total_price / booking.people_count).toLocaleString() %></span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-muted">Guests</span>
+                                <span class="font-medium text-gray-900">x <%= booking.people_count %></span>
+                            </div>
+                            <div class="h-px bg-gray-100 my-2"></div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-gray-900">Total</span>
+                                <span class="font-bold text-2xl text-primary">R<%= parseFloat(booking.total_price).toLocaleString() %></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <% if (booking.payment_status === 'paid') { %>
+                                <div class="w-full py-3 rounded-xl bg-green-50 text-green-700 font-bold text-center border border-green-200 flex items-center justify-center gap-2">
+                                    <i data-lucide="check-circle" class="w-5 h-5"></i> Paid in Full
+                                </div>
+                            <% } else if (booking.status !== 'cancelled') { %>
+                                <div class="space-y-3">
+                                    <div class="w-full py-3 rounded-xl bg-yellow-50 text-yellow-800 font-bold text-center border border-yellow-200 flex items-center justify-center gap-2">
+                                        <i data-lucide="clock" class="w-5 h-5"></i> Payment Pending
+                                    </div>
+                                    <button class="w-full py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                                        Pay Now securely
+                                    </button>
+                                </div>
+                            <% } else { %>
+                                <div class="w-full py-3 rounded-xl bg-gray-100 text-gray-500 font-bold text-center border border-gray-200">
+                                    Booking Cancelled
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                            <div class="flex gap-3">
+                                <div class="bg-white p-2 rounded-full h-fit text-blue-600">
+                                    <i data-lucide="help-circle" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-blue-900 mb-1">Need Help?</h4>
+                                    <p class="text-xs text-blue-800 mb-3">Questions about your booking? Our team is available 24/7.</p>
+                                    <a href="/contact" class="text-xs font-bold text-blue-600 hover:text-blue-800 underline">Contact Support</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="cancelModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onclick="closeCancelModal()"></div>
+
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-100">
+                    
+                    <form action="/bookings/<%= booking.id %>/cancel" method="POST">
+                        <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                                    <i data-lucide="alert-triangle" class="h-6 w-6 text-red-600"></i>
+                                </div>
+                                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                                    <h3 class="text-lg font-semibold leading-6 text-gray-900" id="modal-title">Cancel Booking</h3>
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-500 mb-4">Are you sure you want to cancel booking <span class="font-mono font-bold text-gray-700"><%= booking.booking_number %></span>? This action cannot be undone.</p>
+                                        
+                                        <label for="reason" class="block text-xs font-bold text-gray-700 uppercase mb-2">Reason for Cancellation</label>
+                                        <textarea name="reason" id="reason" rows="3" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-danger focus:ring focus:ring-danger/20 text-sm p-3 border" placeholder="Please tell us why you are cancelling..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                            <button type="submit" class="inline-flex w-full justify-center rounded-xl bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition-all">
+                                Yes, Cancel Booking
+                            </button>
+                            <button type="button" onclick="closeCancelModal()" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all">
+                                Keep Booking
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function openCancelModal() {
+            const modal = document.getElementById('cancelModal');
+            modal.classList.remove('hidden');
+            // Small animation for smooth entry
+            const panel = modal.querySelector('.relative');
+            panel.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                panel.classList.remove('opacity-0', 'scale-95');
+                panel.classList.add('opacity-100', 'scale-100');
+            }, 10);
+        }
+
+        function closeCancelModal() {
+            const modal = document.getElementById('cancelModal');
+            modal.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

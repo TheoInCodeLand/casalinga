@@ -6,7 +6,8 @@ const tourController = {
     // GET /tours (Browse all tours)
     getAllTours: async (req, res) => {
         try {
-            const { category, price_min, price_max, date, location, page = 1 } = req.query;
+            // 1. Extract 'search' alongside other filters
+            const { category, price_min, price_max, date, location, search, page = 1 } = req.query;
             const limit = 12;
             const offset = (page - 1) * limit;
 
@@ -24,7 +25,15 @@ const tourController = {
             const queryParams = [];
             let paramCount = 0;
 
-            // Apply filters
+            // --- 2. Add Generic Search Logic (This was missing) ---
+            if (search) {
+                paramCount++;
+                // Search across Title, Description, AND Location
+                query += ` AND (t.title ILIKE $${paramCount} OR t.short_description ILIKE $${paramCount} OR t.location ILIKE $${paramCount})`;
+                queryParams.push(`%${search}%`);
+            }
+
+            // Apply specific filters
             if (category) {
                 paramCount++;
                 query += ` AND EXISTS (
@@ -37,13 +46,13 @@ const tourController = {
 
             if (price_min) {
                 paramCount++;
-                query += ` AND (t.discount_price >= $${paramCount} OR t.price >= $${paramCount})`;
+                query += ` AND (COALESCE(t.discount_price, t.price) >= $${paramCount})`;
                 queryParams.push(price_min);
             }
 
             if (price_max) {
                 paramCount++;
-                query += ` AND (t.discount_price <= $${paramCount} OR t.price <= $${paramCount})`;
+                query += ` AND (COALESCE(t.discount_price, t.price) <= $${paramCount})`;
                 queryParams.push(price_max);
             }
 
@@ -59,7 +68,7 @@ const tourController = {
                 queryParams.push(`%${location}%`);
             }
 
-            // Count total for pagination
+            // Count total for pagination (wrapping the query to count filtered results)
             const countQuery = `SELECT COUNT(*) FROM (${query}) as filtered`;
             const countResult = await db.query(countQuery, queryParams);
             const totalTours = parseInt(countResult.rows[0].count);
@@ -72,16 +81,10 @@ const tourController = {
             const toursResult = await db.query(query, queryParams);
             const tours = toursResult.rows;
 
-            // Get featured tours for sidebar
-            const featuredTours = await db.query(
-                `SELECT t.id, t.title, t.slug, t.price, t.discount_price,
-                        (SELECT image_url FROM tour_images WHERE tour_id = t.id AND is_main = true LIMIT 1) as image
-                 FROM tours t 
-                 WHERE t.featured = true AND t.status IN ('upcoming', 'available')
-                 LIMIT 3`
-            );
+            // Get featured tours for sidebar (if needed, though template doesn't use it now)
+            // ... (Keep existing sidebar logic if you want) ...
 
-            // Get categories for filter
+            // Get categories for filter dropdown/buttons
             const categories = await db.query(
                 'SELECT id, name, icon FROM categories ORDER BY name'
             );
@@ -89,17 +92,18 @@ const tourController = {
             res.render('tours/index', {
                 title: 'Browse Tours - Casalinga Tours',
                 tours,
-                featuredTours: featuredTours.rows,
                 categories: categories.rows,
                 currentPage: parseInt(page),
                 totalPages,
                 totalTours,
+                // Pass all filters back to the view so pagination keeps them
                 filters: {
                     category,
                     price_min,
                     price_max,
                     date,
-                    location
+                    location,
+                    search // Pass search back to view
                 },
                 moment
             });

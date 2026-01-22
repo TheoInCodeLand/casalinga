@@ -1,103 +1,622 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                container: {
+                    center: true,
+                    padding: "2rem",
+                    screens: { "2xl": "1400px" },
+                },
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        border: "oklch(0.922 0 0)",
+                        input: "oklch(0.922 0 0)",
+                        ring: "oklch(0.708 0 0)",
+                        background: "#faf8f5",
+                        foreground: "oklch(0.145 0 0)",
+                        primary: {
+                            DEFAULT: "#1e6b38",
+                            foreground: "oklch(0.985 0 0)",
+                        },
+                        secondary: {
+                            DEFAULT: "#f2eadd",
+                            foreground: "oklch(0.205 0 0)",
+                        },
+                        muted: {
+                            DEFAULT: "oklch(0.97 0 0)",
+                            foreground: "oklch(0.556 0 0)",
+                        },
+                        accent: {
+                            DEFAULT: "oklch(0.97 0 0)",
+                            foreground: "oklch(0.205 0 0)",
+                        },
+                        card: {
+                            DEFAULT: "oklch(1 0 0)",
+                            foreground: "oklch(0.145 0 0)",
+                        }
+                    },
+                    keyframes: {
+                        draw: {
+                            'from': { strokeDasharray: '0, 200' },
+                            'to': { strokeDasharray: '200, 200' },
+                        }
+                    },
+                    animation: {
+                        draw: 'draw 1.5s ease-out forwards',
+                    }
+                },
+            },
+        }
+    </script>
 
-<header class="hero-section" style="background-image: url('/images/hero-bg.jpg');">
-    <div class="hero-overlay"></div>
-    <div class="container position-relative text-white text-center">
-        <h1 class="display-3 fw-bold mb-4">Discover Wellness Through Travel</h1>
-        <p class="lead mb-5 fs-4">Adventure, nature, and relaxation across South Africa.</p>
-        <a href="/tours" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow">Explore Tours</a>
-    </div>
-</header>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-<div class="container" style="margin-top: -40px; position: relative; z-index: 10;">
-    <div class="card shadow border-0 p-4">
-        <form action="/tours/search" method="GET" class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label small fw-bold text-muted">Destination</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-map-marker-alt text-primary"></i></span>
-                    <input type="text" name="location" class="form-control border-start-0" placeholder="Where do you want to go?">
-                </div>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label small fw-bold text-muted">Category</label>
-                <select name="category" class="form-select">
-                    <option value="">Any Category</option>
-                    <% categories.forEach(cat => { %>
-                        <option value="<%= cat.name %>"><%= cat.name %></option>
-                    <% }) %>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label small fw-bold text-muted">Date</label>
-                <input type="date" name="date" class="form-control">
-            </div>
-            <div class="col-md-2 d-grid align-items-end">
-                <button type="submit" class="btn btn-primary py-2">Search</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<section class="py-5 mt-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <span class="text-primary text-uppercase fw-bold small tracking-wide">Our Packages</span>
-            <h2 class="fw-bold mt-2">Featured Tours</h2>
-        </div>
-
-        <div class="row g-4">
-            <% featuredTours.forEach(tour => { %>
-            <div class="col-md-6 col-lg-4">
-                <div class="card tour-card h-100">
-                    <div class="tour-img-wrapper">
-                        <span class="position-absolute top-0 end-0 bg-primary text-white px-3 py-1 m-3 rounded-pill small fw-bold">
-                            <%= tour.duration_days %> Days
-                        </span>
-                        <img src="<%= tour.image || '/images/placeholder-tour.jpg' %>" alt="<%= tour.title %>">
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title fw-bold mb-0"><a href="/tours/<%= tour.slug %>" class="text-decoration-none text-dark"><%= tour.title %></a></h5>
-                            <span class="text-success fw-bold">R<%= tour.price %></span>
-                        </div>
-                        <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-1 text-primary"></i> <%= tour.location %></p>
-                        <p class="card-text text-muted small line-clamp-2"><%= tour.short_description %></p>
-                    </div>
-                    <div class="card-footer bg-white border-top-0 p-4 pt-0">
-                        <div class="d-grid">
-                            <a href="/tours/<%= tour.slug %>" class="btn btn-outline-primary">View Details</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <% }) %>
-        </div>
+    <style>
+        /* Custom Styles */
+        body { font-feature-settings: "rlig" 1, "calt" 1; }
         
-        <div class="text-center mt-5">
-            <a href="/tours" class="btn btn-outline-dark rounded-pill px-5">View All Tours</a>
-        </div>
-    </div>
-</section>
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-<section class="py-5 bg-light">
-    <div class="container py-4">
-        <div class="row g-5 text-center">
-            <div class="col-md-4">
-                <div class="mb-3 text-primary"><i class="fas fa-leaf fa-3x"></i></div>
-                <h5 class="fw-bold">Wellness Focused</h5>
-                <p class="text-muted">Trips designed to rejuvenate your mind and body through nature.</p>
-            </div>
-            <div class="col-md-4">
-                <div class="mb-3 text-primary"><i class="fas fa-shield-alt fa-3x"></i></div>
-                <h5 class="fw-bold">Safe & Secure</h5>
-                <p class="text-muted">Professional guides and secure booking systems for peace of mind.</p>
-            </div>
-            <div class="col-md-4">
-                <div class="mb-3 text-primary"><i class="fas fa-tags fa-3x"></i></div>
-                <h5 class="fw-bold">Best Value</h5>
-                <p class="text-muted">Unforgettable experiences at competitive prices with no hidden fees.</p>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .animate-draw {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: drawLine 2s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-background text-foreground overflow-x-hidden">
+
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out py-5 bg-transparent">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <nav class="flex items-center justify-between">
+                <a href="/" class="flex items-center gap-2 group">
+                    <div class="relative">
+                        <i data-lucide="mountain" class="h-8 w-8 transition-colors duration-300 text-white" id="header-logo-icon"></i>
+                        <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                    <span id="header-logo-text" class="font-serif text-2xl font-semibold tracking-tight transition-colors duration-300 text-white">Casalinga</span>
+                </a>
+
+                <ul class="hidden md:flex items-center gap-1">
+                    <li><a href="/" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Home</a></li>
+                    <li><a href="/tours" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Tours</a></li>
+                    <li><a href="/about" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">About</a></li>
+                    <li><a href="/contact" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Contact</a></li>
+                </ul>
+
+                <div class="hidden md:flex items-center gap-3">
+                    <% if (user) { %>
+                        <a href="/user/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                            Dashboard
+                        </a>
+                    <% } else { %>
+                        <a href="/auth/login" class="nav-link text-white/90 hover:text-white text-sm font-medium px-4">Login</a>
+                        <a href="/auth/register" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                            Sign Up
+                        </a>
+                    <% } %>
+                </div>
+
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg transition-colors text-white">
+                    <i data-lucide="menu" class="h-6 w-6"></i>
+                </button>
+            </nav>
+
+            <div id="mobile-menu" class="md:hidden overflow-hidden transition-all duration-300 ease-out max-h-0 opacity-0 mt-4">
+                <div class="bg-card rounded-2xl p-4 shadow-lg border border-border">
+                    <ul class="space-y-1">
+                        <li><a href="/" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Home</a></li>
+                        <li><a href="/tours" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Tours</a></li>
+                        <li><a href="/about" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">About</a></li>
+                        <li><a href="/contact" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Contact</a></li>
+                    </ul>
+                    <div class="mt-4 pt-4 border-t border-border">
+                        <% if (user) { %>
+                            <a href="/user/dashboard" class="w-full flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">Dashboard</a>
+                        <% } else { %>
+                            <div class="grid grid-cols-2 gap-2">
+                                <a href="/auth/login" class="flex items-center justify-center border border-border h-10 rounded-full">Login</a>
+                                <a href="/auth/register" class="flex items-center justify-center bg-primary text-primary-foreground h-10 rounded-full">Sign Up</a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </header>
+
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div id="hero-bg" class="absolute inset-0 scale-110 transition-transform duration-300 ease-out">
+            <img src="/images/hero-mountains.jpg" alt="Beautiful mountain landscape" class="w-full h-full object-cover">
+        </div>
+
+        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30"></div>
+        
+        <div id="particles-container" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+        <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center pt-20">
+            <div class="reveal active transition-all duration-1000 ease-out">
+                <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 mb-8">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    <span class="text-white/90 text-sm font-medium">Now booking 2026 adventures</span>
+                </div>
+
+                <h1 class="text-white font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight mb-6 text-balance">
+                    Discover wellness through <br>
+                    <span class="relative inline-block">
+                        travel, adventure & nature
+                        <svg class="absolute -bottom-2 left-0 w-full h-3 text-secondary" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true">
+                            <path d="M0 8 Q50 0, 100 8 T200 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" class="animate-draw"></path>
+                        </svg>
+                    </span>
+                </h1>
+
+                <p class="text-white/80 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed reveal" style="transition-delay: 300ms;">
+                    Experience unforgettable outdoor adventures, horse riding, camping, and guided wellness retreats in the heart of South Africa.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 reveal" style="transition-delay: 500ms;">
+                    <a href="#tours" class="group inline-flex items-center justify-center whitespace-nowrap text-base bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-full px-8 py-6 font-medium shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 duration-300">
+                        Explore Tours
+                        <i data-lucide="arrow-right" class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                    <button class="group inline-flex items-center justify-center whitespace-nowrap text-base ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 h-11 rounded-full px-8 py-6 font-medium duration-300">
+                        <i data-lucide="play" class="mr-2 h-5 w-5 transition-transform group-hover:scale-110"></i>
+                        Watch Our Story
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-8 mt-16 max-w-lg mx-auto reveal" style="transition-delay: 700ms;">
+                    <div class="text-center">
+                        <div class="text-white text-2xl sm:text-3xl font-serif font-semibold"><%= stats && stats.traveler_count ? stats.traveler_count : '500' %>+</div>
+                        <div class="text-white/60 text-xs sm:text-sm mt-1">Happy Travelers</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-white text-2xl sm:text-3xl font-serif font-semibold"><%= stats && stats.tour_count ? stats.tour_count : '20' %>+</div>
+                        <div class="text-white/60 text-xs sm:text-sm mt-1">Unique Tours</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-white text-2xl sm:text-3xl font-serif font-semibold">15+</div>
+                        <div class="text-white/60 text-xs sm:text-sm mt-1">Years Experience</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent"></div>
+    </section>
+
+    <section id="tours" class="py-24 sm:py-32 bg-background">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block text-primary text-sm font-semibold tracking-wider uppercase mb-4">Our Experiences</span>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6 text-balance">Featured Tours & Adventures</h2>
+                <p class="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">Handpicked experiences designed to connect you with nature, adventure, and your inner peace.</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-2 mb-12 reveal" style="transition-delay: 200ms;">
+                <a href="/tours" class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-primary text-primary-foreground shadow-lg shadow-primary/25">All</a>
+                <% if(categories && categories.length > 0) { %>
+                    <% categories.forEach(cat => { %>
+                        <a href="/tours?category=<%= cat.name %>" class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                            <%= cat.name %>
+                        </a>
+                    <% }) %>
+                <% } %>
+            </div>
+
+           <div id="tours-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <% if (featuredTours && featuredTours.length > 0) { %>
+                    <% featuredTours.forEach((tour, index) => { %>
+                        <div class="group relative bg-card rounded-2xl overflow-hidden shadow-sm border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-2 reveal" style="transition-delay: <%= index * 100 %>ms;">
+                            
+                            <div class="relative h-64 overflow-hidden">
+                                <img src="<%= tour.main_image || '/images/placeholder-tour.jpg' %>" alt="<%= tour.title %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                                
+                                <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+                                    <% if (tour.primary_tag) { %>
+                                        <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
+                                            <%= tour.primary_tag %>
+                                        </span>
+                                    <% } %>
+
+                                    <% if (tour.featured) { %>
+                                        <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-primary text-primary-foreground">
+                                            Popular
+                                        </span>
+                                    <% } %>
+
+                                    <% if (tour.discount_price) { %>
+                                        <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-primary text-primary-foreground">
+                                            Sale
+                                        </span>
+                                    <% } %>
+                                </div>
+
+                                <button class="absolute top-4 right-4 p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40 transition-all duration-300 text-white group/heart">
+                                    <i data-lucide="heart" class="h-5 w-5 transition-transform group-hover/heart:scale-110"></i>
+                                </button>
+
+                                <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
+                                    <span class="text-foreground text-sm font-medium">From 
+                                        <% if (tour.discount_price) { %>
+                                            <span class="text-primary font-semibold">R<%= parseFloat(tour.discount_price).toLocaleString() %></span>
+                                        <% } else { %>
+                                            <span class="text-primary font-semibold">R<%= parseFloat(tour.price).toLocaleString() %></span>
+                                        <% } %>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="flex items-center gap-1">
+                                        <i data-lucide="clock" class="h-4 w-4 text-primary"></i>
+                                        <span class="text-muted-foreground text-sm"><%= tour.duration_days %> Days</span>
+                                    </div>
+                                    <span class="text-muted-foreground text-sm">•</span>
+                                    <div class="flex items-center gap-1">
+                                        <i data-lucide="map-pin" class="h-4 w-4 text-primary"></i>
+                                        <span class="text-muted-foreground text-sm"><%= tour.location %></span>
+                                    </div>
+                                </div>
+
+                                <h3 class="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300"><%= tour.title %></h3>
+                                <p class="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2"><%= tour.short_description %></p>
+                                
+                                <a href="/tours/<%= tour.slug %>" class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-primary bg-transparent hover:bg-primary hover:text-primary-foreground h-10 px-4 py-2 w-full rounded-full group/btn transition-all duration-300">
+                                    View Details <i data-lucide="arrow-right" class="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="col-span-full text-center text-muted-foreground py-12">
+                        <p>No featured tours available at the moment.</p>
+                    </div>
+                <% } %>
+            </div>text-center mt-16 reveal" style="transition-delay: 500ms;">
+                <a href="/tours" class="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-primary bg-transparent hover:bg-primary hover:text-primary-foreground h-11 rounded-full px-8 py-6 text-base font-medium text-primary transition-all duration-300">
+                    View All Tours
+                    <i data-lucide="arrow-right" class="ml-2 h-5 w-5"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 sm:py-32 bg-secondary/30">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block text-primary text-sm font-semibold tracking-wider uppercase mb-4">Why Choose Us</span>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6 text-balance">Why Casalinga?</h2>
+                <p class="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">We believe in creating transformative experiences that nurture the soul and inspire a deeper connection with the natural world.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="group relative p-8 rounded-2xl bg-card border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 reveal">
+                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+                    <div class="relative inline-flex items-center justify-center w-14 h-14 rounded-xl mb-6 transition-all duration-300 bg-green-100 group-hover:scale-110">
+                        <i data-lucide="leaf" class="h-7 w-7 text-green-600"></i>
+                    </div>
+                    <h3 class="relative font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">Wellness Focus</h3>
+                    <p class="relative text-muted-foreground leading-relaxed">Every experience is designed with your mental and physical wellbeing at the core.</p>
+                </div>
+
+                <div class="group relative p-8 rounded-2xl bg-card border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 reveal" style="transition-delay: 100ms;">
+                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+                    <div class="relative inline-flex items-center justify-center w-14 h-14 rounded-xl mb-6 transition-all duration-300 bg-blue-100 group-hover:scale-110">
+                        <i data-lucide="globe" class="h-7 w-7 text-blue-600"></i>
+                    </div>
+                    <h3 class="relative font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">Outdoor Adventures</h3>
+                    <p class="relative text-muted-foreground leading-relaxed">From mountain trails to riverside camping, explore landscapes.</p>
+                </div>
+
+                <div class="group relative p-8 rounded-2xl bg-card border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 reveal" style="transition-delay: 200ms;">
+                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+                    <div class="relative inline-flex items-center justify-center w-14 h-14 rounded-xl mb-6 transition-all duration-300 bg-amber-100 group-hover:scale-110">
+                        <i data-lucide="shield" class="h-7 w-7 text-amber-600"></i>
+                    </div>
+                    <h3 class="relative font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">Safety First</h3>
+                    <p class="relative text-muted-foreground leading-relaxed">Rigorous safety protocols and experienced staff ensure peace of mind.</p>
+                </div>
+            </div>
+
+            <div class="mt-20 relative overflow-hidden rounded-3xl bg-primary p-10 sm:p-14 reveal" style="transition-delay: 300ms;">
+                <div class="absolute inset-0 opacity-10">
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                        <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="currentColor"></circle></pattern>
+                        <rect width="100%" height="100%" fill="url(#grid)"></rect>
+                    </svg>
+                </div>
+                <div class="relative flex flex-col lg:flex-row items-center justify-between gap-8">
+                    <div class="text-center lg:text-left">
+                        <h3 class="font-serif text-2xl sm:text-3xl font-semibold text-primary-foreground mb-3">Ready to start your adventure?</h3>
+                        <p class="text-primary-foreground/80 text-lg max-w-xl">Join thousands of travelers who have discovered the magic of wellness travel with Casalinga.</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="/tours" class="px-8 py-4 rounded-full bg-white text-primary font-semibold hover:bg-white/90 transition-all duration-300 hover:scale-105 shadow-lg">Book Your Tour</a>
+                        <a href="/contact" class="px-8 py-4 rounded-full bg-transparent border-2 border-white text-white font-semibold hover:bg-white/10 transition-all duration-300">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="py-24 sm:py-32 bg-background overflow-hidden">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block text-primary text-sm font-semibold tracking-wider uppercase mb-4">Testimonials</span>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6 text-balance">What Our Travelers Say</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-card rounded-2xl p-8 border border-border shadow-sm reveal">
+                    <div class="flex gap-1 mb-4">
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                    </div>
+                    <p class="text-foreground text-lg leading-relaxed mb-6">"The Wilderness Retreat was absolutely life-changing. Waking up to mountain views and practicing yoga at sunrise made this the best trip of my life."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">SM</div>
+                        <div>
+                            <h4 class="font-semibold text-foreground">Sarah Mitchell</h4>
+                            <p class="text-sm text-muted-foreground">Wellness Enthusiast</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card rounded-2xl p-8 border border-border shadow-sm reveal" style="transition-delay: 100ms;">
+                    <div class="flex gap-1 mb-4">
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                    </div>
+                    <p class="text-foreground text-lg leading-relaxed mb-6">"Casalinga stands out. The attention to detail, safety standards, and authentic experiences are unmatched. Highly recommended!"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">JV</div>
+                        <div>
+                            <h4 class="font-semibold text-foreground">James van der Berg</h4>
+                            <p class="text-sm text-muted-foreground">Adventure Seeker</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card rounded-2xl p-8 border border-border shadow-sm reveal" style="transition-delay: 200ms;">
+                    <div class="flex gap-1 mb-4">
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
+                    </div>
+                    <p class="text-foreground text-lg leading-relaxed mb-6">"Took my family on the Safari Adventure. The kids haven't stopped talking about it! Safe, educational, and absolutely thrilling."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">MT</div>
+                        <div>
+                            <h4 class="font-semibold text-foreground">Michael Thompson</h4>
+                            <p class="text-sm text-muted-foreground">Family Traveler</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-24 sm:py-32 bg-secondary/30 relative overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative text-center reveal">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-8">
+                <i data-lucide="sparkles" class="h-8 w-8 text-primary"></i>
+            </div>
+            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6">Stay Inspired</h2>
+            <p class="text-muted-foreground text-lg max-w-xl mx-auto mb-10">Subscribe to our newsletter for exclusive deals, travel tips, and early access to new adventures.</p>
+
+            <form id="newsletter-form" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto transition-all duration-500">
+                <input type="email" placeholder="Enter your email" required class="flex h-14 w-full rounded-full border border-border bg-card px-6 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 text-foreground">
+                <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-14 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+                    Subscribe <i data-lucide="send" class="ml-2 h-4 w-4"></i>
+                </button>
+            </form>
+            
+            <div id="newsletter-success" class="hidden mt-6 items-center justify-center gap-3 bg-primary/10 text-primary px-6 py-4 rounded-full max-w-fit mx-auto">
+                <i data-lucide="check-circle" class="h-6 w-6"></i>
+                <span class="font-medium">You're subscribed! Check your inbox.</span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-foreground text-background">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
+                <div class="lg:col-span-2">
+                    <a href="/" class="flex items-center gap-2 mb-6">
+                        <i data-lucide="mountain" class="h-8 w-8 text-primary"></i>
+                        <span class="font-serif text-2xl font-semibold text-background">Casalinga</span>
+                    </a>
+                    <p class="text-background/70 leading-relaxed mb-8 max-w-sm">Discover wellness through travel, adventure, and connection with nature.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-background mb-6">Explore</h3>
+                    <ul class="space-y-4 text-background/70">
+                        <li><a href="/tours" class="hover:text-background transition-colors">All Tours</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Group Bookings</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-background mb-6">Company</h3>
+                    <ul class="space-y-4 text-background/70">
+                        <li><a href="/about" class="hover:text-background transition-colors">About Us</a></li>
+                        <li><a href="/contact" class="hover:text-background transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-background mb-6">Support</h3>
+                    <ul class="space-y-4 text-background/70">
+                        <li><a href="#" class="hover:text-background transition-colors">FAQs</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-background/10">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-background/60 text-sm">&copy; 2026 Casalinga Tours. All rights reserved.</p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="p-2 rounded-full bg-background/10 hover:bg-background/20 text-background/70 hover:text-background"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+                    <a href="#" class="p-2 rounded-full bg-background/10 hover:bg-background/20 text-background/70 hover:text-background"><i data-lucide="facebook" class="h-5 w-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Particles
+        const particlesContainer = document.getElementById('particles-container');
+        for(let i=0; i<20; i++) {
+            const p = document.createElement('div');
+            p.className = "absolute w-1 h-1 bg-white/30 rounded-full animate-pulse";
+            p.style.left = `${Math.random() * 100}%`;
+            p.style.top = `${Math.random() * 100}%`;
+            p.style.animationDelay = `${Math.random() * 3}s`;
+            p.style.animationDuration = `${2 + Math.random() * 3}s`;
+            particlesContainer.appendChild(p);
+        }
+
+        // Parallax
+        const heroBg = document.getElementById('hero-bg');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * -20;
+            const y = (e.clientY / window.innerHeight) * -20;
+            heroBg.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
+        });
+
+        // Header Scroll Logic
+        const header = document.getElementById('main-header');
+        const logoText = document.getElementById('header-logo-text');
+        const logoIcon = document.getElementById('header-logo-icon');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const headerCta = document.getElementById('header-cta');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('bg-background/95', 'backdrop-blur-md', 'shadow-sm', 'py-3');
+                header.classList.remove('bg-transparent', 'py-5');
+                logoText.classList.replace('text-white', 'text-foreground');
+                logoIcon.classList.replace('text-white', 'text-primary');
+                mobileMenuBtn.classList.replace('text-white', 'text-foreground');
+                
+                navLinks.forEach(link => {
+                    link.classList.replace('text-white/90', 'text-foreground');
+                    link.classList.replace('hover:text-white', 'hover:text-primary');
+                });
+                
+                if(headerCta) {
+                    headerCta.classList.replace('bg-white', 'bg-primary');
+                    headerCta.classList.replace('text-foreground', 'text-primary-foreground');
+                    headerCta.classList.remove('hover:bg-white/90');
+                    headerCta.classList.add('hover:bg-primary/90');
+                }
+            } else {
+                header.classList.remove('bg-background/95', 'backdrop-blur-md', 'shadow-sm', 'py-3');
+                header.classList.add('bg-transparent', 'py-5');
+                logoText.classList.replace('text-foreground', 'text-white');
+                logoIcon.classList.replace('text-primary', 'text-white');
+                mobileMenuBtn.classList.replace('text-foreground', 'text-white');
+
+                navLinks.forEach(link => {
+                    link.classList.replace('text-foreground', 'text-white/90');
+                    link.classList.replace('hover:text-primary', 'hover:text-white');
+                });
+
+                if(headerCta) {
+                    headerCta.classList.replace('bg-primary', 'bg-white');
+                    headerCta.classList.replace('text-primary-foreground', 'text-foreground');
+                    headerCta.classList.remove('hover:bg-primary/90');
+                    headerCta.classList.add('hover:bg-white/90');
+                }
+            }
+        });
+
+        // Mobile Menu
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            if (mobileMenu.classList.contains('max-h-0')) {
+                mobileMenu.classList.remove('max-h-0', 'opacity-0');
+                mobileMenu.classList.add('max-h-96', 'opacity-100');
+            } else {
+                mobileMenu.classList.add('max-h-0', 'opacity-0');
+                mobileMenu.classList.remove('max-h-96', 'opacity-100');
+            }
+        });
+
+        // Scroll Animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Newsletter Form
+        document.getElementById('newsletter-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            e.target.style.display = 'none';
+            document.getElementById('newsletter-success').classList.remove('hidden');
+            document.getElementById('newsletter-success').classList.add('flex');
+        });
+    </script>
+</body>
+</html>

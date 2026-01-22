@@ -1,111 +1,323 @@
-<div class="position-relative" style="height: 50vh; overflow: hidden;">
-    <img src="<%= images[0] ? images[0].image_url : '/images/placeholder-tour.jpg' %>" class="w-100 h-100" style="object-fit: cover; filter: brightness(0.7);" alt="<%= tour.title %>">
-    <div class="position-absolute bottom-0 start-0 w-100 p-5 bg-gradient-dark">
-        <div class="container">
-            <h1 class="display-4 fw-bold text-white mb-2"><%= tour.title %></h1>
-            <p class="lead text-white-50"><i class="fas fa-map-marker-alt me-2"></i><%= tour.location %></p>
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= tour.title %> | Casalinga Tours</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
+                extend: {
+                    fontFamily: { sans: ['DM Sans', 'sans-serif'], serif: ['Playfair Display', 'serif'] },
+                    colors: {
+                        background: "#faf8f5",
+                        foreground: "#1a1a1a",
+                        primary: { DEFAULT: "#1e6b38", foreground: "#ffffff" },
+                        secondary: { DEFAULT: "#f2eadd", foreground: "#1a1a1a" },
+                        muted: "#6b7280",
+                        border: "#e5e7eb"
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="font-sans antialiased bg-background text-foreground">
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-sm py-4 transition-all">
+        <div class="mx-auto max-w-7xl px-4 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2">
+                <i data-lucide="mountain" class="h-8 w-8 text-primary"></i>
+                <span class="font-serif text-2xl font-semibold text-gray-900">Casalinga</span>
+            </a>
+            <nav class="hidden md:flex items-center gap-6">
+                <a href="/" class="text-sm font-medium hover:text-primary transition-colors">Home</a>
+                <a href="/tours" class="text-sm font-medium text-primary">Tours</a>
+                <% if (user) { %>
+                    <a href="/user/dashboard" class="px-5 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90">Dashboard</a>
+                <% } else { %>
+                    <a href="/auth/login" class="text-sm font-medium hover:text-primary">Login</a>
+                    <a href="/auth/register" class="px-5 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90">Sign Up</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <div class="relative h-[60vh] lg:h-[70vh] w-full overflow-hidden mt-16">
+        <img src="<%= images[0] ? images[0].image_url : '/images/placeholder-tour.jpg' %>" 
+             alt="<%= tour.title %>" 
+             class="absolute inset-0 w-full h-full object-cover">
+        
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+
+        <div class="absolute bottom-0 left-0 right-0 p-8 lg:p-16">
+            <div class="mx-auto max-w-7xl">
+                <div class="flex flex-col md:flex-row items-end justify-between gap-6">
+                    <div class="space-y-4 max-w-3xl">
+                        <div class="flex flex-wrap gap-2">
+                            <% categories.forEach(cat => { %>
+                                <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-bold border border-white/30">
+                                    <%= cat.name %>
+                                </span>
+                            <% }) %>
+                        </div>
+                        <h1 class="font-serif text-4xl md:text-6xl font-bold text-white leading-tight">
+                            <%= tour.title %>
+                        </h1>
+                        <div class="flex items-center gap-6 text-white/90 text-sm md:text-base">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                                <%= tour.location %>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="calendar" class="w-5 h-5"></i>
+                                <%= moment(tour.start_date).format('MMM D, YYYY') %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="container py-5">
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="row g-2 mb-4">
-                <% images.slice(1, 4).forEach(img => { %>
-                <div class="col-4">
-                    <img src="<%= img.image_url %>" class="img-fluid rounded" style="height: 150px; object-fit: cover; width: 100%;">
-                </div>
-                <% }) %>
+    <div class="mx-auto max-w-7xl px-4 py-12 lg:py-16">
+        
+        <% if (locals.error) { %>
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-8 flex items-center gap-3">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                <p><%= error %></p>
             </div>
-
-            <div class="mb-5">
-                <h3 class="fw-bold mb-3">Overview</h3>
-                <div class="d-flex gap-4 text-muted mb-4 p-3 bg-light rounded">
-                    <div><i class="far fa-clock me-2"></i> <%= tour.duration_days %> Days</div>
-                    <div><i class="fas fa-user-friends me-2"></i> Max <%= tour.capacity %> People</div>
-                    <div><i class="far fa-calendar-alt me-2"></i> <%= moment(tour.start_date).format('MMM D, YYYY') %></div>
-                </div>
-                <p class="lead"><%= tour.short_description %></p>
-                <div class="mt-4">
-                    <p style="white-space: pre-line;"><%= tour.full_description %></p>
-                </div>
+        <% } %>
+        <% if (locals.success) { %>
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-8 flex items-center gap-3">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                <p><%= success %></p>
             </div>
+        <% } %>
 
-            <div class="mb-5">
-                <h4 class="fw-bold mb-3">What's Included</h4>
-                <div class="row g-3">
-                    <% amenities.forEach(am => { %>
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center">
-                            <i class="<%= am.icon %> text-success me-3 fa-lg"></i>
-                            <span><%= am.name %></span>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            
+            <div class="lg:col-span-2 space-y-12">
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                    <div class="space-y-1">
+                        <span class="text-xs text-muted uppercase tracking-wider font-semibold">Duration</span>
+                        <div class="flex items-center gap-2 font-medium text-gray-900">
+                            <i data-lucide="clock" class="w-4 h-4 text-primary"></i> <%= tour.duration_days %> Days
                         </div>
                     </div>
-                    <% }) %>
+                    <div class="space-y-1">
+                        <span class="text-xs text-muted uppercase tracking-wider font-semibold">Group Size</span>
+                        <div class="flex items-center gap-2 font-medium text-gray-900">
+                            <i data-lucide="users" class="w-4 h-4 text-primary"></i> Max <%= tour.capacity %>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-xs text-muted uppercase tracking-wider font-semibold">Start Date</span>
+                        <div class="flex items-center gap-2 font-medium text-gray-900">
+                            <i data-lucide="calendar-days" class="w-4 h-4 text-primary"></i> <%= moment(tour.start_date).format('MMM D') %>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-xs text-muted uppercase tracking-wider font-semibold">End Date</span>
+                        <div class="flex items-center gap-2 font-medium text-gray-900">
+                            <i data-lucide="flag" class="w-4 h-4 text-primary"></i> <%= moment(tour.end_date).format('MMM D') %>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-lg-4">
-            <div class="card shadow border-0 sticky-top" style="top: 100px;">
-                <div class="card-body p-4">
-                    <div class="mb-4">
-                        <h4 class="fw-bold text-primary mb-0">R<%= tour.discount_price || tour.price %></h4>
-                        <small class="text-muted">per person</small>
+                <div class="prose prose-lg text-gray-600 max-w-none">
+                    <h3 class="font-serif text-2xl font-bold text-gray-900 mb-4">About this experience</h3>
+                    <p class="whitespace-pre-line leading-relaxed"><%= tour.full_description %></p>
+                </div>
+
+                <div>
+                    <h3 class="font-serif text-2xl font-bold text-gray-900 mb-6">What's Included</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <% amenities.forEach(am => { %>
+                            <div class="flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-white border border-transparent hover:border-gray-200 transition-colors">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <% if(am.icon.includes('fa-')) { %>
+                                        <i class="<%= am.icon %>"></i>
+                                    <% } else { %>
+                                        <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                    <% } %>
+                                </div>
+                                <span class="font-medium text-gray-700"><%= am.name %></span>
+                            </div>
+                        <% }) %>
+                    </div>
+                </div>
+
+                <% if(images.length > 1) { %>
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold text-gray-900 mb-6">Gallery</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <% images.slice(1).forEach(img => { %>
+                                <div class="relative aspect-square rounded-xl overflow-hidden group">
+                                    <img src="<%= img.image_url %>" alt="<%= img.alt_text || tour.title %>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="sticky top-24 bg-white rounded-3xl p-6 border border-gray-100 shadow-xl shadow-gray-200/50">
+                    <div class="flex items-end justify-between mb-6 pb-6 border-b border-gray-100">
+                        <div>
+                            <p class="text-sm text-muted mb-1">Price per person</p>
+                            <div class="flex items-baseline gap-2">
+                                <% if (tour.discount_price) { %>
+                                    <span class="text-3xl font-bold text-primary">R<%= parseFloat(tour.discount_price).toLocaleString() %></span>
+                                    <span class="text-lg text-gray-400 line-through">R<%= parseFloat(tour.price).toLocaleString() %></span>
+                                <% } else { %>
+                                    <span class="text-3xl font-bold text-primary">R<%= parseFloat(tour.price).toLocaleString() %></span>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-md text-amber-700 text-sm font-bold">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i> 4.9
+                        </div>
                     </div>
 
-                    <form action="/bookings/create" method="POST">
+                    <form action="/bookings/create" method="POST" class="space-y-4">
                         <input type="hidden" name="tour_id" value="<%= tour.id %>">
                         <input type="hidden" name="tour_slug" value="<%= tour.slug %>">
-                        <input type="hidden" name="tour_date" value="<%= tour.start_date %>">
                         
-                        <div class="mb-3">
-                            <label class="form-label fw-bold small">Date</label>
-                            <input type="text" class="form-control bg-light" value="<%= moment(tour.start_date).format('ddd, MMM D, YYYY') %>" readonly>
+                        <input type="hidden" name="tour_date" value="<%= moment(tour.start_date).format('YYYY-MM-DD') %>">
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-700">Dates</label>
+                            <div class="relative">
+                                <i data-lucide="calendar" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="text" value="<%= moment(tour.start_date).format('ddd, MMM D') %> - <%= moment(tour.end_date).format('ddd, MMM D') %>" readonly class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-600 text-sm focus:outline-none cursor-default">
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold small">Guests</label>
-                            <input type="number" name="people_count" class="form-control" min="1" max="10" value="1" required>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-700">Guests</label>
+                            <div class="relative">
+                                <i data-lucide="user" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="number" name="people_count" min="1" max="<%= tour.capacity %>" value="1" required class="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                            </div>
+                            <p class="text-xs text-muted text-right"><%= tour.capacity %> spots available</p>
                         </div>
 
-                        <div class="mb-4">
-                            <label class="form-label fw-bold small">Special Requests</label>
-                            <textarea name="special_requests" class="form-control" rows="2" placeholder="Dietary restrictions, etc."></textarea>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-gray-700">Special Requests</label>
+                            <textarea name="special_requests" rows="2" placeholder="Dietary requirements, allergies..." class="w-full p-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"></textarea>
                         </div>
 
                         <% if (user) { %>
-                            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill">Book Now</button>
+                            <button type="submit" class="w-full py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25 transition-all transform hover:-translate-y-0.5">
+                                Book Now
+                            </button>
                         <% } else { %>
-                            <a href="/auth/login" class="btn btn-outline-primary w-100 py-3 fw-bold rounded-pill">Login to Book</a>
+                            <a href="/auth/login" class="block w-full py-4 bg-gray-900 text-white font-bold text-center rounded-xl hover:bg-gray-800 transition-all">
+                                Login to Book
+                            </a>
                         <% } %>
                     </form>
-                    
+
                     <% if (user) { %>
-                        <div class="text-center mt-3">
-                            <button class="btn btn-sm text-danger" onclick="toggleFavorite('<%= tour.id %>')">
-                                <i class="<%= isFavorite ? 'fas' : 'far' %> fa-heart me-1"></i> 
+                        <div class="mt-4 pt-4 border-t border-gray-100 text-center">
+                            <button id="favorite-btn" onclick="toggleFavorite('<%= tour.id %>')" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-red-500 transition-colors group cursor-pointer">
+                                <i class="<%= isFavorite ? 'fa-solid text-red-500' : 'fa-regular' %> fa-heart transition-transform group-hover:scale-110"></i>
                                 <span id="fav-text"><%= isFavorite ? 'Saved to Favorites' : 'Add to Favorites' %></span>
                             </button>
                         </div>
                     <% } %>
+                    
+                    <div class="mt-6 flex items-center justify-center gap-2 text-xs text-muted">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-primary"></i>
+                        <span>Secure booking • No hidden fees</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<script>
-async function toggleFavorite(tourId) {
-    try {
-        const res = await fetch(`/tours/${tourId}/favorite`, { method: 'POST' });
-        const data = await res.json();
-        if (data.success) {
-            location.reload(); 
+        <% if (similarTours && similarTours.length > 0) { %>
+            <div class="mt-24 pt-12 border-t border-gray-200">
+                <h2 class="font-serif text-3xl font-bold text-gray-900 mb-8">You might also like</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <% similarTours.forEach(sim => { %>
+                        <a href="/tours/<%= sim.slug %>" class="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1">
+                            <div class="relative h-48 overflow-hidden">
+                                <img src="<%= sim.image || '/images/placeholder-tour.jpg' %>" alt="<%= sim.title %>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-serif text-lg font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors"><%= sim.title %></h3>
+                                <p class="text-sm text-muted mb-3 line-clamp-1"><%= sim.short_description %></p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-primary font-bold">R<%= parseFloat(sim.price).toLocaleString() %></span>
+                                    <span class="text-xs text-gray-400 flex items-center gap-1">View <i data-lucide="arrow-right" class="w-3 h-3"></i></span>
+                                </div>
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        async function toggleFavorite(tourId) {
+            try {
+                // FIX: More specific selector
+                const btn = document.getElementById('favorite-btn');
+                const btnIcon = btn.querySelector('.fa-heart');
+                const btnText = document.getElementById('fav-text');
+                
+                // Optimistic UI update
+                const isCurrentlyFav = btnIcon.classList.contains('fa-solid');
+                if (isCurrentlyFav) {
+                    btnIcon.classList.replace('fa-solid', 'fa-regular');
+                    btnIcon.classList.remove('text-red-500');
+                    btnText.textContent = 'Add to Favorites';
+                } else {
+                    btnIcon.classList.replace('fa-regular', 'fa-solid');
+                    btnIcon.classList.add('text-red-500');
+                    btnText.textContent = 'Saved to Favorites';
+                }
+
+                const res = await fetch(`/tours/${tourId}/favorite`, { method: 'POST' });
+                const data = await res.json();
+                
+                if (!data.success) {
+                    // Revert if failed
+                    if (isCurrentlyFav) {
+                        btnIcon.classList.replace('fa-regular', 'fa-solid');
+                        btnIcon.classList.add('text-red-500');
+                        btnText.textContent = 'Saved to Favorites';
+                    } else {
+                        btnIcon.classList.replace('fa-solid', 'fa-regular');
+                        btnIcon.classList.remove('text-red-500');
+                        btnText.textContent = 'Add to Favorites';
+                    }
+                    alert("Could not update favorites. Please try again.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("An error occurred. Please try again.");
+            }
         }
-    } catch (err) {
-        console.error(err);
-    }
-}
-</script>
+    </script>
+</body>
+</html>

@@ -55,7 +55,7 @@ const bookingController = {
 
             // Generate booking number
             const bookingNumberQuery = await db.query(
-                "SELECT 'CT-' || TO_CHAR(CURRENT_DATE, 'YYMMDD') || '-' || LPAD(COALESCE(MAX(SUBSTRING(booking_number FROM 10)::INTEGER), 0) + 1, 5, '0') as next_number FROM bookings WHERE booking_number LIKE 'CT-' || TO_CHAR(CURRENT_DATE, 'YYMMDD') || '-%'"
+                "SELECT 'CT-' || TO_CHAR(CURRENT_DATE, 'YYMMDD') || '-' || LPAD((COALESCE(MAX(SUBSTRING(booking_number FROM 10)::INTEGER), 0) + 1)::TEXT, 5, '0') as next_number FROM bookings WHERE booking_number LIKE 'CT-' || TO_CHAR(CURRENT_DATE, 'YYMMDD') || '-%'"
             );
 
             const bookingNumber = bookingNumberQuery.rows[0].next_number || 
@@ -191,7 +191,7 @@ const bookingController = {
             const bookingQuery = await db.query(
                 `SELECT 
                     b.*,
-                    t.title, t.slug, t.location, t.description,
+                    t.title, t.slug, t.location, t.full_description,
                     t.start_date, t.end_date, t.duration_days,
                     u.name as user_name, u.email as user_email, u.phone as user_phone,
                     (SELECT image_url FROM tour_images WHERE tour_id = t.id AND is_main = true LIMIT 1) as tour_image

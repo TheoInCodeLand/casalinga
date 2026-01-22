@@ -27,10 +27,16 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+      // Allow scripts from Tailwind CDN and Unpkg (for Lucide icons)
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://cdn.tailwindcss.com", "https://unpkg.com"],
+      // Allow styles from Google Fonts and Tailwind
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+      // Allow fonts from Google Fonts
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      // Allow images from anywhere (for your tour images) and data URIs
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
+      connectSrc: ["'self'", "https://unpkg.com"], // Sometimes needed for icon fetching
+      upgradeInsecureRequests: null, // Optional: helps in local dev if https/http mix issues arise
     },
   },
 }));
