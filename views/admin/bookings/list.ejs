@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Bookings - Casalinga Tours</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* Base Variables & Reset */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --background: 0 0% 100%; --foreground: 222.2 84% 4.9%; 
+      --card: 0 0% 100%; --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%; --popover-foreground: 222.2 84% 4.9%; 
+      --primary: 221.2 83.2% 53.3%; --primary-foreground: 210 40% 98%;
+      --secondary: 210 40% 96%; --secondary-foreground: 222.2 84% 4.9%; 
+      --muted: 210 40% 96%; --muted-foreground: 215.4 16.3% 46.9%; 
+      --accent: 210 40% 96%; --accent-foreground: 222.2 84% 4.9%; 
+      --destructive: 0 84.2% 60.2%; --destructive-foreground: 210 40% 98%;
+      --success: 142.1 76.2% 36.3%; --success-foreground: 355.7 100% 97.3%;
+      --warning: 38 92% 50%; --warning-foreground: 48 96% 89%;
+      --border: 214.3 31.8% 91.4%; --input: 214.3 31.8% 91.4%; 
+      --ring: 221.2 83.2% 53.3%; --radius: 0.75rem;
+      --sidebar-background: 0 0% 98%; --sidebar-foreground: 240 5.3% 26.1%; 
+      --sidebar-primary: 240 5.9% 10%; --sidebar-accent: 240 4.8% 95.9%;
+    }
+    body { font-family: 'Inter', sans-serif; background-color: hsl(var(--background)); color: hsl(var(--foreground)); line-height: 1.5; }
+
+    /* Layout */
+    .app-wrapper { display: flex; min-height: 100vh; width: 100%; }
+    
+    /* Sidebar */
+    .sidebar { width: 16rem; height: 100vh; position: fixed; left: 0; top: 0; background-color: hsl(var(--sidebar-background)); border-right: 1px solid hsl(var(--border)); display: flex; flex-direction: column; z-index: 40; transition: transform 0.2s; }
+    .sidebar-header { padding: 1.5rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 1.125rem; }
+    .sidebar-logo-icon { width: 2rem; height: 2rem; border-radius: 0.5rem; background: hsl(var(--primary)); color: white; display: flex; align-items: center; justify-content: center; }
+    .sidebar-content { flex: 1; overflow-y: auto; padding: 0.5rem; }
+    .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-menu-button { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-radius: 0.375rem; color: hsl(var(--sidebar-foreground)); text-decoration: none; transition: 0.15s; }
+    .sidebar-menu-button:hover, .sidebar-menu-button.active { background-color: hsl(var(--sidebar-accent)); font-weight: 500; }
+    .sidebar-footer { padding: 1rem; border-top: 1px solid hsl(var(--border)); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.75rem; }
+    .sidebar-user img { width: 2rem; height: 2rem; border-radius: 50%; object-fit: cover; }
+    .sidebar-user-info { display: flex; flex-direction: column; font-size: 0.875rem; }
+
+    /* Main Content */
+    .main-content { flex: 1; margin-left: 16rem; overflow-x: hidden; }
+    
+    /* Topbar */
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); background: hsl(var(--background)); }
+    .topbar-search { display: flex; align-items: center; gap: 1rem; flex: 1; max-width: 28rem; }
+    .search-input-wrapper { position: relative; flex: 1; }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: hsl(var(--muted-foreground)); width: 1rem; height: 1rem; }
+    .search-input { width: 100%; height: 2.5rem; padding: 0.5rem 0.75rem 0.5rem 2.5rem; border: 1px solid hsl(var(--input)); border-radius: var(--radius); outline: none; background: transparent; }
+    .search-input:focus { border-color: hsl(var(--ring)); }
+    .topbar-actions { display: flex; gap: 1rem; }
+    .avatar-button { width: 2rem; height: 2rem; border-radius: 50%; overflow: hidden; border: none; cursor: pointer; padding: 0; }
+    .avatar-button img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Page */
+    .page-content { padding: 1.5rem 2rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .page-title { font-size: 1.875rem; font-weight: 700; letter-spacing: -0.025em; }
+    
+    /* Filters Area */
+    .filter-section { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+    
+    .status-tabs { display: inline-flex; background-color: hsl(var(--muted)); padding: 0.25rem; border-radius: var(--radius); width: fit-content; }
+    .status-tab { padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; color: hsl(var(--muted-foreground)); text-decoration: none; border-radius: calc(var(--radius) - 2px); transition: all 0.15s; }
+    .status-tab:hover { color: hsl(var(--foreground)); }
+    .status-tab.active { background-color: hsl(var(--background)); color: hsl(var(--foreground)); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+    .advanced-filters { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    .filter-select { padding: 0.5rem 2rem 0.5rem 0.75rem; border: 1px solid hsl(var(--border)); border-radius: var(--radius); background-color: transparent; font-size: 0.875rem; min-width: 200px; cursor: pointer; }
+    .date-input { padding: 0.4rem 0.75rem; border: 1px solid hsl(var(--border)); border-radius: var(--radius); background-color: transparent; font-size: 0.875rem; }
+
+    /* Table */
+    .table-container { border: 1px solid hsl(var(--border)); border-radius: var(--radius); background: hsl(var(--card)); overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th, .table td { padding: 1rem; text-align: left; border-bottom: 1px solid hsl(var(--border)); }
+    .table th { background: hsl(var(--muted)); font-size: 0.75rem; text-transform: uppercase; color: hsl(var(--muted-foreground)); font-weight: 600; letter-spacing: 0.05em; }
+    .table tr:last-child td { border-bottom: none; }
+    .table tr:hover td { background-color: hsl(var(--accent) / 0.5); }
+
+    /* Customer Cell */
+    .customer-cell { display: flex; align-items: center; gap: 0.75rem; }
+    .customer-avatar { width: 2.25rem; height: 2.25rem; background: hsl(var(--primary)); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600; }
+    .customer-info { display: flex; flex-direction: column; }
+    .customer-name { font-weight: 500; font-size: 0.875rem; color: hsl(var(--foreground)); }
+    .customer-email { font-size: 0.75rem; color: hsl(var(--muted-foreground)); }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .badge-pending { background-color: hsl(45, 100%, 96%); color: hsl(35, 90%, 35%); border: 1px solid hsl(45, 100%, 90%); }
+    .badge-confirmed { background-color: hsl(145, 80%, 96%); color: hsl(145, 80%, 30%); border: 1px solid hsl(145, 80%, 90%); }
+    .badge-cancelled { background-color: hsl(0, 90%, 97%); color: hsl(0, 90%, 40%); border: 1px solid hsl(0, 90%, 92%); }
+
+    /* Action Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem; border-radius: 0.375rem; border: 1px solid transparent; cursor: pointer; transition: 0.15s; text-decoration: none; }
+    .btn-icon { width: 2rem; height: 2rem; color: hsl(var(--muted-foreground)); }
+    .btn-icon:hover { background-color: hsl(var(--accent)); color: hsl(var(--foreground)); }
+    .btn-confirm:hover { background-color: hsl(142, 70%, 95%); color: hsl(142, 76%, 36%); }
+    .btn-cancel:hover { background-color: hsl(0, 84%, 95%); color: hsl(0, 84%, 60%); }
+    
+    .btn-primary { background: hsl(var(--primary)); color: white; padding: 0.5rem 1rem; font-weight: 500; }
+    .btn-primary:hover { background: hsl(221.2 83.2% 46%); }
+
+    /* Pagination */
+    .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; }
+    .page-link { display: inline-flex; align-items: center; justify-content: center; min-width: 2.5rem; height: 2.5rem; border-radius: var(--radius); border: 1px solid hsl(var(--input)); text-decoration: none; color: hsl(var(--foreground)); transition: 0.15s; }
+    .page-link:hover { background: hsl(var(--accent)); }
+    .page-link.active { background: hsl(var(--primary)); color: white; border-color: hsl(var(--primary)); }
+    .page-link.disabled { opacity: 0.5; pointer-events: none; }
+
+    /* Mobile */
+    .mobile-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .topbar-search { display: none; }
+      .mobile-toggle { display: block; }
+      .table th:nth-child(3), .table td:nth-child(3),
+      .table th:nth-child(4), .table td:nth-child(4) { display: none; }
+    }
+    
+    /* Dropdown */
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-content { display: none; position: absolute; right: 0; top: 100%; min-width: 12rem; background: hsl(var(--popover)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 50; padding: 0.25rem; }
+    .dropdown-content.show { display: block; }
+    .dropdown-item { display: block; padding: 0.5rem; color: hsl(var(--foreground)); text-decoration: none; border-radius: 4px; }
+    .dropdown-item:hover { background: hsl(var(--accent)); }
+  </style>
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-wrapper">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon"><i class="fas fa-layer-group"></i></div>
+          <span>Casalinga Admin</span>
+        </div>
+      </div>
+      <nav class="sidebar-content">
+        <ul class="sidebar-menu">
+          <li><a href="/admin/dashboard" class="sidebar-menu-button"><i class="fas fa-th-large"></i> Dashboard</a></li>
+          <li><a href="/admin/bookings" class="sidebar-menu-button active"><i class="fas fa-calendar-check"></i> Bookings</a></li>
+          <li><a href="/admin/tours" class="sidebar-menu-button"><i class="fas fa-map-marked-alt"></i> Tours</a></li>
+          <% if (user.role === 'admin') { %>
+          <li><a href="/admin/users" class="sidebar-menu-button"><i class="fas fa-users"></i> Users</a></li>
+          <li><a href="/admin/analytics" class="sidebar-menu-button"><i class="fas fa-chart-line"></i> Analytics</a></li>
+          <% } %>
+          <li><a href="/admin/settings/categories" class="sidebar-menu-button"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>">
+          <div class="sidebar-user-info">
+            <span style="font-weight: 600;"><%= user.name %></span>
+            <span style="color: hsl(var(--muted-foreground));"><%= user.role %></span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-search">
+            <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+            <form action="/admin/bookings" method="GET" class="search-input-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="search" class="search-input" placeholder="Search by booking #, name or email..." value="<%= filters.search || '' %>">
+                <% if(filters.status) { %><input type="hidden" name="status" value="<%= filters.status %>"><% } %>
+            </form>
+        </div>
+        <div class="topbar-actions">
+           <div class="dropdown">
+             <button class="avatar-button" id="userBtn"><img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="User"></button>
+             <div class="dropdown-content" id="userDropdown">
+                 <a href="/user/profile" class="dropdown-item">Profile</a>
+                 <a href="/auth/logout" class="dropdown-item" style="color: var(--destructive);">Log out</a>
+             </div>
+           </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <h2 class="page-title">Bookings</h2>
+          <div class="page-actions">
+             <% if(bookings.length > 0) { %>
+             <a href="/admin/bookings?format=csv&status=<%= filters.status || '' %>&start_date=<%= filters.start_date || '' %>" class="btn btn-primary">
+                 <i class="fas fa-download" style="margin-right: 0.5rem;"></i> Export CSV
+             </a>
+             <% } %>
+          </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="status-tabs">
+                <a href="/admin/bookings" class="status-tab <%= !filters.status ? 'active' : '' %>">All Bookings</a>
+                <a href="/admin/bookings?status=pending" class="status-tab <%= filters.status === 'pending' ? 'active' : '' %>">
+                    <i class="fas fa-clock" style="margin-right: 4px; font-size: 0.75rem;"></i> Pending
+                </a>
+                <a href="/admin/bookings?status=confirmed" class="status-tab <%= filters.status === 'confirmed' ? 'active' : '' %>">
+                    <i class="fas fa-check-circle" style="margin-right: 4px; font-size: 0.75rem;"></i> Confirmed
+                </a>
+                <a href="/admin/bookings?status=cancelled" class="status-tab <%= filters.status === 'cancelled' ? 'active' : '' %>">
+                    <i class="fas fa-times-circle" style="margin-right: 4px; font-size: 0.75rem;"></i> Cancelled
+                </a>
+            </div>
+
+            <form action="/admin/bookings" method="GET" class="advanced-filters">
+                <% if(filters.status) { %><input type="hidden" name="status" value="<%= filters.status %>"><% } %>
+                <% if(filters.search) { %><input type="hidden" name="search" value="<%= filters.search %>"><% } %>
+                
+                <select name="tour_id" class="filter-select" onchange="this.form.submit()">
+                    <option value="">All Tours</option>
+                    <% tours.forEach(tour => { %>
+                        <option value="<%= tour.id %>" <%= filters.tour_id == tour.id ? 'selected' : '' %>><%= tour.title %></option>
+                    <% }) %>
+                </select>
+
+                <div style="display: flex; align-items: center; gap: 0.5rem; color: hsl(var(--muted-foreground)); font-size: 0.875rem;">
+                    <span>From:</span>
+                    <input type="date" name="start_date" class="date-input" value="<%= filters.start_date %>" onchange="this.form.submit()">
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Booking Ref</th>
+                        <th>Customer</th>
+                        <th>Tour Details</th>
+                        <th>Date & Pax</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (bookings.length === 0) { %>
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 3rem; color: hsl(var(--muted-foreground));">
+                                <div style="margin-bottom: 1rem; font-size: 2rem; opacity: 0.2;"><i class="fas fa-inbox"></i></div>
+                                No bookings found matching your criteria.
+                            </td>
+                        </tr>
+                    <% } %>
+                    <% bookings.forEach(booking => { %>
+                    <tr>
+                        <td style="font-family: monospace; font-weight: 600; color: hsl(var(--primary));">
+                            #<%= booking.booking_number.split('-').pop() %>
+                        </td>
+                        <td>
+                            <div class="customer-cell">
+                                <div class="customer-avatar">
+                                    <%= booking.customer_name.charAt(0).toUpperCase() %>
+                                </div>
+                                <div class="customer-info">
+                                    <span class="customer-name"><%= booking.customer_name %></span>
+                                    <a href="mailto:<%= booking.customer_email %>" class="customer-email"><%= booking.customer_email %></a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span style="display: block; font-weight: 500;"><%= booking.tour_title %></span>
+                            <small style="color: hsl(var(--muted-foreground));">Booked <%= moment(booking.booked_at).fromNow() %></small>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="far fa-calendar text-muted"></i>
+                                <span><%= moment(booking.tour_date).format('MMM D') %></span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: hsl(var(--muted-foreground)); margin-top: 2px;">
+                                <%= booking.people_count %> People
+                            </div>
+                        </td>
+                        <td style="font-weight: 600;">
+                            R<%= parseFloat(booking.total_price).toLocaleString() %>
+                        </td>
+                        <td>
+                            <span class="badge badge-<%= booking.status %>">
+                                <% if(booking.status === 'pending') { %><i class="fas fa-clock" style="margin-right: 4px;"></i><% } %>
+                                <% if(booking.status === 'confirmed') { %><i class="fas fa-check" style="margin-right: 4px;"></i><% } %>
+                                <% if(booking.status === 'cancelled') { %><i class="fas fa-ban" style="margin-right: 4px;"></i><% } %>
+                                <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1) %>
+                            </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <div style="display: inline-flex; gap: 0.25rem;">
+                                <a href="/admin/bookings/<%= booking.id %>" class="btn btn-icon" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                
+                                <% if(booking.status === 'pending') { %>
+                                <form action="/admin/bookings/<%= booking.id %>/confirm" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-icon btn-confirm" title="Confirm Booking" onclick="return confirm('Confirm this booking?')">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                                <% } %>
+
+                                <% if(booking.status !== 'cancelled') { %>
+                                <form action="/admin/bookings/<%= booking.id %>/cancel" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-icon btn-cancel" title="Cancel Booking" onclick="return confirm('Cancel this booking? This action cannot be undone.')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
+                                <% } %>
+                            </div>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <% if (totalPages > 1) { %>
+        <nav class="pagination">
+            <a href="?page=<%= currentPage - 1 %>&status=<%= filters.status || '' %>&search=<%= filters.search || '' %>" class="page-link <%= currentPage === 1 ? 'disabled' : '' %>">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <% for(let i=1; i<=totalPages; i++) { %>
+                <a href="?page=<%= i %>&status=<%= filters.status || '' %>&search=<%= filters.search || '' %>" class="page-link <%= currentPage === i ? 'active' : '' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+            <a href="?page=<%= currentPage + 1 %>&status=<%= filters.status || '' %>&search=<%= filters.search || '' %>" class="page-link <%= currentPage === totalPages ? 'disabled' : '' %>">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </nav>
+        <% } %>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const mobileToggle = document.getElementById('mobileToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if(mobileToggle) {
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('show');
+        });
+    }
+
+    if(sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        });
+    }
+
+    // Dropdown Logic
+    const userBtn = document.getElementById('userBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    
+    if(userBtn) {
+        userBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+        
+        document.addEventListener('click', () => {
+            userDropdown.classList.remove('show');
+        });
+    }
+  </script>
+</body>
+</html>

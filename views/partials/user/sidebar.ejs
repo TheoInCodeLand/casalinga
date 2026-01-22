@@ -1,0 +1,38 @@
+<div class="col-lg-3 mb-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center p-4">
+            <div class="position-relative d-inline-block mb-3">
+                <img src="<%= user.avatar || '/images/default-avatar.png' %>" class="rounded-circle" width="100" height="100" style="object-fit: cover; border: 3px solid #f8f9fa;">
+                <label for="avatarUpload" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 shadow-sm" style="cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-camera small"></i>
+                </label>
+            </div>
+            <h5 class="fw-bold mb-0"><%= user.name %></h5>
+            <small class="text-muted"><%= user.email %></small>
+            
+            <form action="/user/profile/avatar" method="POST" enctype="multipart/form-data" id="avatarForm">
+                <input type="file" name="avatar" id="avatarUpload" class="d-none" accept="image/*" onchange="document.getElementById('avatarForm').submit()">
+            </form>
+        </div>
+        <div class="list-group list-group-flush">
+            <a href="/user/dashboard" class="list-group-item list-group-item-action border-0 py-3 <%= typeof title !== 'undefined' && title.includes('Dashboard') ? 'active fw-bold' : '' %>">
+                <i class="fas fa-th-large me-3"></i> Dashboard
+            </a>
+            <a href="/user/bookings" class="list-group-item list-group-item-action border-0 py-3 <%= typeof title !== 'undefined' && title.includes('My Bookings') ? 'active fw-bold' : '' %>">
+                <i class="fas fa-ticket-alt me-3"></i> My Bookings
+            </a>
+            <a href="/user/favorites" class="list-group-item list-group-item-action border-0 py-3 <%= typeof title !== 'undefined' && title.includes('Favorites') ? 'active fw-bold' : '' %>">
+                <i class="fas fa-heart me-3"></i> Saved Tours
+            </a>
+            <a href="/user/profile" class="list-group-item list-group-item-action border-0 py-3 <%= typeof title !== 'undefined' && title.includes('Profile') ? 'active fw-bold' : '' %>">
+                <i class="fas fa-user-cog me-3"></i> Profile Settings
+            </a>
+            <a href="/user/notifications" class="list-group-item list-group-item-action border-0 py-3 <%= typeof title !== 'undefined' && title.includes('Notifications') ? 'active fw-bold' : '' %>">
+                <i class="fas fa-bell me-3"></i> Notifications
+            </a>
+            <a href="/auth/logout" class="list-group-item list-group-item-action border-0 py-3 text-danger">
+                <i class="fas fa-sign-out-alt me-3"></i> Logout
+            </a>
+        </div>
+    </div>
+</div>

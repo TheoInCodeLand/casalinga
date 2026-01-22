@@ -1,0 +1,111 @@
+<div class="position-relative" style="height: 50vh; overflow: hidden;">
+    <img src="<%= images[0] ? images[0].image_url : '/images/placeholder-tour.jpg' %>" class="w-100 h-100" style="object-fit: cover; filter: brightness(0.7);" alt="<%= tour.title %>">
+    <div class="position-absolute bottom-0 start-0 w-100 p-5 bg-gradient-dark">
+        <div class="container">
+            <h1 class="display-4 fw-bold text-white mb-2"><%= tour.title %></h1>
+            <p class="lead text-white-50"><i class="fas fa-map-marker-alt me-2"></i><%= tour.location %></p>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="row g-2 mb-4">
+                <% images.slice(1, 4).forEach(img => { %>
+                <div class="col-4">
+                    <img src="<%= img.image_url %>" class="img-fluid rounded" style="height: 150px; object-fit: cover; width: 100%;">
+                </div>
+                <% }) %>
+            </div>
+
+            <div class="mb-5">
+                <h3 class="fw-bold mb-3">Overview</h3>
+                <div class="d-flex gap-4 text-muted mb-4 p-3 bg-light rounded">
+                    <div><i class="far fa-clock me-2"></i> <%= tour.duration_days %> Days</div>
+                    <div><i class="fas fa-user-friends me-2"></i> Max <%= tour.capacity %> People</div>
+                    <div><i class="far fa-calendar-alt me-2"></i> <%= moment(tour.start_date).format('MMM D, YYYY') %></div>
+                </div>
+                <p class="lead"><%= tour.short_description %></p>
+                <div class="mt-4">
+                    <p style="white-space: pre-line;"><%= tour.full_description %></p>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <h4 class="fw-bold mb-3">What's Included</h4>
+                <div class="row g-3">
+                    <% amenities.forEach(am => { %>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <i class="<%= am.icon %> text-success me-3 fa-lg"></i>
+                            <span><%= am.name %></span>
+                        </div>
+                    </div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow border-0 sticky-top" style="top: 100px;">
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <h4 class="fw-bold text-primary mb-0">R<%= tour.discount_price || tour.price %></h4>
+                        <small class="text-muted">per person</small>
+                    </div>
+
+                    <form action="/bookings/create" method="POST">
+                        <input type="hidden" name="tour_id" value="<%= tour.id %>">
+                        <input type="hidden" name="tour_slug" value="<%= tour.slug %>">
+                        <input type="hidden" name="tour_date" value="<%= tour.start_date %>">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Date</label>
+                            <input type="text" class="form-control bg-light" value="<%= moment(tour.start_date).format('ddd, MMM D, YYYY') %>" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Guests</label>
+                            <input type="number" name="people_count" class="form-control" min="1" max="10" value="1" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small">Special Requests</label>
+                            <textarea name="special_requests" class="form-control" rows="2" placeholder="Dietary restrictions, etc."></textarea>
+                        </div>
+
+                        <% if (user) { %>
+                            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill">Book Now</button>
+                        <% } else { %>
+                            <a href="/auth/login" class="btn btn-outline-primary w-100 py-3 fw-bold rounded-pill">Login to Book</a>
+                        <% } %>
+                    </form>
+                    
+                    <% if (user) { %>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-sm text-danger" onclick="toggleFavorite('<%= tour.id %>')">
+                                <i class="<%= isFavorite ? 'fas' : 'far' %> fa-heart me-1"></i> 
+                                <span id="fav-text"><%= isFavorite ? 'Saved to Favorites' : 'Add to Favorites' %></span>
+                            </button>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function toggleFavorite(tourId) {
+    try {
+        const res = await fetch(`/tours/${tourId}/favorite`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+            location.reload(); 
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+</script>

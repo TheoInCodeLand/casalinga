@@ -1,0 +1,83 @@
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <%- include('../partials/user/sidebar') %>
+            
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold">My Bookings</h4>
+                    <div class="btn-group">
+                        <a href="?status=" class="btn btn-outline-secondary <%= !statusFilter ? 'active' : '' %>">All</a>
+                        <a href="?status=confirmed" class="btn btn-outline-success <%= statusFilter === 'confirmed' ? 'active' : '' %>">Confirmed</a>
+                        <a href="?status=pending" class="btn btn-outline-warning <%= statusFilter === 'pending' ? 'active' : '' %>">Pending</a>
+                    </div>
+                </div>
+
+                <% if (bookings.length === 0) { %>
+                    <div class="card border-0 shadow-sm text-center py-5">
+                        <div class="card-body">
+                            <div class="mb-3 text-muted"><i class="fas fa-ticket-alt fa-3x opacity-25"></i></div>
+                            <h5>No bookings found</h5>
+                            <p class="text-muted mb-4">You haven't made any bookings matching this criteria.</p>
+                            <a href="/tours" class="btn btn-primary rounded-pill px-4">Browse Tours</a>
+                        </div>
+                    </div>
+                <% } %>
+
+                <div class="row g-4">
+                    <% bookings.forEach(booking => { %>
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm overflow-hidden">
+                            <div class="row g-0">
+                                <div class="col-md-3 position-relative">
+                                    <img src="<%= booking.tour_image %>" class="h-100 w-100" style="object-fit: cover; min-height: 150px;">
+                                    <div class="position-absolute top-0 start-0 m-2">
+                                        <span class="badge bg-<%= booking.status === 'confirmed' ? 'success' : (booking.status === 'cancelled' ? 'danger' : 'warning text-dark') %>">
+                                            <%= booking.status.toUpperCase() %>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <small class="text-muted font-monospace"><%= booking.booking_number %></small>
+                                                <h5 class="fw-bold mb-1"><%= booking.title %></h5>
+                                                <p class="text-muted small mb-0"><i class="fas fa-map-marker-alt me-1"></i> <%= booking.location %></p>
+                                            </div>
+                                            <div class="text-end">
+                                                <h5 class="fw-bold text-primary mb-0">R<%= parseFloat(booking.total_price).toLocaleString() %></h5>
+                                                <small class="text-muted"><%= booking.people_count %> Guests</small>
+                                            </div>
+                                        </div>
+                                        <hr class="my-3 border-light">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">Booked on <%= moment(booking.booked_at).format('MMM D, YYYY') %></small>
+                                            <a href="/user/bookings/<%= booking.id %>" class="btn btn-outline-primary btn-sm rounded-pill px-4">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+                </div>
+
+                <% if (totalPages > 1) { %>
+                <div class="mt-4">
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+                            </li>
+                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

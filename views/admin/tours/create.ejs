@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Tour - Casalinga Tours Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* --- BASE STYLES FROM TEMPLATE --- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 222.2 84% 4.9%;
+      --primary: 221.2 83.2% 53.3%;
+      --primary-foreground: 210 40% 98%;
+      --secondary: 210 40% 96%;
+      --secondary-foreground: 222.2 84% 4.9%;
+      --muted: 210 40% 96%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --accent: 210 40% 96%;
+      --accent-foreground: 222.2 84% 4.9%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 221.2 83.2% 53.3%;
+      --radius: 0.5rem;
+      --sidebar-background: 0 0% 98%;
+      --sidebar-foreground: 240 5.3% 26.1%;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      line-height: 1.5;
+    }
+
+    /* --- LAYOUT --- */
+    .app-wrapper { display: flex; min-height: 100vh; width: 100%; }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 16rem; height: 100vh; position: fixed; left: 0; top: 0;
+      background-color: hsl(var(--sidebar-background));
+      border-right: 1px solid hsl(var(--border));
+      display: flex; flex-direction: column; z-index: 40;
+      transition: transform 0.2s ease-in-out;
+    }
+    .sidebar-header { padding: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .sidebar-logo-icon {
+      width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center;
+      border-radius: 0.5rem; background-color: hsl(var(--primary)); color: white;
+    }
+    .sidebar-logo-text { font-size: 1.125rem; font-weight: 600; }
+    .sidebar-content { flex: 1; overflow-y: auto; padding: 0.5rem; }
+    .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-menu-button {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem;
+      border-radius: 0.375rem; color: hsl(var(--sidebar-foreground)); text-decoration: none;
+      transition: all 0.15s; font-size: 0.875rem; font-weight: 500;
+    }
+    .sidebar-menu-button:hover, .sidebar-menu-button.active {
+      background-color: hsl(var(--accent)); color: hsl(var(--accent-foreground));
+    }
+    .sidebar-menu-button.active { font-weight: 600; color: hsl(var(--primary)); }
+    .sidebar-footer { padding: 1rem; border-top: 1px solid hsl(var(--border)); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.75rem; }
+    .sidebar-user-avatar { width: 2.25rem; height: 2.25rem; border-radius: 50%; object-fit: cover; }
+    .sidebar-user-info { display: flex; flex-direction: column; }
+    .sidebar-user-name { font-size: 0.875rem; font-weight: 600; }
+    .sidebar-user-role { font-size: 0.75rem; color: hsl(var(--muted-foreground)); }
+
+    /* Main Content */
+    .main-content { flex: 1; margin-left: 16rem; overflow-x: hidden; background-color: #f8f9fa; }
+    
+    /* Topbar */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; background-color: white; border-bottom: 1px solid hsl(var(--border));
+      position: sticky; top: 0; z-index: 30;
+    }
+    .mobile-toggle { display: none; background: none; border: none; font-size: 1.25rem; cursor: pointer; }
+
+    /* --- FORM SPECIFIC STYLES --- */
+    .page-container { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+    
+    .page-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;
+    }
+    .page-title { font-size: 1.5rem; font-weight: 700; color: hsl(var(--foreground)); }
+    .page-breadcrumbs { font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-top: 0.25rem; }
+
+    /* Form Layout */
+    .form-grid {
+      display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;
+    }
+
+    .card {
+      background: white; border: 1px solid hsl(var(--border)); border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 1.5rem; overflow: hidden;
+    }
+    .card-header { padding: 1.25rem; border-bottom: 1px solid hsl(var(--border)); }
+    .card-title { font-size: 1rem; font-weight: 600; }
+    .card-body { padding: 1.5rem; }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .form-control {
+      width: 100%; padding: 0.625rem; font-size: 0.875rem;
+      border: 1px solid hsl(var(--input)); border-radius: var(--radius);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control:focus {
+      outline: none; border-color: hsl(var(--primary));
+      box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+    }
+    textarea.form-control { resize: vertical; min-height: 120px; }
+    
+    .form-text { font-size: 0.75rem; color: hsl(var(--muted-foreground)); margin-top: 0.375rem; }
+
+    /* Upload Zone */
+    .upload-zone {
+      border: 2px dashed hsl(var(--border)); border-radius: var(--radius);
+      padding: 2rem; text-align: center; cursor: pointer;
+      transition: all 0.2s; background-color: #fafafa;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: hsl(var(--primary)); background-color: hsl(var(--primary) / 0.05);
+    }
+    .upload-icon { font-size: 2rem; color: hsl(var(--muted-foreground)); margin-bottom: 1rem; }
+    .upload-preview {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.5rem; margin-top: 1rem;
+    }
+    .preview-item {
+      position: relative; aspect-ratio: 1; border-radius: 0.25rem; overflow: hidden;
+      border: 1px solid hsl(var(--border));
+    }
+    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Checkbox/Radio Pills */
+    .pill-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .pill-input { display: none; }
+    .pill-label {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500;
+      background-color: hsl(var(--muted)); color: hsl(var(--muted-foreground));
+      border-radius: 9999px; cursor: pointer; transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .pill-input:checked + .pill-label {
+      background-color: hsl(var(--primary)); color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .pill-label:hover { background-color: hsl(var(--accent)); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.625rem 1.25rem; font-size: 0.875rem; font-weight: 500;
+      border-radius: var(--radius); cursor: pointer; text-decoration: none;
+      transition: all 0.15s; border: none;
+    }
+    .btn-primary { background-color: hsl(var(--primary)); color: white; }
+    .btn-primary:hover { background-color: hsl(221.2 83.2% 45%); }
+    .btn-outline { background: white; border: 1px solid hsl(var(--input)); color: hsl(var(--foreground)); }
+    .btn-outline:hover { background-color: hsl(var(--accent)); }
+    .btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .mobile-toggle { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo-icon"><i class="fas fa-plane"></i></div>
+      <span class="sidebar-logo-text">Casalinga Admin</span>
+    </div>
+    <nav class="sidebar-content">
+      <ul class="sidebar-menu">
+        <li><a href="/admin/dashboard" class="sidebar-menu-button"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="/admin/bookings" class="sidebar-menu-button"><i class="fas fa-calendar-check"></i> Bookings</a></li>
+        <li><a href="/admin/tours" class="sidebar-menu-button active"><i class="fas fa-map-marked-alt"></i> Tours</a></li>
+        <% if (user.role === 'admin') { %>
+        <li><a href="/admin/users" class="sidebar-menu-button"><i class="fas fa-users"></i> Users</a></li>
+        <li><a href="/admin/analytics" class="sidebar-menu-button"><i class="fas fa-chart-line"></i> Analytics</a></li>
+        <% } %>
+        <li><a href="/admin/settings/categories" class="sidebar-menu-button"><i class="fas fa-sliders-h"></i> Settings</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <img src="<%= user.avatar || '/images/default-avatar.png' %>" class="sidebar-user-avatar" alt="User">
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name"><%= user.name %></span>
+          <span class="sidebar-user-role"><%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %></span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+      <div style="flex: 1;"></div> <div class="dropdown">
+        <a href="/" target="_blank" class="btn btn-outline btn-sm" style="margin-right: 1rem;">
+          <i class="fas fa-external-link-alt"></i> View Website
+        </a>
+        <a href="/auth/logout" class="btn btn-outline btn-sm" style="color: var(--destructive); border-color: var(--destructive);">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </header>
+
+    <div class="page-container">
+      <form action="/admin/tours/create" method="POST" enctype="multipart/form-data" id="createTourForm">
+        
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Create New Tour</h1>
+            <p class="page-breadcrumbs">Tours &gt; Create New</p>
+          </div>
+          <div style="display: flex; gap: 1rem;">
+            <a href="/admin/tours" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-save"></i> Publish Tour
+            </button>
+          </div>
+        </div>
+
+        <% if (locals.error) { %>
+          <div style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; border: 1px solid #fecaca;">
+            <i class="fas fa-exclamation-circle margin-right: 0.5rem;"></i> <%= error %>
+          </div>
+        <% } %>
+
+        <div class="form-grid">
+          <div class="left-col">
+            
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Basic Information</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Tour Title</label>
+                  <input type="text" name="title" class="form-control" placeholder="e.g. Weekend Getaway to Drakensberg" required>
+                </div>
+                
+                <div class="form-group">
+                  <label class="form-label">Short Description</label>
+                  <textarea name="short_description" class="form-control" rows="3" maxlength="250" placeholder="A brief summary for the tour card (max 250 chars)" required></textarea>
+                  <div class="form-text">Shown on the listing page. Keep it punchy.</div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Full Description</label>
+                  <textarea name="full_description" class="form-control" rows="10" placeholder="Detailed itinerary, what to expect, requirements..." required></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Media</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Tour Images</label>
+                  
+                  <div class="upload-zone" id="dropZone">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <p style="font-weight: 500;">Click to upload or drag and drop</p>
+                    <p class="form-text">SVG, PNG, JPG or GIF (max 5MB per file)</p>
+                    <input type="file" name="images" id="fileInput" multiple accept="image/*" style="display: none;">
+                  </div>
+
+                  <div class="upload-preview" id="imagePreview"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Amenities Included</h3>
+              </div>
+              <div class="card-body">
+                <div class="pill-group">
+                  <% amenities.forEach(am => { %>
+                    <input type="checkbox" name="amenities" value="<%= am.id %>" id="am_<%= am.id %>" class="pill-input">
+                    <label for="am_<%= am.id %>" class="pill-label">
+                      <i class="<%= am.icon %>"></i> <%= am.name %>
+                    </label>
+                  <% }) %>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="right-col">
+            
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Visibility</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Status</label>
+                  <select name="status" class="form-control">
+                    <option value="upcoming">Upcoming</option>
+                    <option value="available" selected>Available</option>
+                    <option value="fully_booked">Fully Booked</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="pill-label" style="width: 100%; justify-content: center; background-color: white; border: 1px solid hsl(var(--input));">
+                    <input type="checkbox" name="featured" style="margin-right: 0.5rem;"> Mark as Featured
+                  </label>
+                  <div class="form-text text-center">Featured tours appear on the homepage.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Pricing & Logistics</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Price (ZAR)</label>
+                  <div style="position: relative;">
+                    <span style="position: absolute; left: 10px; top: 9px; color: #888;">R</span>
+                    <input type="number" name="price" class="form-control" style="padding-left: 25px;" step="0.01" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Discount Price (Optional)</label>
+                  <div style="position: relative;">
+                    <span style="position: absolute; left: 10px; top: 9px; color: #888;">R</span>
+                    <input type="number" name="discount_price" class="form-control" style="padding-left: 25px;" step="0.01">
+                  </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid hsl(var(--border)); margin: 1.5rem 0;">
+
+                <div class="form-group">
+                  <label class="form-label">Location</label>
+                  <div style="position: relative;">
+                    <i class="fas fa-map-marker-alt" style="position: absolute; left: 10px; top: 12px; color: #888;"></i>
+                    <input type="text" name="location" class="form-control" style="padding-left: 30px;" placeholder="e.g. Cape Town" required>
+                  </div>
+                </div>
+
+                <div class="row" style="display: flex; gap: 1rem;">
+                  <div class="form-group" style="flex: 1;">
+                    <label class="form-label">Capacity</label>
+                    <input type="number" name="capacity" class="form-control" value="20" min="1" required>
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                    <label class="form-label">Duration (Days)</label>
+                    <input type="number" name="duration_days" class="form-control" value="1" min="1" required>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Schedule</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Start Date</label>
+                  <input type="date" name="start_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">End Date</label>
+                  <input type="date" name="end_date" class="form-control" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Categories</h3>
+              </div>
+              <div class="card-body">
+                <div class="pill-group">
+                  <% categories.forEach(cat => { %>
+                    <input type="checkbox" name="categories" value="<%= cat.id %>" id="cat_<%= cat.id %>" class="pill-input">
+                    <label for="cat_<%= cat.id %>" class="pill-label">
+                      <%= cat.name %>
+                    </label>
+                  <% }) %>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Mobile Sidebar Toggle
+  const mobileToggle = document.getElementById('mobileToggle');
+  const sidebar = document.getElementById('sidebar');
+  if (mobileToggle) {
+    mobileToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+  }
+
+  // Image Upload Logic
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const imagePreview = document.getElementById('imagePreview');
+
+  dropZone.addEventListener('click', () => fileInput.click());
+
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    fileInput.files = e.dataTransfer.files;
+    handleFiles(e.dataTransfer.files);
+  });
+
+  fileInput.addEventListener('change', () => {
+    handleFiles(fileInput.files);
+  });
+
+  function handleFiles(files) {
+    imagePreview.innerHTML = '';
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const div = document.createElement('div');
+          div.className = 'preview-item';
+          div.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+          imagePreview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

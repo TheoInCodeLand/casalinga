@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Users - Casalinga Tours</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* Base Variables & Reset */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --background: 0 0% 100%; --foreground: 222.2 84% 4.9%; 
+      --card: 0 0% 100%; --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%; --popover-foreground: 222.2 84% 4.9%; 
+      --primary: 221.2 83.2% 53.3%; --primary-foreground: 210 40% 98%;
+      --muted: 210 40% 96%; --muted-foreground: 215.4 16.3% 46.9%; 
+      --accent: 210 40% 96%; --accent-foreground: 222.2 84% 4.9%; 
+      --destructive: 0 84.2% 60.2%; --destructive-foreground: 210 40% 98%;
+      --success: 142.1 76.2% 36.3%; --warning: 38 92% 50%;
+      --border: 214.3 31.8% 91.4%; --input: 214.3 31.8% 91.4%; 
+      --radius: 0.75rem;
+      --sidebar-background: 0 0% 98%; --sidebar-foreground: 240 5.3% 26.1%; 
+      --sidebar-primary: 240 5.9% 10%; --sidebar-accent: 240 4.8% 95.9%;
+      --money: 142.1 76.2% 36.3%;
+    }
+    body { font-family: 'Inter', sans-serif; background-color: hsl(var(--background)); color: hsl(var(--foreground)); line-height: 1.5; }
+
+    /* Layout */
+    .app-wrapper { display: flex; min-height: 100vh; width: 100%; }
+    
+    /* Sidebar */
+    .sidebar { width: 16rem; height: 100vh; position: fixed; left: 0; top: 0; background-color: hsl(var(--sidebar-background)); border-right: 1px solid hsl(var(--border)); display: flex; flex-direction: column; z-index: 40; transition: transform 0.2s; }
+    .sidebar-header { padding: 1.5rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 1.125rem; }
+    .sidebar-logo-icon { width: 2rem; height: 2rem; border-radius: 0.5rem; background: hsl(var(--primary)); color: white; display: flex; align-items: center; justify-content: center; }
+    .sidebar-content { flex: 1; overflow-y: auto; padding: 0.5rem; }
+    .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; }
+    .sidebar-menu-button { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-radius: 0.375rem; color: hsl(var(--sidebar-foreground)); text-decoration: none; transition: 0.15s; }
+    .sidebar-menu-button:hover, .sidebar-menu-button.active { background-color: hsl(var(--sidebar-accent)); font-weight: 500; }
+    .sidebar-footer { padding: 1rem; border-top: 1px solid hsl(var(--border)); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.75rem; }
+    .sidebar-user img { width: 2rem; height: 2rem; border-radius: 50%; object-fit: cover; }
+    .sidebar-user-info { display: flex; flex-direction: column; font-size: 0.875rem; }
+
+    /* Main Content */
+    .main-content { flex: 1; margin-left: 16rem; overflow-x: hidden; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); }
+    .topbar-actions { margin-left: auto; display: flex; gap: 1rem; }
+    .avatar-button { width: 2rem; height: 2rem; border-radius: 50%; overflow: hidden; border: none; cursor: pointer; padding: 0; }
+    .avatar-button img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Page Content */
+    .page-content { padding: 1.5rem 2rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .page-title { font-size: 1.875rem; font-weight: 700; letter-spacing: -0.025em; }
+
+    /* Stats Cards */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); padding: 1rem; display: flex; align-items: center; gap: 1rem; }
+    .stat-icon { width: 3rem; height: 3rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+    .stat-info h3 { font-size: 1.5rem; font-weight: 700; line-height: 1; margin-bottom: 0.25rem; }
+    .stat-info p { color: hsl(var(--muted-foreground)); font-size: 0.875rem; }
+
+    /* Filters */
+    .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; background: hsl(var(--card)); padding: 1rem; border-radius: var(--radius); border: 1px solid hsl(var(--border)); align-items: center; }
+    .search-input-group { position: relative; flex: 1; }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: hsl(var(--muted-foreground)); }
+    .search-input { width: 100%; padding: 0.5rem 0.75rem 0.5rem 2.25rem; border: 1px solid hsl(var(--input)); border-radius: var(--radius); background: transparent; font-size: 0.875rem; }
+    .search-input:focus { outline: none; border-color: hsl(var(--primary)); }
+    
+    .filter-select { padding: 0.5rem 2rem 0.5rem 0.75rem; border: 1px solid hsl(var(--input)); border-radius: var(--radius); background: transparent; font-size: 0.875rem; cursor: pointer; }
+
+    /* Table */
+    .table-container { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); overflow: hidden; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th, .table td { padding: 1rem; text-align: left; border-bottom: 1px solid hsl(var(--border)); }
+    .table th { background: hsl(var(--muted)); font-size: 0.75rem; text-transform: uppercase; color: hsl(var(--muted-foreground)); font-weight: 600; }
+    .table tr:last-child td { border-bottom: none; }
+    .table tr:hover td { background-color: hsl(var(--accent) / 0.3); }
+
+    /* User Cell */
+    .user-cell { display: flex; align-items: center; gap: 0.75rem; }
+    .user-avatar-cell { width: 2.5rem; height: 2.5rem; border-radius: 50%; object-fit: cover; background: hsl(var(--muted)); display: flex; align-items: center; justify-content: center; font-weight: 600; color: hsl(var(--muted-foreground)); }
+    .user-info-cell { display: flex; flex-direction: column; }
+    .user-name { font-weight: 500; color: hsl(var(--foreground)); }
+    .user-email { font-size: 0.75rem; color: hsl(var(--muted-foreground)); }
+
+    /* Badges */
+    .role-badge { display: inline-flex; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
+    .role-admin { background: hsl(262, 83%, 96%); color: hsl(262, 83%, 58%); border: 1px solid hsl(262, 83%, 90%); }
+    .role-manager { background: hsl(217, 91%, 96%); color: hsl(217, 91%, 60%); border: 1px solid hsl(217, 91%, 90%); }
+    .role-user { background: hsl(220, 14%, 96%); color: hsl(220, 14%, 46%); border: 1px solid hsl(220, 14%, 90%); }
+
+    .status-dot { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 50%; margin-right: 0.5rem; }
+    .status-active { background-color: hsl(142, 76%, 36%); box-shadow: 0 0 0 2px hsl(142, 76%, 90%); }
+    .status-inactive { background-color: hsl(0, 84%, 60%); box-shadow: 0 0 0 2px hsl(0, 84%, 90%); }
+
+    /* Actions */
+    .action-btn { width: 2rem; height: 2rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 0.375rem; color: hsl(var(--muted-foreground)); border: 1px solid transparent; background: transparent; cursor: pointer; transition: 0.15s; }
+    .action-btn:hover { background: hsl(var(--accent)); color: hsl(var(--foreground)); }
+    .action-btn.danger:hover { background: hsl(0, 84%, 96%); color: hsl(0, 84%, 60%); }
+    .action-btn.success:hover { background: hsl(142, 76%, 96%); color: hsl(142, 76%, 36%); }
+
+    /* Pagination */
+    .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; }
+    .page-link { display: inline-flex; align-items: center; justify-content: center; min-width: 2.5rem; height: 2.5rem; border-radius: var(--radius); border: 1px solid hsl(var(--input)); text-decoration: none; color: hsl(var(--foreground)); transition: 0.15s; }
+    .page-link:hover { background: hsl(var(--accent)); }
+    .page-link.active { background: hsl(var(--primary)); color: white; border-color: hsl(var(--primary)); }
+    .page-link.disabled { opacity: 0.5; pointer-events: none; }
+
+    /* Mobile */
+    .mobile-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .stats-row { grid-template-columns: 1fr; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .mobile-toggle { display: block; }
+      .table th:nth-child(3), .table td:nth-child(3), .table th:nth-child(4), .table td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon"><i class="fas fa-layer-group"></i></div>
+          <span>Casalinga Admin</span>
+        </div>
+      </div>
+      <nav class="sidebar-content">
+        <ul class="sidebar-menu">
+          <li><a href="/admin/dashboard" class="sidebar-menu-button"><i class="fas fa-th-large"></i> Dashboard</a></li>
+          <li><a href="/admin/bookings" class="sidebar-menu-button"><i class="fas fa-calendar-check"></i> Bookings</a></li>
+          <li><a href="/admin/tours" class="sidebar-menu-button"><i class="fas fa-map-marked-alt"></i> Tours</a></li>
+          <% if (user.role === 'admin') { %>
+          <li><a href="/admin/users" class="sidebar-menu-button active"><i class="fas fa-users"></i> Users</a></li>
+          <li><a href="/admin/analytics" class="sidebar-menu-button"><i class="fas fa-chart-line"></i> Analytics</a></li>
+          <% } %>
+          <li><a href="/admin/settings/categories" class="sidebar-menu-button"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>">
+          <div class="sidebar-user-info">
+            <span style="font-weight: 600;"><%= user.name %></span>
+            <span style="color: hsl(var(--muted-foreground));"><%= user.role %></span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+        <h4 style="margin: 0; font-weight: 600;">User Management</h4>
+        <div class="topbar-actions">
+           <button class="avatar-button"><img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="User"></button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <h2 class="page-title">Users</h2>
+          <div style="display: flex; gap: 0.5rem;">
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: hsl(220, 14%, 96%); color: hsl(220, 14%, 46%);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3><%= roleStats.find(s => s.role === 'user')?.count || 0 %></h3>
+                    <p>Customers</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: hsl(217, 91%, 96%); color: hsl(217, 91%, 60%);">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="stat-info">
+                    <h3><%= roleStats.find(s => s.role === 'manager')?.count || 0 %></h3>
+                    <p>Managers</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: hsl(262, 83%, 96%); color: hsl(262, 83%, 58%);">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <h3><%= roleStats.find(s => s.role === 'admin')?.count || 0 %></h3>
+                    <p>Admins</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <form action="/admin/users" method="GET" style="display: flex; gap: 1rem; flex: 1; align-items: center; width: 100%;">
+                <div class="search-input-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" name="search" class="search-input" placeholder="Search by name or email..." value="<%= search || '' %>">
+                </div>
+                <select name="role" class="filter-select" onchange="this.form.submit()">
+                    <option value="">All Roles</option>
+                    <option value="user" <%= roleFilter === 'user' ? 'selected' : '' %>>User</option>
+                    <option value="manager" <%= roleFilter === 'manager' ? 'selected' : '' %>>Manager</option>
+                    <option value="admin" <%= roleFilter === 'admin' ? 'selected' : '' %>>Admin</option>
+                </select>
+                <% if(search || roleFilter) { %>
+                    <a href="/admin/users" class="btn btn-ghost" style="color: hsl(var(--destructive)); font-size: 0.875rem; text-decoration: none;">Clear</a>
+                <% } %>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User Profile</th>
+                        <th>Role</th>
+                        <th>Bookings</th>
+                        <th>Spent</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (users.length === 0) { %>
+                        <tr><td colspan="7" style="text-align: center; padding: 3rem; color: hsl(var(--muted-foreground));">No users found.</td></tr>
+                    <% } %>
+                    <% users.forEach(userData => { %>
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <% if(userData.avatar_url) { %>
+                                    <img src="<%= userData.avatar_url %>" class="user-avatar-cell">
+                                <% } else { %>
+                                    <div class="user-avatar-cell"><%= userData.name.charAt(0).toUpperCase() %></div>
+                                <% } %>
+                                <div class="user-info-cell">
+                                    <span class="user-name"><%= userData.name %></span>
+                                    <span class="user-email"><%= userData.email %></span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="role-badge role-<%= userData.role %>"><%= userData.role %></span>
+                        </td>
+                        <td>
+                            <span style="font-weight: 500;"><%= userData.total_bookings %></span>
+                        </td>
+                        <td style="color: hsl(var(--money)); font-weight: 100;">
+                            R<%= parseFloat(userData.total_spent).toLocaleString() %>
+                        </td>
+                        <td>
+                            <span class="status-dot status-<%= userData.is_active ? 'active' : 'inactive' %>"></span>
+                            <span style="font-size: 0.875rem; color: hsl(var(--muted-foreground));"><%= userData.is_active ? 'Active' : 'Inactive' %></span>
+                        </td>
+                        <td style="font-size: 0.875rem; color: hsl(var(--muted-foreground));">
+                            <%= moment(userData.created_at).format('MMM D, YYYY') %>
+                        </td>
+                        <td style="text-align: right;">
+                            <div style="display: flex; gap: 0.25rem; justify-content: flex-end;">
+                                <% if(userData.id !== user.id) { %>
+                                    <form action="/admin/users/<%= userData.id %>/role" method="POST" style="display: inline;">
+                                        <select name="role" onchange="this.form.submit()" style="padding: 0.25rem; border: 1px solid hsl(var(--border)); border-radius: 0.25rem; font-size: 0.75rem;">
+                                            <option value="user" <%= userData.role === 'user' ? 'selected' : '' %>>User</option>
+                                            <option value="manager" <%= userData.role === 'manager' ? 'selected' : '' %>>Manager</option>
+                                            <option value="admin" <%= userData.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                                        </select>
+                                    </form>
+
+                                    <form action="/admin/users/<%= userData.id %>/status" method="POST" style="display: inline;">
+                                        <input type="hidden" name="status" value="<%= userData.is_active ? 'inactive' : 'active' %>">
+                                        <button type="submit" class="action-btn <%= userData.is_active ? 'danger' : 'success' %>" title="<%= userData.is_active ? 'Deactivate User' : 'Activate User' %>">
+                                            <i class="fas fa-<%= userData.is_active ? 'ban' : 'check' %>"></i>
+                                        </button>
+                                    </form>
+                                <% } else { %>
+                                    <span style="font-size: 0.75rem; color: hsl(var(--muted-foreground)); font-style: italic;">Current User</span>
+                                <% } %>
+                            </div>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <% if (totalPages > 1) { %>
+        <nav class="pagination">
+            <a href="?page=<%= currentPage - 1 %>&search=<%= search || '' %>&role=<%= roleFilter || '' %>" class="page-link <%= currentPage === 1 ? 'disabled' : '' %>">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <% for(let i=1; i<=totalPages; i++) { %>
+                <a href="?page=<%= i %>&search=<%= search || '' %>&role=<%= roleFilter || '' %>" class="page-link <%= currentPage === i ? 'active' : '' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+            <a href="?page=<%= currentPage + 1 %>&search=<%= search || '' %>&role=<%= roleFilter || '' %>" class="page-link <%= currentPage === totalPages ? 'disabled' : '' %>">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </nav>
+        <% } %>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const mobileToggle = document.getElementById('mobileToggle');
+    const sidebar = document.getElementById('sidebar');
+    if(mobileToggle) mobileToggle.addEventListener('click', () => { sidebar.classList.toggle('open'); });
+  </script>
+</body>
+</html>

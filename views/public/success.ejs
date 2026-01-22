@@ -1,0 +1,21 @@
+<div class="container py-5 text-center" style="min-height: 70vh; display: flex; align-items: center; justify-content: center;">
+    <div class="card shadow-sm border-0 p-5" style="max-width: 500px;">
+        <div class="mb-4">
+            <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <i class="fas fa-check fa-3x text-success"></i>
+            </div>
+        </div>
+        
+        <h2 class="fw-bold mb-3"><%= title || 'Success!' %></h2>
+        <p class="text-muted mb-4"><%= message || 'Your operation was completed successfully.' %></p>
+        
+        <div class="d-grid gap-2">
+            <% if (user) { %>
+                <a href="/user/dashboard" class="btn btn-primary rounded-pill">Go to Dashboard</a>
+                <a href="/tours" class="btn btn-outline-secondary rounded-pill">Browse More Tours</a>
+            <% } else { %>
+                <a href="/" class="btn btn-primary rounded-pill">Return Home</a>
+            <% } %>
+        </div>
+    </div>
+</div>

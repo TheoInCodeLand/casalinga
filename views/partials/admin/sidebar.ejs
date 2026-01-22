@@ -1,0 +1,48 @@
+<div class="col-md-3 col-lg-2 sidebar d-none d-md-block p-0">
+    <div class="p-3 text-center border-bottom border-secondary">
+        <h4 class="m-0">Casalinga Admin</h4>
+    </div>
+    <ul class="nav flex-column mt-3">
+        <li class="nav-item">
+            <a class="nav-link <%= typeof title !== 'undefined' && title.includes('Dashboard') ? 'active' : '' %>" href="/admin/dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <%= typeof title !== 'undefined' && title.includes('Manage Tours') ? 'active' : '' %>" href="/admin/tours">
+                <i class="fas fa-map-marked-alt"></i> Tours
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <%= typeof title !== 'undefined' && title.includes('Bookings') ? 'active' : '' %>" href="/admin/bookings">
+                <i class="fas fa-calendar-check"></i> Bookings
+            </a>
+        </li>
+        <% if (user.role === 'admin') { %>
+        <li class="nav-item">
+            <a class="nav-link <%= typeof title !== 'undefined' && title.includes('Analytics') ? 'active' : '' %>" href="/admin/analytics">
+                <i class="fas fa-chart-line"></i> Analytics
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <%= typeof title !== 'undefined' && title.includes('User') ? 'active' : '' %>" href="/admin/users">
+                <i class="fas fa-users"></i> Users
+            </a>
+        </li>
+        <% } %>
+        <li class="nav-item mt-3">
+            <span class="text-muted small px-3 text-uppercase">Settings</span>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/settings/categories"><i class="fas fa-tags"></i> Categories</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/admin/settings/amenities"><i class="fas fa-wifi"></i> Amenities</a>
+        </li>
+        <li class="nav-item mt-4">
+            <a class="nav-link text-danger" href="/auth/logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </li>
+    </ul>
+</div>

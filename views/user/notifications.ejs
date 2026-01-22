@@ -1,0 +1,33 @@
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <%- include('../partials/user/sidebar') %>
+            
+            <div class="col-lg-9">
+                <h4 class="fw-bold mb-4">Notifications</h4>
+                
+                <div class="list-group shadow-sm border-0">
+                    <% if (notifications.length === 0) { %>
+                        <div class="list-group-item p-5 text-center text-muted">
+                            <i class="far fa-bell-slash fa-2x mb-3 opacity-50"></i>
+                            <p class="mb-0">No notifications yet.</p>
+                        </div>
+                    <% } %>
+
+                    <% notifications.forEach(notif => { %>
+                    <div class="list-group-item border-0 border-bottom p-4 <%= !notif.is_read ? 'bg-white' : 'bg-light' %>">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-bold <%= !notif.is_read ? 'text-primary' : '' %>">
+                                <% if(!notif.is_read) { %><i class="fas fa-circle small me-2 text-primary" style="font-size: 8px;"></i><% } %>
+                                <%= notif.title %>
+                            </h6>
+                            <small class="text-muted"><%= moment(notif.created_at).fromNow() %></small>
+                        </div>
+                        <p class="mb-1 text-muted small"><%= notif.message %></p>
+                    </div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

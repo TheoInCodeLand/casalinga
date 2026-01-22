@@ -1,0 +1,103 @@
+
+
+<header class="hero-section" style="background-image: url('/images/hero-bg.jpg');">
+    <div class="hero-overlay"></div>
+    <div class="container position-relative text-white text-center">
+        <h1 class="display-3 fw-bold mb-4">Discover Wellness Through Travel</h1>
+        <p class="lead mb-5 fs-4">Adventure, nature, and relaxation across South Africa.</p>
+        <a href="/tours" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow">Explore Tours</a>
+    </div>
+</header>
+
+<div class="container" style="margin-top: -40px; position: relative; z-index: 10;">
+    <div class="card shadow border-0 p-4">
+        <form action="/tours/search" method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label small fw-bold text-muted">Destination</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-map-marker-alt text-primary"></i></span>
+                    <input type="text" name="location" class="form-control border-start-0" placeholder="Where do you want to go?">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-muted">Category</label>
+                <select name="category" class="form-select">
+                    <option value="">Any Category</option>
+                    <% categories.forEach(cat => { %>
+                        <option value="<%= cat.name %>"><%= cat.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-muted">Date</label>
+                <input type="date" name="date" class="form-control">
+            </div>
+            <div class="col-md-2 d-grid align-items-end">
+                <button type="submit" class="btn btn-primary py-2">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-primary text-uppercase fw-bold small tracking-wide">Our Packages</span>
+            <h2 class="fw-bold mt-2">Featured Tours</h2>
+        </div>
+
+        <div class="row g-4">
+            <% featuredTours.forEach(tour => { %>
+            <div class="col-md-6 col-lg-4">
+                <div class="card tour-card h-100">
+                    <div class="tour-img-wrapper">
+                        <span class="position-absolute top-0 end-0 bg-primary text-white px-3 py-1 m-3 rounded-pill small fw-bold">
+                            <%= tour.duration_days %> Days
+                        </span>
+                        <img src="<%= tour.image || '/images/placeholder-tour.jpg' %>" alt="<%= tour.title %>">
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title fw-bold mb-0"><a href="/tours/<%= tour.slug %>" class="text-decoration-none text-dark"><%= tour.title %></a></h5>
+                            <span class="text-success fw-bold">R<%= tour.price %></span>
+                        </div>
+                        <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-1 text-primary"></i> <%= tour.location %></p>
+                        <p class="card-text text-muted small line-clamp-2"><%= tour.short_description %></p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 p-4 pt-0">
+                        <div class="d-grid">
+                            <a href="/tours/<%= tour.slug %>" class="btn btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="/tours" class="btn btn-outline-dark rounded-pill px-5">View All Tours</a>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container py-4">
+        <div class="row g-5 text-center">
+            <div class="col-md-4">
+                <div class="mb-3 text-primary"><i class="fas fa-leaf fa-3x"></i></div>
+                <h5 class="fw-bold">Wellness Focused</h5>
+                <p class="text-muted">Trips designed to rejuvenate your mind and body through nature.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3 text-primary"><i class="fas fa-shield-alt fa-3x"></i></div>
+                <h5 class="fw-bold">Safe & Secure</h5>
+                <p class="text-muted">Professional guides and secure booking systems for peace of mind.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3 text-primary"><i class="fas fa-tags fa-3x"></i></div>
+                <h5 class="fw-bold">Best Value</h5>
+                <p class="text-muted">Unforgettable experiences at competitive prices with no hidden fees.</p>
+            </div>
+        </div>
+    </div>
+</section>

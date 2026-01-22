@@ -1,0 +1,57 @@
+<div class="card auth-card">
+    <div class="auth-header">
+        <a href="/" class="brand-logo">Casalinga Tours</a>
+        <p class="mb-0 mt-2 opacity-75">Create Account</p>
+    </div>
+    <div class="auth-body">
+
+        <% if (error) { %>
+            <div class="alert alert-danger text-center mb-4 border-0 bg-danger-subtle text-danger">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <form action="/auth/register" method="POST">
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Full Name</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-user text-muted"></i></span>
+                    <input type="text" name="name" class="form-control border-start-0 bg-light" required placeholder="John Doe">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Email Address</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-envelope text-muted"></i></span>
+                    <input type="email" name="email" class="form-control border-start-0 bg-light" required placeholder="name@example.com">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Phone Number</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-phone text-muted"></i></span>
+                    <input type="tel" name="phone" class="form-control border-start-0 bg-light" required placeholder="+27 72 123 4567">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-muted small fw-bold">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
+                    <input type="password" name="password" class="form-control border-start-0 bg-light" required placeholder="Min 6 characters">
+                </div>
+            </div>
+
+            <div class="d-grid mb-4">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+
+            <div class="text-center">
+                <span class="text-muted small">Already have an account?</span>
+                <a href="/auth/login" class="fw-bold text-decoration-none ms-1">Sign In</a>
+            </div>
+        </form>
+    </div>
+</div>

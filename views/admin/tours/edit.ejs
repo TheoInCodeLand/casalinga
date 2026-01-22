@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Tour - Casalinga Tours</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 222.2 84% 4.9%;
+      --primary: 221.2 83.2% 53.3%;
+      --primary-foreground: 210 40% 98%;
+      --secondary: 210 40% 96%;
+      --secondary-foreground: 222.2 84% 4.9%;
+      --muted: 210 40% 96%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --accent: 210 40% 96%;
+      --accent-foreground: 222.2 84% 4.9%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 221.2 83.2% 53.3%;
+      --radius: 0.75rem;
+      --sidebar-background: 0 0% 98%;
+      --sidebar-foreground: 240 5.3% 26.1%;
+      --sidebar-primary: 240 5.9% 10%;
+      --sidebar-primary-foreground: 0 0% 98%;
+      --sidebar-accent: 240 4.8% 95.9%;
+      --sidebar-accent-foreground: 240 5.9% 10%;
+      --sidebar-border: 220 13% 91%;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .app-wrapper {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 16rem;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background-color: hsl(var(--sidebar-background));
+      border-right: 1px solid hsl(var(--border));
+      display: flex;
+      flex-direction: column;
+      z-index: 40;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sidebar-logo-icon {
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+    }
+
+    .sidebar-logo-icon svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .sidebar-logo-text {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    .sidebar-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      list-style: none;
+    }
+
+    .sidebar-menu-button {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      text-decoration: none;
+      color: hsl(var(--sidebar-foreground));
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .sidebar-menu-button:hover {
+      background-color: hsl(var(--sidebar-accent));
+      color: hsl(var(--sidebar-accent-foreground));
+    }
+
+    .sidebar-menu-button.active {
+      background-color: hsl(var(--sidebar-accent));
+      color: hsl(var(--sidebar-accent-foreground));
+      font-weight: 500;
+    }
+
+    .sidebar-menu-button svg {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid hsl(var(--border));
+    }
+
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-user-avatar {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .sidebar-user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-user-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .sidebar-user-role {
+      font-size: 0.75rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 16rem;
+      overflow-x: hidden;
+    }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      border-bottom: 1px solid hsl(var(--border));
+      background-color: hsl(var(--background));
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-left: auto;
+    }
+
+    .icon-button {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.375rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: hsl(var(--foreground));
+      transition: background-color 0.15s;
+    }
+
+    .icon-button:hover {
+      background-color: hsl(var(--accent));
+    }
+
+    .avatar-button {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+    }
+
+    .avatar-button img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Page Content */
+    .page-content {
+      flex: 1;
+      padding: 1.5rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .page-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .page-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Cards */
+    .card {
+      border-radius: var(--radius);
+      border: 1px solid hsl(var(--border));
+      background-color: hsl(var(--card));
+      color: hsl(var(--card-foreground));
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid hsl(var(--border));
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: hsl(var(--foreground));
+    }
+
+    .form-control {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: hsl(var(--foreground));
+      background-color: transparent;
+      border: 1px solid hsl(var(--input));
+      border-radius: var(--radius);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: hsl(var(--ring));
+      box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+    }
+
+    textarea.form-control {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-right: -0.75rem;
+      margin-left: -0.75rem;
+    }
+
+    .col {
+      flex: 1 0 0%;
+      padding-right: 0.75rem;
+      padding-left: 0.75rem;
+    }
+
+    .col-4 {
+      flex: 0 0 auto;
+      width: 33.33333333%;
+      padding-right: 0.75rem;
+      padding-left: 0.75rem;
+    }
+
+    .col-8 {
+      flex: 0 0 auto;
+      width: 66.66666667%;
+      padding-right: 0.75rem;
+      padding-left: 0.75rem;
+    }
+
+    /* Checkboxes & Switches */
+    .form-check {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-check-input {
+      width: 1rem;
+      height: 1rem;
+      margin-top: 0.15em;
+      margin-right: 0.5rem;
+      cursor: pointer;
+    }
+
+    .form-check-label {
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+    }
+    .btn-primary:hover { background-color: hsl(221.2 83.2% 46%); }
+
+    .btn-secondary {
+      background-color: hsl(var(--secondary));
+      color: hsl(var(--secondary-foreground));
+    }
+    .btn-secondary:hover { background-color: hsl(210 40% 90%); }
+
+    .btn-danger {
+      background-color: hsl(var(--destructive));
+      color: hsl(var(--destructive-foreground));
+    }
+    .btn-danger:hover { background-color: hsl(0 84.2% 50%); }
+
+    .btn-outline {
+      background-color: transparent;
+      border-color: hsl(var(--input));
+      color: hsl(var(--foreground));
+    }
+    .btn-outline:hover { background-color: hsl(var(--accent)); }
+
+    /* Image Grid */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .image-card {
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .image-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+    }
+
+    .image-card-body {
+      padding: 0.5rem;
+      background: hsl(var(--card));
+      text-align: center;
+    }
+
+    /* Mobile Responsive */
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 35;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .mobile-toggle { display: block; }
+      .sidebar-overlay.show { display: block; }
+      .row { flex-direction: column; }
+      .col-4, .col-8 { width: 100%; }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.show { display: flex; }
+    .modal-content {
+      background: hsl(var(--card));
+      padding: 2rem;
+      border-radius: var(--radius);
+      max-width: 500px;
+      width: 90%;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-wrapper">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          </div>
+          <span class="sidebar-logo-text">Casalinga Admin</span>
+        </div>
+      </div>
+      <nav class="sidebar-content">
+        <ul class="sidebar-menu">
+          <li class="sidebar-menu-item">
+            <a href="/admin/dashboard" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="/admin/bookings" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+              <span>Bookings</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="/admin/tours" class="sidebar-menu-button active">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+              <span>Tours</span>
+            </a>
+          </li>
+          <% if (user.role === 'admin') { %>
+          <li class="sidebar-menu-item">
+            <a href="/admin/users" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span>Users</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="/admin/analytics" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="18" y1="20" y2="10"></line><line x1="12" x2="12" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="14"></line></svg>
+              <span>Analytics</span>
+            </a>
+          </li>
+          <% } %>
+          <li class="sidebar-menu-item">
+            <a href="/admin/settings/categories" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <img class="sidebar-user-avatar" src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>">
+          <div class="sidebar-user-info">
+            <span class="sidebar-user-name"><%= user.name %></span>
+            <span class="sidebar-user-role"><%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %></span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-search">
+          <button class="mobile-toggle" id="mobileToggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path></svg>
+          </button>
+          <div class="search-input-wrapper">
+            <h4 style="margin: 0; font-weight: 600;">Tour Management</h4>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="dropdown">
+            <button class="avatar-button" id="userBtn">
+              <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>">
+            </button>
+            <div class="dropdown-content" id="userDropdown">
+                <div class="dropdown-label">My Account</div>
+                <div class="dropdown-separator"></div>
+                <a href="/user/profile" class="dropdown-item">Profile</a>
+                <a href="/user/settings" class="dropdown-item">Settings</a>
+                <div class="dropdown-separator"></div>
+                <a href="/auth/logout" class="dropdown-item" style="color: var(--destructive);">Log out</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <h2 class="page-title">Edit Tour: <%= tour.title %></h2>
+          <div class="page-actions">
+            <a href="/tours/<%= tour.slug %>" target="_blank" class="btn btn-outline">
+                <i class="fas fa-eye" style="margin-right: 0.5rem;"></i> View Live
+            </a>
+            <button type="button" class="btn btn-danger" onclick="openDeleteModal()">
+                <i class="fas fa-trash" style="margin-right: 0.5rem;"></i> Delete Tour
+            </button>
+          </div>
+        </div>
+
+        <form action="/admin/tours/<%= tour.id %>/edit" method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Basic Information</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-group">
+                                <label class="form-label">Tour Title</label>
+                                <input type="text" name="title" class="form-control" value="<%= tour.title %>" required>
+                            </div>
+                            
+                            <div class="row" style="margin: 0 -0.5rem;">
+                                <div class="col" style="padding: 0 0.5rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Location</label>
+                                        <input type="text" name="location" class="form-control" value="<%= tour.location %>" required>
+                                    </div>
+                                </div>
+                                <div class="col" style="padding: 0 0.5rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Duration (Days)</label>
+                                        <input type="number" name="duration_days" class="form-control" value="<%= tour.duration_days %>" required>
+                                    </div>
+                                </div>
+                                <div class="col" style="padding: 0 0.5rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Capacity</label>
+                                        <input type="number" name="capacity" class="form-control" value="<%= tour.capacity %>" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Short Description (Max 250 chars)</label>
+                                <textarea name="short_description" class="form-control" rows="2" maxlength="250" required><%= tour.short_description %></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Full Description</label>
+                                <textarea name="full_description" class="form-control" rows="8" required><%= tour.full_description %></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Tour Images</h3>
+                        </div>
+                        <div class="card-content">
+                            <% if (images && images.length > 0) { %>
+                                <div class="image-grid">
+                                    <% images.forEach(img => { %>
+                                    <div class="image-card">
+                                        <img src="<%= img.image_url %>" alt="Tour image">
+                                        <div class="image-card-body">
+                                            <div class="form-check" style="justify-content: center; margin-bottom: 0;">
+                                                <input class="form-check-input" type="checkbox" name="remove_images" value="<%= img.id %>" id="del_<%= img.id %>">
+                                                <label class="form-check-label" style="color: var(--destructive); font-size: 0.75rem;" for="del_<%= img.id %>">
+                                                    Delete
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                </div>
+                            <% } else { %>
+                                <p style="color: hsl(var(--muted-foreground)); text-align: center; margin-bottom: 1rem;">No images uploaded yet.</p>
+                            <% } %>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Upload New Images</label>
+                                <input type="file" name="images" class="form-control" multiple accept="image/*">
+                                <small style="color: hsl(var(--muted-foreground));">Supported formats: JPG, PNG, WEBP. Max 5MB each.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Pricing & Dates</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-group">
+                                <label class="form-label">Price (ZAR)</label>
+                                <input type="number" name="price" class="form-control" step="0.01" value="<%= tour.price %>" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Discount Price (Optional)</label>
+                                <input type="number" name="discount_price" class="form-control" step="0.01" value="<%= tour.discount_price %>">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" name="start_date" class="form-control" value="<%= moment(tour.start_date).format('YYYY-MM-DD') %>" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">End Date</label>
+                                <input type="date" name="end_date" class="form-control" value="<%= moment(tour.end_date).format('YYYY-MM-DD') %>" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Attributes</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-group">
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-control">
+                                    <option value="upcoming" <%= tour.status === 'upcoming' ? 'selected' : '' %>>Upcoming</option>
+                                    <option value="available" <%= tour.status === 'available' ? 'selected' : '' %>>Available</option>
+                                    <option value="fully_booked" <%= tour.status === 'fully_booked' ? 'selected' : '' %>>Fully Booked</option>
+                                    <option value="cancelled" <%= tour.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                    <option value="completed" <%= tour.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" name="featured" class="form-check-input" id="featuredCheck" <%= tour.featured ? 'checked' : '' %>>
+                                    <label class="form-check-label" for="featuredCheck">Featured Tour</label>
+                                </div>
+                            </div>
+                            
+                            <hr style="border: 0; border-top: 1px solid hsl(var(--border)); margin: 1rem 0;">
+                            
+                            <div class="form-group">
+                                <label class="form-label">Categories</label>
+                                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                    <% categories.forEach(cat => { %>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="categories" value="<%= cat.id %>" id="cat_<%= cat.id %>" <%= selectedCategories.includes(cat.id) ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="cat_<%= cat.id %>"><%= cat.name %></label>
+                                    </div>
+                                    <% }) %>
+                                </div>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid hsl(var(--border)); margin: 1rem 0;">
+
+                            <div class="form-group">
+                                <label class="form-label">Amenities</label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                    <% amenities.forEach(am => { %>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="amenities" value="<%= am.id %>" id="am_<%= am.id %>" <%= selectedAmenities.includes(am.id) ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="am_<%= am.id %>">
+                                            <i class="<%= am.icon %>" style="margin-right: 4px; color: hsl(var(--muted-foreground));"></i> 
+                                            <%= am.name %>
+                                        </label>
+                                    </div>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem;">Save Changes</button>
+                    <a href="/admin/tours" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;">Cancel</a>
+                </div>
+            </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+        <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">Delete Tour</h3>
+        <p style="margin-bottom: 1.5rem; color: hsl(var(--muted-foreground));">
+            Are you sure you want to delete <strong><%= tour.title %></strong>? This action cannot be undone.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+            <form action="/admin/tours/<%= tour.id %>/delete" method="POST">
+                <button type="submit" class="btn btn-danger">Delete Permanently</button>
+            </form>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    // Sidebar logic
+    const mobileToggle = document.getElementById('mobileToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (mobileToggle) {
+      mobileToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        sidebarOverlay.classList.toggle('show');
+      });
+    }
+
+    if (sidebarOverlay) {
+      sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('show');
+      });
+    }
+
+    // Dropdown Logic
+    function setupDropdown(buttonId, dropdownId) {
+      const button = document.getElementById(buttonId);
+      const dropdown = document.getElementById(dropdownId);
+
+      if (button && dropdown) {
+        button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.querySelectorAll('.dropdown-content.show').forEach(el => {
+            if (el.id !== dropdownId) el.classList.remove('show');
+          });
+          dropdown.classList.toggle('show');
+        });
+      }
+    }
+    setupDropdown('userBtn', 'userDropdown');
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.dropdown-content.show').forEach(el => {
+        el.classList.remove('show');
+      });
+    });
+
+    // Modal Logic
+    const deleteModal = document.getElementById('deleteModal');
+    
+    function openDeleteModal() {
+        deleteModal.classList.add('show');
+    }
+
+    function closeDeleteModal() {
+        deleteModal.classList.remove('show');
+    }
+
+    deleteModal.addEventListener('click', (e) => {
+        if (e.target === deleteModal) {
+            closeDeleteModal();
+        }
+    });
+  </script>
+</body>
+</html>

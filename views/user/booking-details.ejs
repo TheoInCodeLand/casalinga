@@ -1,0 +1,142 @@
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <%- include('../partials/user/sidebar') %>
+            
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold">Booking Details</h4>
+                    <a href="/user/bookings" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i> Back</a>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small">Booking Reference</span>
+                            <h5 class="fw-bold mb-0 font-monospace text-primary"><%= booking.booking_number %></h5>
+                        </div>
+                        <span class="badge bg-<%= booking.status === 'confirmed' ? 'success' : (booking.status === 'cancelled' ? 'danger' : 'warning text-dark') %> fs-6 px-3 py-2 rounded-pill">
+                            <%= booking.status.toUpperCase() %>
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="fw-bold mb-3">Tour Information</h5>
+                                <div class="d-flex mb-4">
+                                    <img src="<%= booking.tour_image %>" class="rounded me-3" width="100" height="100" style="object-fit: cover;">
+                                    <div>
+                                        <h6 class="fw-bold"><a href="/tours/<%= booking.slug %>" class="text-dark text-decoration-none"><%= booking.title %></a></h6>
+                                        <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i> <%= booking.location %></p>
+                                        <div class="d-flex gap-3 small text-muted">
+                                            <span><i class="fas fa-calendar-alt me-1"></i> <%= moment(booking.start_date).format('MMM D') %> - <%= moment(booking.end_date).format('MMM D, YYYY') %></span>
+                                            <span><i class="fas fa-clock me-1"></i> <%= booking.duration_days %> Days</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h6 class="fw-bold mb-2">Amenities Included</h6>
+                                <div class="row g-2 mb-4">
+                                    <% amenities.forEach(am => { %>
+                                    <div class="col-6 col-md-4">
+                                        <div class="d-flex align-items-center text-muted small">
+                                            <i class="<%= am.icon %> me-2 text-success"></i> <%= am.name %>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                </div>
+
+                                <h6 class="fw-bold mb-2">Special Requests</h6>
+                                <p class="text-muted small bg-light p-3 rounded fst-italic">
+                                    <%= booking.special_requests || 'No special requests made.' %>
+                                </p>
+                            </div>
+
+                            <div class="col-md-4 border-start">
+                                <h6 class="fw-bold mb-3">Payment Summary</h6>
+                                <div class="d-flex justify-content-between mb-2 small">
+                                    <span class="text-muted">Guests</span>
+                                    <span class="fw-bold"><%= booking.people_count %> Person(s)</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3 small">
+                                    <span class="text-muted">Price per person</span>
+                                    <span class="fw-bold">R<%= (booking.total_price / booking.people_count).toFixed(2) %></span>
+                                </div>
+                                <div class="border-top pt-3 d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">Total Amount</span>
+                                    <span class="fs-4 fw-bold text-primary">R<%= parseFloat(booking.total_price).toLocaleString() %></span>
+                                </div>
+
+                                <% if (booking.status === 'pending' || booking.status === 'confirmed') { %>
+                                <div class="mt-4 pt-4 border-top">
+                                    <button class="btn btn-outline-danger w-100 btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                        Cancel Booking
+                                    </button>
+                                    <small class="text-muted d-block text-center mt-2" style="font-size: 0.75rem;">
+                                        Cancellation fees may apply based on our policy.
+                                    </small>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this booking? This action cannot be undone.</p>
+                <form id="cancelForm">
+                    <div class="mb-3">
+                        <label class="form-label">Reason for cancellation</label>
+                        <select name="reason" class="form-select" required>
+                            <option value="">Select a reason...</option>
+                            <option value="Change of plans">Change of plans</option>
+                            <option value="Found a better option">Found a better option</option>
+                            <option value="Personal emergency">Personal emergency</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Booking</button>
+                <button type="button" class="btn btn-danger" onclick="cancelBooking()">Confirm Cancellation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function cancelBooking() {
+    const reason = document.querySelector('[name="reason"]').value;
+    if(!reason) return alert('Please select a reason');
+    
+    try {
+        const res = await fetch('/user/bookings/<%= booking.id %>/cancel', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ reason })
+        });
+        const data = await res.json();
+        
+        if(data.success) {
+            window.location.reload();
+        } else {
+            alert(data.message || 'Error cancelling booking');
+        }
+    } catch(err) {
+        console.error(err);
+        alert('An error occurred');
+    }
+}
+</script>

@@ -1,0 +1,131 @@
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <%- include('../partials/user/sidebar') %>
+            
+            <div class="col-lg-9">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100 bg-primary text-white">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0 opacity-75">Total Trips</h6>
+                                        <h2 class="fw-bold mb-0 mt-2"><%= stats.total_trips || 0 %></h2>
+                                    </div>
+                                    <i class="fas fa-plane fa-2x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100 bg-white">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0 text-muted">Pending</h6>
+                                        <h2 class="fw-bold mb-0 mt-2 text-warning"><%= stats.pending_trips || 0 %></h2>
+                                    </div>
+                                    <i class="fas fa-clock fa-2x text-warning opacity-25"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100 bg-white">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0 text-muted">Total Spent</h6>
+                                        <h2 class="fw-bold mb-0 mt-2 text-success">R<%= parseFloat(stats.total_spent || 0).toLocaleString() %></h2>
+                                    </div>
+                                    <i class="fas fa-wallet fa-2x text-success opacity-25"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="fw-bold mb-0">Upcoming Trips</h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (upcomingBookings.length === 0) { %>
+                            <div class="text-center py-4">
+                                <img src="/images/no-data.svg" alt="No bookings" width="100" class="mb-3 opacity-50">
+                                <p class="text-muted">You have no upcoming trips.</p>
+                                <a href="/tours" class="btn btn-outline-primary rounded-pill btn-sm">Browse Tours</a>
+                            </div>
+                        <% } else { %>
+                            <% upcomingBookings.forEach(booking => { %>
+                            <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                                <img src="<%= booking.image %>" class="rounded" width="80" height="60" style="object-fit: cover;">
+                                <div class="ms-3 flex-grow-1">
+                                    <h6 class="fw-bold mb-1"><%= booking.title %></h6>
+                                    <small class="text-muted"><i class="fas fa-calendar me-1"></i> <%= moment(booking.start_date).format('MMM D, YYYY') %></small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success mb-1">Confirmed</span>
+                                    <a href="/user/bookings/<%= booking.id %>" class="btn btn-sm btn-light d-block mt-1">Details</a>
+                                </div>
+                            </div>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="fw-bold mb-0">Recent Bookings</h6>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <% recentBookings.forEach(booking => { %>
+                                <a href="/user/bookings/<%= booking.id %>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-4 py-3">
+                                    <div>
+                                        <div class="fw-bold small"><%= booking.title %></div>
+                                        <small class="text-muted"><%= moment(booking.booked_at).format('MMM D') %></small>
+                                    </div>
+                                    <span class="badge rounded-pill bg-<%= booking.status === 'confirmed' ? 'success' : (booking.status === 'cancelled' ? 'danger' : 'warning text-dark') %>">
+                                        <%= booking.status %>
+                                    </span>
+                                </a>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-0">Saved Tours</h6>
+                                <a href="/user/favorites" class="small text-decoration-none">View All</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-2">
+                                    <% favoriteTours.forEach(tour => { %>
+                                    <div class="col-6">
+                                        <a href="/tours/<%= tour.slug %>" class="text-decoration-none text-dark">
+                                            <div class="position-relative rounded overflow-hidden">
+                                                <img src="<%= tour.image %>" class="w-100" style="height: 100px; object-fit: cover;">
+                                                <div class="position-absolute bottom-0 start-0 w-100 p-2 bg-gradient-dark text-white small">
+                                                    <%= tour.title %>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <% }) %>
+                                    <% if(favoriteTours.length === 0) { %>
+                                        <p class="text-muted small text-center w-100">No saved tours yet.</p>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

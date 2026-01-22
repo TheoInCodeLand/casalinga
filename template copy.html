@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales CRM - Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 222.2 84% 4.9%;
+      --primary: 221.2 83.2% 53.3%;
+      --primary-foreground: 210 40% 98%;
+      --secondary: 210 40% 96%;
+      --secondary-foreground: 222.2 84% 4.9%;
+      --muted: 210 40% 96%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --accent: 210 40% 96%;
+      --accent-foreground: 222.2 84% 4.9%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 221.2 83.2% 53.3%;
+      --radius: 0.75rem;
+      --sidebar-background: 0 0% 98%;
+      --sidebar-foreground: 240 5.3% 26.1%;
+      --sidebar-primary: 240 5.9% 10%;
+      --sidebar-primary-foreground: 0 0% 98%;
+      --sidebar-accent: 240 4.8% 95.9%;
+      --sidebar-accent-foreground: 240 5.9% 10%;
+      --sidebar-border: 220 13% 91%;
+      --sidebar-ring: 217.2 91.2% 59.8%;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .app-wrapper {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 16rem;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background-color: hsl(var(--sidebar-background));
+      border-right: 1px solid hsl(var(--border));
+      display: flex;
+      flex-direction: column;
+      z-index: 40;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sidebar-logo-icon {
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+    }
+
+    .sidebar-logo-icon svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .sidebar-logo-text {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    .sidebar-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      list-style: none;
+    }
+
+    .sidebar-menu-item {
+      position: relative;
+    }
+
+    .sidebar-menu-button {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      text-decoration: none;
+      color: hsl(var(--sidebar-foreground));
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .sidebar-menu-button:hover {
+      background-color: hsl(var(--sidebar-accent));
+      color: hsl(var(--sidebar-accent-foreground));
+    }
+
+    .sidebar-menu-button.active {
+      background-color: hsl(var(--sidebar-accent));
+      color: hsl(var(--sidebar-accent-foreground));
+      font-weight: 500;
+    }
+
+    .sidebar-menu-button svg {
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid hsl(var(--border));
+    }
+
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-user-avatar {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .sidebar-user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-user-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .sidebar-user-role {
+      font-size: 0.75rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 16rem;
+      overflow-x: hidden;
+    }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      border-bottom: 1px solid hsl(var(--border));
+      background-color: hsl(var(--background));
+    }
+
+    .topbar-search {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+      max-width: 28rem;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: hsl(var(--muted-foreground));
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 2.5rem;
+      padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+      font-size: 0.875rem;
+      border: 1px solid hsl(var(--input));
+      border-radius: var(--radius);
+      background-color: transparent;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .search-input:focus {
+      border-color: hsl(var(--ring));
+      box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+    }
+
+    .search-input::placeholder {
+      color: hsl(var(--muted-foreground));
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .icon-button {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.375rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: hsl(var(--foreground));
+      transition: background-color 0.15s;
+    }
+
+    .icon-button:hover {
+      background-color: hsl(var(--accent));
+    }
+
+    .icon-button svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -0.25rem;
+      right: -0.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+      border-radius: 50%;
+    }
+
+    .avatar-button {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+    }
+
+    .avatar-button img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Page Content */
+    .page-content {
+      flex: 1;
+      padding: 1.5rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .page-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .page-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Button */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .btn-primary {
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: hsl(221.2 83.2% 46%);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid hsl(var(--input));
+      color: hsl(var(--foreground));
+    }
+
+    .btn-outline:hover {
+      background-color: hsl(var(--accent));
+    }
+
+    .btn-sm {
+      height: 2rem;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: none;
+      color: hsl(var(--foreground));
+    }
+
+    .btn-ghost:hover {
+      background-color: hsl(var(--accent));
+    }
+
+    /* Date Range Picker */
+    .date-picker-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 400;
+      border: 1px solid hsl(var(--input));
+      border-radius: var(--radius);
+      background: transparent;
+      color: hsl(var(--foreground));
+      cursor: pointer;
+      min-width: 16.25rem;
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .date-picker-btn:hover {
+      background-color: hsl(var(--accent));
+    }
+
+    .date-picker-btn svg {
+      width: 1rem;
+      height: 1rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .tabs-list {
+      display: inline-flex;
+      height: 2.5rem;
+      align-items: center;
+      justify-content: flex-start;
+      border-radius: var(--radius);
+      background-color: hsl(var(--muted));
+      padding: 0.25rem;
+      gap: 0.25rem;
+    }
+
+    .tab-trigger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: calc(var(--radius) - 2px);
+      background: transparent;
+      border: none;
+      color: hsl(var(--muted-foreground));
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+
+    .tab-trigger:hover {
+      color: hsl(var(--foreground));
+    }
+
+    .tab-trigger.active {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Cards */
+    .card {
+      border-radius: var(--radius);
+      border: 1px solid hsl(var(--border));
+      background-color: hsl(var(--card));
+      color: hsl(var(--card-foreground));
+    }
+
+    .card-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+      padding: 1.5rem;
+    }
+
+    .card-header-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 0.5rem;
+    }
+
+    .card-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .card-title-lg {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .card-description {
+      font-size: 0.875rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .card-content {
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    .card-icon {
+      width: 1rem;
+      height: 1rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .card-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .card-subtitle {
+      font-size: 0.75rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    /* Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1rem;
+    }
+
+    .col-span-4 {
+      grid-column: span 4;
+    }
+
+    .col-span-3 {
+      grid-column: span 3;
+    }
+
+    /* Chart Container */
+    .chart-container {
+      height: 350px;
+      padding-left: 0.5rem;
+    }
+
+    /* Recent Sales */
+    .recent-sales {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .sale-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .sale-avatar {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .sale-info {
+      margin-left: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .sale-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .sale-company {
+      font-size: 0.875rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .sale-amount {
+      margin-left: auto;
+      font-weight: 500;
+    }
+
+    /* Placeholder Content */
+    .placeholder-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      color: hsl(var(--muted-foreground));
+    }
+
+    /* Dropdown */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 0.5rem);
+      min-width: 12rem;
+      background-color: hsl(var(--popover));
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      z-index: 50;
+      padding: 0.25rem;
+      animation: slideIn 0.15s ease-out;
+    }
+
+    .dropdown-content.show {
+      display: block;
+    }
+
+    .dropdown-content.wide {
+      min-width: 20rem;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dropdown-label {
+      padding: 0.5rem 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .dropdown-separator {
+      height: 1px;
+      background-color: hsl(var(--border));
+      margin: 0.25rem 0;
+    }
+
+    .dropdown-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      text-align: left;
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-radius: calc(var(--radius) - 4px);
+      color: hsl(var(--foreground));
+    }
+
+    .dropdown-item:hover {
+      background-color: hsl(var(--accent));
+    }
+
+    .dropdown-item-title {
+      font-weight: 500;
+    }
+
+    .dropdown-item-desc {
+      font-size: 0.75rem;
+      color: hsl(var(--muted-foreground));
+    }
+
+    /* Mobile Toggle */
+    .mobile-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: hsl(var(--foreground));
+    }
+
+    .mobile-toggle svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 35;
+    }
+
+    .sidebar-overlay.show {
+      display: block;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .col-span-4,
+      .col-span-3 {
+        grid-column: span 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .mobile-toggle {
+        display: flex;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-actions {
+        flex-wrap: wrap;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-search {
+        display: none;
+      }
+
+      .date-picker-btn {
+        min-width: auto;
+      }
+    }
+
+    /* Calendar Popup */
+    .calendar-popup {
+      display: none;
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      left: 0;
+      background-color: hsl(var(--popover));
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      z-index: 50;
+      padding: 1rem;
+      animation: slideIn 0.15s ease-out;
+    }
+
+    .calendar-popup.show {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .calendar {
+      width: 280px;
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .calendar-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .calendar-nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 0.25rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .calendar-nav-btn:hover {
+      background-color: hsl(var(--accent));
+      color: hsl(var(--foreground));
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.125rem;
+      text-align: center;
+    }
+
+    .calendar-day-header {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: hsl(var(--muted-foreground));
+      padding: 0.5rem 0;
+    }
+
+    .calendar-day {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      font-size: 0.875rem;
+      border-radius: 0.25rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      margin: 0.125rem auto;
+    }
+
+    .calendar-day:hover {
+      background-color: hsl(var(--accent));
+    }
+
+    .calendar-day.selected {
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+    }
+
+    .calendar-day.in-range {
+      background-color: hsl(var(--accent));
+    }
+
+    .calendar-day.other-month {
+      color: hsl(var(--muted-foreground));
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="18" y1="20" y2="10"></line><line x1="12" x2="12" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="14"></line></svg>
+          </div>
+          <span class="sidebar-logo-text">Sales CRM</span>
+        </div>
+      </div>
+      <nav class="sidebar-content">
+        <ul class="sidebar-menu">
+          <li class="sidebar-menu-item">
+            <a href="#" class="sidebar-menu-button active">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="#" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              <span>Deals</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="#" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><circle cx="12" cy="10" r="2"></circle><line x1="8" x2="8" y1="2" y2="4"></line><line x1="16" x2="16" y1="2" y2="4"></line></svg>
+              <span>Contacts</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="#" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="m9 12 2 2 4-4"></path></svg>
+              <span>Tasks</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="#" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              <span>Integrations</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="#" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <img class="sidebar-user-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe">
+          <div class="sidebar-user-info">
+            <span class="sidebar-user-name">John Doe</span>
+            <span class="sidebar-user-role">Sales Manager</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-search">
+          <button class="mobile-toggle" id="mobileToggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path></svg>
+          </button>
+          <div class="search-input-wrapper">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+            <input type="text" class="search-input" placeholder="Search deals, contacts, tasks...">
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="dropdown">
+            <button class="icon-button" id="notificationBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+              <span class="notification-badge">3</span>
+            </button>
+            <div class="dropdown-content wide" id="notificationDropdown">
+              <div class="dropdown-label">Notifications</div>
+              <div class="dropdown-separator"></div>
+              <button class="dropdown-item">
+                <span class="dropdown-item-title">New deal created</span>
+                <span class="dropdown-item-desc">Sarah added a $25k deal with TechCorp</span>
+              </button>
+              <button class="dropdown-item">
+                <span class="dropdown-item-title">Task due soon</span>
+                <span class="dropdown-item-desc">Follow up with Acme Inc in 2 hours</span>
+              </button>
+              <button class="dropdown-item">
+                <span class="dropdown-item-title">Deal closed</span>
+                <span class="dropdown-item-desc">Mike closed a $15k deal with StartupXYZ</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="dropdown">
+            <button class="avatar-button" id="userBtn">
+              <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe">
+            </button>
+            <div class="dropdown-content" id="userDropdown">
+              <div class="dropdown-label">My Account</div>
+              <div class="dropdown-separator"></div>
+              <button class="dropdown-item">Profile</button>
+              <button class="dropdown-item">Settings</button>
+              <div class="dropdown-separator"></div>
+              <button class="dropdown-item">Log out</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-content">
+        <div class="page-header">
+          <h2 class="page-title">Dashboard</h2>
+          <div class="page-actions">
+            <div class="dropdown">
+              <button class="date-picker-btn" id="datePickerBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+                <span id="dateRangeText">Jan 20, 2023 - Feb 09, 2023</span>
+              </button>
+              <div class="calendar-popup" id="calendarPopup">
+                <div class="calendar">
+                  <div class="calendar-header">
+                    <span class="calendar-title">January 2023</span>
+                    <div class="calendar-nav">
+                      <button class="calendar-nav-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                      </button>
+                      <button class="calendar-nav-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="calendar-grid">
+                    <div class="calendar-day-header">Su</div>
+                    <div class="calendar-day-header">Mo</div>
+                    <div class="calendar-day-header">Tu</div>
+                    <div class="calendar-day-header">We</div>
+                    <div class="calendar-day-header">Th</div>
+                    <div class="calendar-day-header">Fr</div>
+                    <div class="calendar-day-header">Sa</div>
+                    <button class="calendar-day other-month">1</button>
+                    <button class="calendar-day other-month">2</button>
+                    <button class="calendar-day other-month">3</button>
+                    <button class="calendar-day other-month">4</button>
+                    <button class="calendar-day other-month">5</button>
+                    <button class="calendar-day other-month">6</button>
+                    <button class="calendar-day other-month">7</button>
+                    <button class="calendar-day">8</button>
+                    <button class="calendar-day">9</button>
+                    <button class="calendar-day">10</button>
+                    <button class="calendar-day">11</button>
+                    <button class="calendar-day">12</button>
+                    <button class="calendar-day">13</button>
+                    <button class="calendar-day">14</button>
+                    <button class="calendar-day">15</button>
+                    <button class="calendar-day">16</button>
+                    <button class="calendar-day">17</button>
+                    <button class="calendar-day">18</button>
+                    <button class="calendar-day">19</button>
+                    <button class="calendar-day selected">20</button>
+                    <button class="calendar-day in-range">21</button>
+                    <button class="calendar-day in-range">22</button>
+                    <button class="calendar-day in-range">23</button>
+                    <button class="calendar-day in-range">24</button>
+                    <button class="calendar-day in-range">25</button>
+                    <button class="calendar-day in-range">26</button>
+                    <button class="calendar-day in-range">27</button>
+                    <button class="calendar-day in-range">28</button>
+                    <button class="calendar-day in-range">29</button>
+                    <button class="calendar-day in-range">30</button>
+                    <button class="calendar-day in-range">31</button>
+                  </div>
+                </div>
+                <div class="calendar">
+                  <div class="calendar-header">
+                    <span class="calendar-title">February 2023</span>
+                    <div class="calendar-nav">
+                      <button class="calendar-nav-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                      </button>
+                      <button class="calendar-nav-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="calendar-grid">
+                    <div class="calendar-day-header">Su</div>
+                    <div class="calendar-day-header">Mo</div>
+                    <div class="calendar-day-header">Tu</div>
+                    <div class="calendar-day-header">We</div>
+                    <div class="calendar-day-header">Th</div>
+                    <div class="calendar-day-header">Fr</div>
+                    <div class="calendar-day-header">Sa</div>
+                    <button class="calendar-day in-range">1</button>
+                    <button class="calendar-day in-range">2</button>
+                    <button class="calendar-day in-range">3</button>
+                    <button class="calendar-day in-range">4</button>
+                    <button class="calendar-day in-range">5</button>
+                    <button class="calendar-day in-range">6</button>
+                    <button class="calendar-day in-range">7</button>
+                    <button class="calendar-day in-range">8</button>
+                    <button class="calendar-day selected">9</button>
+                    <button class="calendar-day">10</button>
+                    <button class="calendar-day">11</button>
+                    <button class="calendar-day">12</button>
+                    <button class="calendar-day">13</button>
+                    <button class="calendar-day">14</button>
+                    <button class="calendar-day">15</button>
+                    <button class="calendar-day">16</button>
+                    <button class="calendar-day">17</button>
+                    <button class="calendar-day">18</button>
+                    <button class="calendar-day">19</button>
+                    <button class="calendar-day">20</button>
+                    <button class="calendar-day">21</button>
+                    <button class="calendar-day">22</button>
+                    <button class="calendar-day">23</button>
+                    <button class="calendar-day">24</button>
+                    <button class="calendar-day">25</button>
+                    <button class="calendar-day">26</button>
+                    <button class="calendar-day">27</button>
+                    <button class="calendar-day">28</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+              Add New Deal
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <div class="tabs-list">
+            <button class="tab-trigger active" data-tab="overview">Overview</button>
+            <button class="tab-trigger" data-tab="analytics">Analytics</button>
+            <button class="tab-trigger" data-tab="deals">All Deals</button>
+            <button class="tab-trigger" data-tab="reports">Reports</button>
+          </div>
+
+          <!-- Overview Tab -->
+          <div class="tab-content active" id="tab-overview">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+              <div class="card">
+                <div class="card-header card-header-row">
+                  <h3 class="card-title">Monthly Revenue</h3>
+                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-value">$48,500</div>
+                  <p class="card-subtitle">+12.5% from last month</p>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header card-header-row">
+                  <h3 class="card-title">New Deals Closed</h3>
+                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-value">12</div>
+                  <p class="card-subtitle">+3 from last month</p>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header card-header-row">
+                  <h3 class="card-title">Pipeline Value</h3>
+                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-value">$320,000</div>
+                  <p class="card-subtitle">+8.2% total pipeline</p>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header card-header-row">
+                  <h3 class="card-title">Conversion Rate</h3>
+                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-value">18.4%</div>
+                  <p class="card-subtitle">+2.1% lead to close</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+              <div class="card col-span-4">
+                <div class="card-header">
+                  <h3 class="card-title card-title-lg">Revenue Overview</h3>
+                  <p class="card-description">Monthly revenue and deals closed over time</p>
+                </div>
+                <div class="card-content">
+                  <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div class="card col-span-3">
+                <div class="card-header">
+                  <h3 class="card-title card-title-lg">Recent Sales</h3>
+                  <p class="card-description">Latest deals closed by your team</p>
+                </div>
+                <div class="card-content">
+                  <div class="recent-sales">
+                    <div class="sale-item">
+                      <img class="sale-avatar" src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face" alt="Jane Doe">
+                      <div class="sale-info">
+                        <p class="sale-name">Jane Doe</p>
+                        <p class="sale-company">Acme Inc.</p>
+                      </div>
+                      <span class="sale-amount">+$15,000</span>
+                    </div>
+                    <div class="sale-item">
+                      <img class="sale-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="Mike Roberts">
+                      <div class="sale-info">
+                        <p class="sale-name">Mike Roberts</p>
+                        <p class="sale-company">StartupXYZ</p>
+                      </div>
+                      <span class="sale-amount">+$12,500</span>
+                    </div>
+                    <div class="sale-item">
+                      <img class="sale-avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" alt="Sarah Johnson">
+                      <div class="sale-info">
+                        <p class="sale-name">Sarah Johnson</p>
+                        <p class="sale-company">TechCorp Inc.</p>
+                      </div>
+                      <span class="sale-amount">+$25,000</span>
+                    </div>
+                    <div class="sale-item">
+                      <img class="sale-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" alt="Alex Lee">
+                      <div class="sale-info">
+                        <p class="sale-name">Alex Lee</p>
+                        <p class="sale-company">Global Solutions</p>
+                      </div>
+                      <span class="sale-amount">+$8,500</span>
+                    </div>
+                    <div class="sale-item">
+                      <img class="sale-avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" alt="Emily Martinez">
+                      <div class="sale-info">
+                        <p class="sale-name">Emily Martinez</p>
+                        <p class="sale-company">Retail Chain Co.</p>
+                      </div>
+                      <span class="sale-amount">+$25,000</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics Tab -->
+          <div class="tab-content" id="tab-analytics">
+            <div class="stats-grid">
+              <div class="card">
+                <div class="card-header card-header-row">
+                  <h3 class="card-title">Monthly Revenue</h3>
+                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-value">$48,500</div>
+                  <p class="card-subtitle">+12.5% from last month</p>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header card-header-row">
+                  <h3 class="card-title">New Deals Closed</h3>
+                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-value">12</div>
+                  <p class="card-subtitle">+3 from last month</p>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header card-header-row">
+                  <h3 class="card-title">Pipeline Value</h3>
+                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-value">$320,000</div>
+                  <p class="card-subtitle">+8.2% total pipeline</p>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header card-header-row">
+                  <h3 class="card-title">Conversion Rate</h3>
+                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <div class="card-content">
+                  <div class="card-value">18.4%</div>
+                  <p class="card-subtitle">+2.1% lead to close</p>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title card-title-lg">Analytics Dashboard</h3>
+                <p class="card-description">Detailed analytics and performance metrics coming soon</p>
+              </div>
+              <div class="card-content">
+                <div class="placeholder-content">
+                  Advanced analytics features will be available here
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deals Tab -->
+          <div class="tab-content" id="tab-deals">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title card-title-lg">All Deals</h3>
+                <p class="card-description">Comprehensive view of all deals with advanced filtering and sorting</p>
+              </div>
+              <div class="card-content">
+                <div class="placeholder-content">
+                  Data table with all deals will be displayed here
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reports Tab -->
+          <div class="tab-content" id="tab-reports">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title card-title-lg">Reports</h3>
+                <p class="card-description">Generate and download comprehensive sales reports</p>
+              </div>
+              <div class="card-content">
+                <div class="placeholder-content">
+                  Report generation features will be available here
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Mobile Sidebar Toggle
+    const mobileToggle = document.getElementById('mobileToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    mobileToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('show');
+    });
+
+    sidebarOverlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('show');
+    });
+
+    // Dropdown Toggles
+    function setupDropdown(buttonId, dropdownId) {
+      const button = document.getElementById(buttonId);
+      const dropdown = document.getElementById(dropdownId);
+
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Close all other dropdowns
+        document.querySelectorAll('.dropdown-content.show, .calendar-popup.show').forEach(el => {
+          if (el.id !== dropdownId) el.classList.remove('show');
+        });
+        dropdown.classList.toggle('show');
+      });
+    }
+
+    setupDropdown('notificationBtn', 'notificationDropdown');
+    setupDropdown('userBtn', 'userDropdown');
+    setupDropdown('datePickerBtn', 'calendarPopup');
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.dropdown-content.show, .calendar-popup.show').forEach(el => {
+        el.classList.remove('show');
+      });
+    });
+
+    // Prevent dropdown from closing when clicking inside
+    document.querySelectorAll('.dropdown-content, .calendar-popup').forEach(el => {
+      el.addEventListener('click', (e) => e.stopPropagation());
+    });
+
+    // Tabs
+    const tabTriggers = document.querySelectorAll('.tab-trigger');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabTriggers.forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const targetTab = trigger.dataset.tab;
+
+        // Update active state on triggers
+        tabTriggers.forEach(t => t.classList.remove('active'));
+        trigger.classList.add('active');
+
+        // Update active state on content
+        tabContents.forEach(content => {
+          content.classList.remove('active');
+          if (content.id === `tab-${targetTab}`) {
+            content.classList.add('active');
+          }
+        });
+      });
+    });
+
+    // Sidebar menu active state
+    const menuButtons = document.querySelectorAll('.sidebar-menu-button');
+    menuButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        menuButtons.forEach(b => b.classList.remove('active'));
+        button.classList.add('active');
+        // Close mobile sidebar
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('show');
+      });
+    });
+
+    // Revenue Chart
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    
+    const data = [
+      { name: "Jan", total: 42000 },
+      { name: "Feb", total: 38000 },
+      { name: "Mar", total: 45000 },
+      { name: "Apr", total: 52000 },
+      { name: "May", total: 48500 },
+      { name: "Jun", total: 55000 },
+    ];
+
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+    const hslToHex = (h, s, l) => {
+      l /= 100;
+      const a = s * Math.min(l, 1 - l) / 100;
+      const f = n => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');
+      };
+      return `#${f(0)}${f(8)}${f(4)}`;
+    };
+
+    // Parse HSL from CSS variable
+    const primaryHSL = primaryColor.split(' ').map(v => parseFloat(v));
+    const chartColor = hslToHex(primaryHSL[0], primaryHSL[1], primaryHSL[2]);
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.map(d => d.name),
+        datasets: [{
+          label: 'Revenue',
+          data: data.map(d => d.total),
+          backgroundColor: chartColor,
+          borderRadius: { topLeft: 4, topRight: 4 },
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '$' + context.parsed.y.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              color: '#888888',
+              font: {
+                size: 12
+              }
+            },
+            border: {
+              display: false
+            }
+          },
+          y: {
+            grid: {
+              color: 'rgba(0,0,0,0.05)',
+              drawBorder: false
+            },
+            ticks: {
+              color: '#888888',
+              font: {
+                size: 12
+              },
+              callback: function(value) {
+                return '$' + (value / 1000) + 'k';
+              }
+            },
+            border: {
+              display: false,
+              dash: [3, 3]
+            }
+          }
+        }
+      }
+    });
+
+    // Keyboard shortcut for sidebar toggle (Ctrl/Cmd + B)
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+        e.preventDefault();
+        sidebar.classList.toggle('open');
+        sidebarOverlay.classList.toggle('show');
+      }
+    });
+  </script>
+</body>
+</html>

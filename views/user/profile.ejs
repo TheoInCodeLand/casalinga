@@ -1,0 +1,115 @@
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <%- include('../partials/user/sidebar') %>
+            
+            <div class="col-lg-9">
+                <h4 class="fw-bold mb-4">Profile Settings</h4>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="fw-bold mb-0">Personal Information</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="profileForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" name="name" class="form-control" value="<%= user.name %>" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" value="<%= user.email %>" disabled readonly>
+                                    <small class="text-muted">Email cannot be changed</small>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" name="phone" class="form-control" value="<%= user.phone %>">
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="fw-bold mb-0">Security</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="passwordForm">
+                            <div class="mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" name="current_password" class="form-control" required>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">New Password</label>
+                                    <input type="password" name="new_password" class="form-control" required minlength="6">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Confirm New Password</label>
+                                    <input type="password" name="confirm_password" class="form-control" required minlength="6">
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-outline-danger">Change Password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    try {
+        const res = await fetch('/user/profile/update', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if(result.success) location.reload();
+        else alert(result.errors ? result.errors[0].msg : result.message);
+    } catch(err) {
+        alert('Error updating profile');
+    }
+});
+
+document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    if(data.new_password !== data.confirm_password) {
+        return alert('New passwords do not match');
+    }
+    
+    try {
+        const res = await fetch('/user/profile/change-password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if(result.success) {
+            alert('Password changed successfully');
+            e.target.reset();
+        } else {
+            alert(result.message);
+        }
+    } catch(err) {
+        alert('Error changing password');
+    }
+});
+</script>
