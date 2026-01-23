@@ -48,6 +48,10 @@ app.use(
         ],
         imgSrc: ["'self'", "data:", "https:"],
         connectSrc: ["'self'", "https://unpkg.com"],
+        frameSrc: [
+          "'self'",
+          "https://www.google.com",
+        ],
       },
     },
   })
