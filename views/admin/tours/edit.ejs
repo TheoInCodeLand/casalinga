@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/css/admin/sidebar-styles.css">
-  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -574,7 +574,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="amenities" value="<%= am.id %>" id="am_<%= am.id %>" <%= selectedAmenities.includes(am.id) ? 'checked' : '' %>>
                                         <label class="form-check-label" for="am_<%= am.id %>">
-                                            <i class="<%= am.icon %>" style="margin-right: 4px; color: hsl(var(--muted-foreground));"></i> 
+                                            <i class="<%= am.icon %> || fa-solid fa-question" style="margin-right: 4px; color: hsl(var(--muted-foreground));"></i> 
                                             <%= am.name %>
                                         </label>
                                     </div>

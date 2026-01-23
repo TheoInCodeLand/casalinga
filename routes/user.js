@@ -2,20 +2,20 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const bookingController = require('../controllers/bookingController');
-const { isAuthenticated } = require('../middleware/auth');
+const { isUser } = require('../middleware/auth');
 const { uploadAvatar } = require('../middleware/upload');
 const validationRules = require('../middleware/validation');
 
 // User dashboard
-router.get('/dashboard', isAuthenticated, userController.getDashboard);
+router.get('/dashboard', isUser, userController.getDashboard);
 
 // Profile management
-router.get('/profile', isAuthenticated, userController.getProfile);
-router.post('/profile/update', isAuthenticated, validationRules.updateProfile, userController.updateProfile);
-router.post('/profile/change-password', isAuthenticated, validationRules.changePassword, userController.changePassword);
+router.get('/profile', isUser, userController.getProfile);
+router.post('/profile/update', isUser, validationRules.updateProfile, userController.updateProfile);
+router.post('/profile/change-password', isUser, validationRules.changePassword, userController.changePassword);
 
 // Avatar upload
-router.post('/profile/avatar', isAuthenticated, uploadAvatar.single('avatar'), async (req, res) => {
+router.post('/profile/avatar', isUser, uploadAvatar.single('avatar'), async (req, res) => {
     try {
         if (!req.file) {
             req.session.error = 'Please select an image to upload';
@@ -43,26 +43,26 @@ router.post('/profile/avatar', isAuthenticated, uploadAvatar.single('avatar'), a
 });
 
 // Booking management
-router.get('/bookings', isAuthenticated, bookingController.getUserBookings);
-router.get('/bookings/:id', isAuthenticated, bookingController.getBookingDetails);
-router.post('/bookings/:id/cancel', isAuthenticated, bookingController.cancelBooking);
+router.get('/bookings', isUser, bookingController.getUserBookings);
+router.get('/bookings/:id', isUser, bookingController.getBookingDetails);
+router.post('/bookings/:id/cancel', isUser, bookingController.cancelBooking);
 
 // Favorites
-router.get('/favorites', isAuthenticated, userController.getFavorites);
+router.get('/favorites', isUser, userController.getFavorites);
 
 // Notifications
-router.get('/notifications', isAuthenticated, userController.getNotifications);
-router.post('/notifications/:id/read', isAuthenticated, userController.markNotificationAsRead);
+router.get('/notifications', isUser, userController.getNotifications);
+router.post('/notifications/:id/read', isUser, userController.markNotificationAsRead);
 
 // Settings
-router.get('/settings', isAuthenticated, (req, res) => {
+router.get('/settings', isUser, (req, res) => {
     res.render('user/settings', {
         title: 'Account Settings - Casalinga Tours'
     });
 });
 
 // Delete account (soft delete)
-router.post('/delete-account', isAuthenticated, async (req, res) => {
+router.post('/delete-account', isUser, async (req, res) => {
     try {
         const { confirm_password } = req.body;
         const userId = req.session.user.id;

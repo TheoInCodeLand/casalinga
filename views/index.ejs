@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
+    <title>Casalinga Tours | Discover Wellness Through Travel</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,10 +46,23 @@
                             DEFAULT: "oklch(0.97 0 0)",
                             foreground: "oklch(0.205 0 0)",
                         },
+                        destructive: {
+                            DEFAULT: "oklch(0.577 0.245 27.325)",
+                            foreground: "oklch(0.577 0.245 27.325)",
+                        },
                         card: {
                             DEFAULT: "oklch(1 0 0)",
                             foreground: "oklch(0.145 0 0)",
-                        }
+                        },
+                        // Chart colors matching your globals
+                        chart1: "oklch(0.646 0.222 41.116)",
+                        chart2: "oklch(0.6 0.118 184.704)",
+                        chart3: "oklch(0.398 0.07 227.392)",
+                    },
+                    borderRadius: {
+                        lg: "0.625rem",
+                        md: "calc(0.625rem - 2px)",
+                        sm: "calc(0.625rem - 4px)",
                     },
                     keyframes: {
                         draw: {
@@ -68,9 +81,10 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        /* Custom Styles */
+        /* Custom Styles matching your global css and component needs */
         body { font-feature-settings: "rlig" 1, "calt" 1; }
         
+        /* Reveal Animation Utilities */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
@@ -81,9 +95,11 @@
             transform: translateY(0);
         }
 
+        /* Hide Scrollbar */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* SVG Curve Animation */
         .animate-draw {
             stroke-dasharray: 200;
             stroke-dashoffset: 200;
@@ -100,7 +116,7 @@
     <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out py-5 bg-transparent">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <nav class="flex items-center justify-between">
-                <a href="/" class="flex items-center gap-2 group">
+                <a href="#home" class="flex items-center gap-2 group">
                     <div class="relative">
                         <i data-lucide="mountain" class="h-8 w-8 transition-colors duration-300 text-white" id="header-logo-icon"></i>
                         <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -109,17 +125,35 @@
                 </a>
 
                 <ul class="hidden md:flex items-center gap-1">
-                    <li><a href="/" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Home</a></li>
+                    <li><a href="/home" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Home</a></li>
                     <li><a href="/tours" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Tours</a></li>
                     <li><a href="/about" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">About</a></li>
+                    <li><a href="/testimonials" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Testimonials</a></li>
                     <li><a href="/contact" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Contact</a></li>
                 </ul>
 
+                <!-- <div class="hidden md:flex items-center gap-3">
+                    <button id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                        Book Now
+                    </button>
+                </div> -->
+
                 <div class="hidden md:flex items-center gap-3">
                     <% if (user) { %>
-                        <a href="/user/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
-                            Dashboard
-                        </a>
+                        <% if (user.role === 'admin') { %>
+                            <a href="/admin/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                                Dashboard
+                            </a>
+                        <% } else if (user.role === 'user') { %>
+                            <a href="/user/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                                Dashboard
+                            </a>
+                        <% } else if (user.role === 'manager') { %>
+                            <a href="/manager/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                                Dashboard
+                            </a>
+                        <% } %>
+                        
                     <% } else { %>
                         <a href="/auth/login" class="nav-link text-white/90 hover:text-white text-sm font-medium px-4">Login</a>
                         <a href="/auth/register" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
@@ -136,29 +170,40 @@
             <div id="mobile-menu" class="md:hidden overflow-hidden transition-all duration-300 ease-out max-h-0 opacity-0 mt-4">
                 <div class="bg-card rounded-2xl p-4 shadow-lg border border-border">
                     <ul class="space-y-1">
-                        <li><a href="/" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Home</a></li>
+                        <li><a href="/home" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Home</a></li>
                         <li><a href="/tours" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Tours</a></li>
                         <li><a href="/about" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">About</a></li>
+                        <li><a href="/testimonials" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Testimonials</a></li>
                         <li><a href="/contact" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Contact</a></li>
                     </ul>
-                    <div class="mt-4 pt-4 border-t border-border">
-                        <% if (user) { %>
-                            <a href="/user/dashboard" class="w-full flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">Dashboard</a>
+
+                    <% if (user) { %>
+                        <% if (user.role === "admin") { %>
+                            <a href="/admin/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                                Dashboard
+                            </a>
+                        <% } else if (user.role === "manager") { %>
+                            <a href="/manager/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                                Dashboard
+                            </a>
                         <% } else { %>
-                            <div class="grid grid-cols-2 gap-2">
-                                <a href="/auth/login" class="flex items-center justify-center border border-border h-10 rounded-full">Login</a>
-                                <a href="/auth/register" class="flex items-center justify-center bg-primary text-primary-foreground h-10 rounded-full">Sign Up</a>
-                            </div>
+                            <a href="/user/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                                Dashboard
+                            </a>
                         <% } %>
-                    </div>
+                    <% } else { %>
+                        <a href="/book" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                            Book Now
+                        </a>
+                    <% } %>
                 </div>
             </div>
         </div>
     </header>
-
+ 
     <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div id="hero-bg" class="absolute inset-0 scale-110 transition-transform duration-300 ease-out">
-            <img src="/images/hero-mountains.jpg" alt="Beautiful mountain landscape" class="w-full h-full object-cover">
+            <img src="/images/hero-mountains.jpg" alt="Beautiful mountain landscape with camping" class="w-full h-full object-cover">
         </div>
 
         <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60"></div>
@@ -187,14 +232,14 @@
                 </h1>
 
                 <p class="text-white/80 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed reveal" style="transition-delay: 300ms;">
-                    Experience unforgettable outdoor adventures, horse riding, camping, and guided wellness retreats in the heart of South Africa.
+                    Experience unforgettable outdoor adventures, horse riding, camping, and guided wellness retreats in the heart of nature.
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 reveal" style="transition-delay: 500ms;">
-                    <a href="#tours" class="group inline-flex items-center justify-center whitespace-nowrap text-base bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-full px-8 py-6 font-medium shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 duration-300">
+                    <button onclick="document.getElementById('tours').scrollIntoView({behavior: 'smooth'})" class="group inline-flex items-center justify-center whitespace-nowrap text-base ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-full px-8 py-6 font-medium shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 duration-300">
                         Explore Tours
                         <i data-lucide="arrow-right" class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"></i>
-                    </a>
+                    </button>
                     <button class="group inline-flex items-center justify-center whitespace-nowrap text-base ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 h-11 rounded-full px-8 py-6 font-medium duration-300">
                         <i data-lucide="play" class="mr-2 h-5 w-5 transition-transform group-hover:scale-110"></i>
                         Watch Our Story
@@ -203,11 +248,11 @@
 
                 <div class="grid grid-cols-3 gap-8 mt-16 max-w-lg mx-auto reveal" style="transition-delay: 700ms;">
                     <div class="text-center">
-                        <div class="text-white text-2xl sm:text-3xl font-serif font-semibold"><%= stats && stats.traveler_count ? stats.traveler_count : '500' %>+</div>
+                        <div class="text-white text-2xl sm:text-3xl font-serif font-semibold">500+</div>
                         <div class="text-white/60 text-xs sm:text-sm mt-1">Happy Travelers</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-white text-2xl sm:text-3xl font-serif font-semibold"><%= stats && stats.tour_count ? stats.tour_count : '20' %>+</div>
+                        <div class="text-white text-2xl sm:text-3xl font-serif font-semibold">50+</div>
                         <div class="text-white/60 text-xs sm:text-sm mt-1">Unique Tours</div>
                     </div>
                     <div class="text-center">
@@ -218,6 +263,10 @@
             </div>
         </div>
 
+        <button onclick="document.getElementById('tours').scrollIntoView({ behavior: 'smooth' })" class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 hover:text-white transition-colors cursor-pointer animate-bounce">
+            <i data-lucide="chevron-down" class="h-8 w-8"></i>
+        </button>
+        
         <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent"></div>
     </section>
 
@@ -228,6 +277,14 @@
                 <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6 text-balance">Featured Tours & Adventures</h2>
                 <p class="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">Handpicked experiences designed to connect you with nature, adventure, and your inner peace.</p>
             </div>
+
+            <!-- <div class="flex flex-wrap justify-center gap-2 mb-12 reveal" style="transition-delay: 200ms;">
+                <button class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-primary text-primary-foreground shadow-lg shadow-primary/25" data-filter="All">All</button>
+                <button class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-secondary text-secondary-foreground hover:bg-secondary/80" data-filter="Adventure">Adventure</button>
+                <button class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-secondary text-secondary-foreground hover:bg-secondary/80" data-filter="Wellness">Wellness</button>
+                <button class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-secondary text-secondary-foreground hover:bg-secondary/80" data-filter="Wildlife">Wildlife</button>
+                <button class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-secondary text-secondary-foreground hover:bg-secondary/80" data-filter="Romantic">Romantic</button>
+            </div> -->
 
             <div class="flex flex-wrap justify-center gap-2 mb-12 reveal" style="transition-delay: 200ms;">
                 <a href="/tours" class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-primary text-primary-foreground shadow-lg shadow-primary/25">All</a>
@@ -240,78 +297,10 @@
                 <% } %>
             </div>
 
-           <div id="tours-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <% if (featuredTours && featuredTours.length > 0) { %>
-                    <% featuredTours.forEach((tour, index) => { %>
-                        <div class="group relative bg-card rounded-2xl overflow-hidden shadow-sm border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-2 reveal" style="transition-delay: <%= index * 100 %>ms;">
-                            
-                            <div class="relative h-64 overflow-hidden">
-                                <img src="<%= tour.main_image || '/images/placeholder-tour.jpg' %>" alt="<%= tour.title %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                                
-                                <div class="absolute top-4 left-4 flex flex-wrap gap-2">
-                                    <% if (tour.primary_tag) { %>
-                                        <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
-                                            <%= tour.primary_tag %>
-                                        </span>
-                                    <% } %>
-
-                                    <% if (tour.featured) { %>
-                                        <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-primary text-primary-foreground">
-                                            Popular
-                                        </span>
-                                    <% } %>
-
-                                    <% if (tour.discount_price) { %>
-                                        <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-primary text-primary-foreground">
-                                            Sale
-                                        </span>
-                                    <% } %>
-                                </div>
-
-                                <button class="absolute top-4 right-4 p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40 transition-all duration-300 text-white group/heart">
-                                    <i data-lucide="heart" class="h-5 w-5 transition-transform group-hover/heart:scale-110"></i>
-                                </button>
-
-                                <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
-                                    <span class="text-foreground text-sm font-medium">From 
-                                        <% if (tour.discount_price) { %>
-                                            <span class="text-primary font-semibold">R<%= parseFloat(tour.discount_price).toLocaleString() %></span>
-                                        <% } else { %>
-                                            <span class="text-primary font-semibold">R<%= parseFloat(tour.price).toLocaleString() %></span>
-                                        <% } %>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="p-6">
-                                <div class="flex items-center gap-2 mb-3">
-                                    <div class="flex items-center gap-1">
-                                        <i data-lucide="clock" class="h-4 w-4 text-primary"></i>
-                                        <span class="text-muted-foreground text-sm"><%= tour.duration_days %> Days</span>
-                                    </div>
-                                    <span class="text-muted-foreground text-sm">•</span>
-                                    <div class="flex items-center gap-1">
-                                        <i data-lucide="map-pin" class="h-4 w-4 text-primary"></i>
-                                        <span class="text-muted-foreground text-sm"><%= tour.location %></span>
-                                    </div>
-                                </div>
-
-                                <h3 class="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300"><%= tour.title %></h3>
-                                <p class="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2"><%= tour.short_description %></p>
-                                
-                                <a href="/tours/<%= tour.slug %>" class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-primary bg-transparent hover:bg-primary hover:text-primary-foreground h-10 px-4 py-2 w-full rounded-full group/btn transition-all duration-300">
-                                    View Details <i data-lucide="arrow-right" class="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1"></i>
-                                </a>
-                            </div>
-                        </div>
-                    <% }) %>
-                <% } else { %>
-                    <div class="col-span-full text-center text-muted-foreground py-12">
-                        <p>No featured tours available at the moment.</p>
-                    </div>
-                <% } %>
-            </div>text-center mt-16 reveal" style="transition-delay: 500ms;">
+            <div id="tours-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+            
+            <div class="text-center mt-16 reveal" style="transition-delay: 500ms;">
                 <a href="/tours" class="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-primary bg-transparent hover:bg-primary hover:text-primary-foreground h-11 rounded-full px-8 py-6 text-base font-medium text-primary transition-all duration-300">
                     View All Tours
                     <i data-lucide="arrow-right" class="ml-2 h-5 w-5"></i>
@@ -328,50 +317,23 @@
                 <p class="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">We believe in creating transformative experiences that nurture the soul and inspire a deeper connection with the natural world.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="group relative p-8 rounded-2xl bg-card border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 reveal">
-                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-                    <div class="relative inline-flex items-center justify-center w-14 h-14 rounded-xl mb-6 transition-all duration-300 bg-green-100 group-hover:scale-110">
-                        <i data-lucide="leaf" class="h-7 w-7 text-green-600"></i>
-                    </div>
-                    <h3 class="relative font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">Wellness Focus</h3>
-                    <p class="relative text-muted-foreground leading-relaxed">Every experience is designed with your mental and physical wellbeing at the core.</p>
+            <div id="features-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 </div>
 
-                <div class="group relative p-8 rounded-2xl bg-card border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 reveal" style="transition-delay: 100ms;">
-                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-                    <div class="relative inline-flex items-center justify-center w-14 h-14 rounded-xl mb-6 transition-all duration-300 bg-blue-100 group-hover:scale-110">
-                        <i data-lucide="globe" class="h-7 w-7 text-blue-600"></i>
-                    </div>
-                    <h3 class="relative font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">Outdoor Adventures</h3>
-                    <p class="relative text-muted-foreground leading-relaxed">From mountain trails to riverside camping, explore landscapes.</p>
-                </div>
-
-                <div class="group relative p-8 rounded-2xl bg-card border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 reveal" style="transition-delay: 200ms;">
-                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-                    <div class="relative inline-flex items-center justify-center w-14 h-14 rounded-xl mb-6 transition-all duration-300 bg-amber-100 group-hover:scale-110">
-                        <i data-lucide="shield" class="h-7 w-7 text-amber-600"></i>
-                    </div>
-                    <h3 class="relative font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">Safety First</h3>
-                    <p class="relative text-muted-foreground leading-relaxed">Rigorous safety protocols and experienced staff ensure peace of mind.</p>
-                </div>
-            </div>
-
-            <div class="mt-20 relative overflow-hidden rounded-3xl bg-primary p-10 sm:p-14 reveal" style="transition-delay: 300ms;">
-                <div class="absolute inset-0 opacity-10">
+            <div class="mt-20 relative overflow-hidden rounded-3xl bg-primary p-10 sm:p-14 reveal" style="transition-delay: 300ms; background: url('./public/images/hero-mountains.jpg'); background-repeat: no-repeat; background-size: cover;">
+                <div class="absolute inset-0 background-white" style="background: rgba(52, 48, 0, 0.644);">
                     <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                        <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="currentColor"></circle></pattern>
+                        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="currentColor"></circle></pattern>
                         <rect width="100%" height="100%" fill="url(#grid)"></rect>
                     </svg>
                 </div>
                 <div class="relative flex flex-col lg:flex-row items-center justify-between gap-8">
                     <div class="text-center lg:text-left">
                         <h3 class="font-serif text-2xl sm:text-3xl font-semibold text-primary-foreground mb-3">Ready to start your adventure?</h3>
-                        <p class="text-primary-foreground/80 text-lg max-w-xl">Join thousands of travelers who have discovered the magic of wellness travel with Casalinga.</p>
+                        <p class="text-primary-foreground/80 text-lg max-w-xl" style="color: rgb(215, 215, 215);">Join thousands of travelers who have discovered the magic of wellness travel with Casalinga.</p>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="/tours" class="px-8 py-4 rounded-full bg-white text-primary font-semibold hover:bg-white/90 transition-all duration-300 hover:scale-105 shadow-lg">Book Your Tour</a>
-                        <a href="/contact" class="px-8 py-4 rounded-full bg-transparent border-2 border-white text-white font-semibold hover:bg-white/10 transition-all duration-300">Contact Us</a>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <button class="px-4 py-2 rounded-full bg-white text-primary font-semibold hover:bg-white/80 transition-all duration-300 hover:scale-105 shadow-lg">Book Your Tour</button>
                     </div>
                 </div>
             </div>
@@ -383,61 +345,42 @@
             <div class="text-center mb-16 reveal">
                 <span class="inline-block text-primary text-sm font-semibold tracking-wider uppercase mb-4">Testimonials</span>
                 <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6 text-balance">What Our Travelers Say</h2>
+                <p class="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">Real stories from real adventurers who discovered their best selves through our experiences.</p>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-card rounded-2xl p-8 border border-border shadow-sm reveal">
-                    <div class="flex gap-1 mb-4">
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                    </div>
-                    <p class="text-foreground text-lg leading-relaxed mb-6">"The Wilderness Retreat was absolutely life-changing. Waking up to mountain views and practicing yoga at sunrise made this the best trip of my life."</p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">SM</div>
-                        <div>
-                            <h4 class="font-semibold text-foreground">Sarah Mitchell</h4>
-                            <p class="text-sm text-muted-foreground">Wellness Enthusiast</p>
+
+            <div class="relative reveal" style="transition-delay: 200ms;">
+                <button id="prev-testimonial" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 p-3 rounded-full bg-card border border-border shadow-lg hover:bg-secondary transition-all duration-300 hidden lg:block">
+                    <i data-lucide="chevron-left" class="h-5 w-5 text-foreground"></i>
+                </button>
+                <button id="next-testimonial" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 p-3 rounded-full bg-card border border-border shadow-lg hover:bg-secondary transition-all duration-300 hidden lg:block">
+                    <i data-lucide="chevron-right" class="h-5 w-5 text-foreground"></i>
+                </button>
+
+                <div class="relative h-[400px] flex items-center justify-center overflow-hidden">
+                    <div id="testimonial-track" class="flex gap-6 transition-transform duration-500 ease-out absolute left-1/2 -translate-x-1/2">
                         </div>
-                    </div>
                 </div>
 
-                <div class="bg-card rounded-2xl p-8 border border-border shadow-sm reveal" style="transition-delay: 100ms;">
-                    <div class="flex gap-1 mb-4">
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                    </div>
-                    <p class="text-foreground text-lg leading-relaxed mb-6">"Casalinga stands out. The attention to detail, safety standards, and authentic experiences are unmatched. Highly recommended!"</p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">JV</div>
-                        <div>
-                            <h4 class="font-semibold text-foreground">James van der Berg</h4>
-                            <p class="text-sm text-muted-foreground">Adventure Seeker</p>
-                        </div>
-                    </div>
+                <div id="testimonial-dots" class="flex justify-center gap-2 mt-8">
                 </div>
+            </div>
 
-                <div class="bg-card rounded-2xl p-8 border border-border shadow-sm reveal" style="transition-delay: 200ms;">
-                    <div class="flex gap-1 mb-4">
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                        <i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>
-                    </div>
-                    <p class="text-foreground text-lg leading-relaxed mb-6">"Took my family on the Safari Adventure. The kids haven't stopped talking about it! Safe, educational, and absolutely thrilling."</p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">MT</div>
-                        <div>
-                            <h4 class="font-semibold text-foreground">Michael Thompson</h4>
-                            <p class="text-sm text-muted-foreground">Family Traveler</p>
-                        </div>
-                    </div>
+             <div class="mt-20 flex flex-wrap justify-center items-center gap-8 sm:gap-16 reveal" style="transition-delay: 400ms;">
+                <div class="text-center">
+                    <div class="text-3xl sm:text-4xl font-serif font-semibold text-primary">4.9</div>
+                    <div class="text-sm text-muted-foreground mt-1">Average Rating</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl sm:text-4xl font-serif font-semibold text-primary">500+</div>
+                    <div class="text-sm text-muted-foreground mt-1">Happy Clients</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl sm:text-4xl font-serif font-semibold text-primary">100%</div>
+                    <div class="text-sm text-muted-foreground mt-1">Safety Record</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl sm:text-4xl font-serif font-semibold text-primary">50+</div>
+                    <div class="text-sm text-muted-foreground mt-1">Unique Tours</div>
                 </div>
             </div>
         </div>
@@ -457,15 +400,28 @@
             <p class="text-muted-foreground text-lg max-w-xl mx-auto mb-10">Subscribe to our newsletter for exclusive deals, travel tips, and early access to new adventures.</p>
 
             <form id="newsletter-form" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto transition-all duration-500">
-                <input type="email" placeholder="Enter your email" required class="flex h-14 w-full rounded-full border border-border bg-card px-6 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 text-foreground">
-                <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-14 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+                <input type="email" placeholder="Enter your email" required class="flex h-14 w-full rounded-full border border-border bg-card px-6 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground">
+                <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-14 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all duration-300">
                     Subscribe <i data-lucide="send" class="ml-2 h-4 w-4"></i>
                 </button>
             </form>
             
-            <div id="newsletter-success" class="hidden mt-6 items-center justify-center gap-3 bg-primary/10 text-primary px-6 py-4 rounded-full max-w-fit mx-auto">
+            <div id="newsletter-success" class="hidden mt-6 items-center justify-center gap-3 bg-primary/10 text-primary px-6 py-4 rounded-full max-w-fit mx-auto animate-in fade-in zoom-in duration-300">
                 <i data-lucide="check-circle" class="h-6 w-6"></i>
                 <span class="font-medium">You're subscribed! Check your inbox.</span>
+            </div>
+
+            <p class="text-sm text-muted-foreground mt-6 reveal" style="transition-delay: 200ms;">We respect your privacy. Unsubscribe at any time.</p>
+
+            <div class="flex flex-wrap justify-center items-center gap-6 mt-12 reveal" style="transition-delay: 300ms;">
+                <div class="flex -space-x-3">
+                    <div style="z-index:5" class="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"><span class="text-xs font-medium text-primary">JM</span></div>
+                    <div style="z-index:4" class="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"><span class="text-xs font-medium text-primary">SK</span></div>
+                    <div style="z-index:3" class="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"><span class="text-xs font-medium text-primary">PN</span></div>
+                    <div style="z-index:2" class="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"><span class="text-xs font-medium text-primary">MT</span></div>
+                    <div style="z-index:1" class="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"><span class="text-xs font-medium text-primary">LC</span></div>
+                </div>
+                <span class="text-sm text-muted-foreground">Join <span class="font-semibold text-foreground">2,500+</span> adventure enthusiasts</span>
             </div>
         </div>
     </section>
@@ -474,31 +430,54 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
                 <div class="lg:col-span-2">
-                    <a href="/" class="flex items-center gap-2 mb-6">
+                    <a href="#home" class="flex items-center gap-2 mb-6">
                         <i data-lucide="mountain" class="h-8 w-8 text-primary"></i>
                         <span class="font-serif text-2xl font-semibold text-background">Casalinga</span>
                     </a>
-                    <p class="text-background/70 leading-relaxed mb-8 max-w-sm">Discover wellness through travel, adventure, and connection with nature.</p>
+                    <p class="text-background/70 leading-relaxed mb-8 max-w-sm">Discover wellness through travel, adventure, and connection with nature. Creating transformative experiences since 2010.</p>
+                    <div class="space-y-4">
+                        <a href="mailto:hello@casalinga.co.za" class="flex items-center gap-3 text-background/70 hover:text-background transition-colors">
+                            <i data-lucide="mail" class="h-5 w-5 text-primary"></i>
+                            <span>hello@casalinga.co.za</span>
+                        </a>
+                        <a href="tel:+27123456789" class="flex items-center gap-3 text-background/70 hover:text-background transition-colors">
+                            <i data-lucide="phone" class="h-5 w-5 text-primary"></i>
+                            <span>+27 12 345 6789</span>
+                        </a>
+                        <div class="flex items-start gap-3 text-background/70">
+                            <i data-lucide="map-pin" class="h-5 w-5 text-primary flex-shrink-0 mt-0.5"></i>
+                            <span>123 Adventure Lane<br />Cape Town, South Africa</span>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <h3 class="font-semibold text-background mb-6">Explore</h3>
                     <ul class="space-y-4 text-background/70">
-                        <li><a href="/tours" class="hover:text-background transition-colors">All Tours</a></li>
+                        <li><a href="#tours" class="hover:text-background transition-colors">All Tours</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Adventure Tours</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Wellness Retreats</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Safari Experiences</a></li>
                         <li><a href="#" class="hover:text-background transition-colors">Group Bookings</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="font-semibold text-background mb-6">Company</h3>
                     <ul class="space-y-4 text-background/70">
-                        <li><a href="/about" class="hover:text-background transition-colors">About Us</a></li>
-                        <li><a href="/contact" class="hover:text-background transition-colors">Contact</a></li>
+                        <li><a href="#about" class="hover:text-background transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Our Team</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Press</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Partners</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="font-semibold text-background mb-6">Support</h3>
                     <ul class="space-y-4 text-background/70">
+                        <li><a href="#" class="hover:text-background transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Safety Info</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Cancellation Policy</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Travel Insurance</a></li>
                         <li><a href="#" class="hover:text-background transition-colors">FAQs</a></li>
-                        <li><a href="#" class="hover:text-background transition-colors">Terms & Conditions</a></li>
                     </ul>
                 </div>
             </div>
@@ -509,16 +488,256 @@
                 <div class="flex items-center gap-4">
                     <a href="#" class="p-2 rounded-full bg-background/10 hover:bg-background/20 text-background/70 hover:text-background"><i data-lucide="instagram" class="h-5 w-5"></i></a>
                     <a href="#" class="p-2 rounded-full bg-background/10 hover:bg-background/20 text-background/70 hover:text-background"><i data-lucide="facebook" class="h-5 w-5"></i></a>
+                    <a href="#" class="p-2 rounded-full bg-background/10 hover:bg-background/20 text-background/70 hover:text-background"><i data-lucide="twitter" class="h-5 w-5"></i></a>
+                    <a href="#" class="p-2 rounded-full bg-background/10 hover:bg-background/20 text-background/70 hover:text-background"><i data-lucide="youtube" class="h-5 w-5"></i></a>
                 </div>
             </div>
         </div>
     </footer>
 
     <script>
-        // Initialize Icons
-        lucide.createIcons();
+        // --- 1. Data Sources ---
+        const rawTours = <%- JSON.stringify(featuredTours || []) %>;
+        const toursData = rawTours.map(tour => {
+            // Handle 'category': Check if it's an array, a string, or null
+            let catArray = ["General"];
+            if (tour.category) {
+                // If it's already an array, use it. If it's a string, wrap it in an array.
+                catArray = Array.isArray(tour.category) ? tour.category : [tour.category];
+            } else if (tour.categories) {
+                // Fallback if your DB uses plural 'categories'
+                catArray = Array.isArray(tour.categories) ? tour.categories : [tour.categories];
+            }
 
-        // Particles
+            return {
+                id: tour.id || Math.random(),
+                title: tour.title,
+                description: tour.short_description || "", 
+                image: tour.main_image || '/images/placeholder-tour.jpg',
+                price: tour.price,
+                duration: tour.duration_days ? `${tour.duration_days} Days` : "Flexible",
+                location: tour.location,
+                slug: tour.slug,
+                
+                // NEW: Use the processed category array here
+                categories: catArray, 
+                
+                // Defaults
+                groupSize: tour.group_size || "Small Group",
+                rating: tour.rating || 5.0,
+                reviews: tour.reviews_count || 0
+            };
+        });
+
+        const featuresData = [
+            { icon: "leaf", title: "Wellness Focus", description: "Every experience is designed with your mental and physical wellbeing at the core. Rejuvenate through nature.", color: "text-green-600", bgColor: "bg-green-100" },
+            { icon: "globe", title: "Outdoor Adventures", description: "From mountain trails to riverside camping, explore South Africa's most breathtaking landscapes.", color: "text-blue-600", bgColor: "bg-blue-100" },
+            { icon: "bus", title: "Guided Experiences", description: "Expert local guides ensure safe, educational, and unforgettable journeys into the wild.", color: "text-amber-600", bgColor: "bg-amber-100" },
+            { icon: "shield", title: "Safety First", description: "Rigorous safety protocols and experienced staff ensure peace of mind on every adventure.", color: "text-indigo-600", bgColor: "bg-indigo-100" },
+            { icon: "heart", title: "Small Groups", description: "Intimate group sizes mean personalized attention and meaningful connections with fellow travelers.", color: "text-rose-600", bgColor: "bg-rose-100" },
+            { icon: "sparkles", title: "Premium Quality", description: "Handpicked accommodations, gourmet meals, and carefully curated itineraries for exceptional experiences.", color: "text-violet-600", bgColor: "bg-violet-100" }
+        ];
+
+        const testimonialsData = [
+            { id: 1, name: "Sarah Mitchell", role: "Wellness Enthusiast", avatar: "SM", content: "The Wilderness Retreat was absolutely life-changing. Waking up to mountain views, practicing yoga at sunrise, and the incredible staff made this the best trip of my life.", rating: 5, tour: "Wilderness Retreat" },
+            { id: 2, name: "James van der Berg", role: "Adventure Seeker", avatar: "JV", content: "As someone who's done adventure tours worldwide, Casalinga stands out. The attention to detail, safety standards, and authentic experiences are unmatched.", rating: 5, tour: "Mountain Explorer" },
+            { id: 3, name: "Priya Naidoo", role: "Travel Blogger", avatar: "PN", content: "I've written about hundreds of travel experiences, but the LaVista Weekend left me speechless. The horseback riding through golden fields was magical.", rating: 5, tour: "LaVista Weekend" },
+            { id: 4, name: "Michael Thompson", role: "Family Traveler", avatar: "MT", content: "Took my family on the Safari Adventure. The kids haven't stopped talking about it! Safe, educational, and absolutely thrilling.", rating: 5, tour: "Safari Adventure" },
+            { id: 5, name: "Lisa Chen", role: "Corporate Executive", avatar: "LC", content: "The Wellness Journey was exactly what I needed to disconnect from work stress. Professional, serene, and transformative.", rating: 5, tour: "Wellness Journey" }
+        ];
+
+        // --- 2. Render Functions ---
+        function renderTours(filter) {
+            const grid = document.getElementById('tours-grid');
+            grid.innerHTML = '';
+
+            const filteredTours = toursData.filter(tour => {
+                if (filter === 'All') return true;
+                // UPDATE: Check if the category array includes the filter
+                return tour.categories.includes(filter) || tour.title.includes(filter);
+            });
+
+            if (filteredTours.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center text-muted-foreground py-12">
+                        <p>No tours found matching this filter.</p>
+                    </div>`;
+                return;
+            }
+
+            filteredTours.forEach((tour, index) => {
+                const card = document.createElement('div');
+                card.className = "group relative bg-card rounded-2xl overflow-hidden shadow-sm border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-2 opacity-0 translate-y-10 reveal-card";
+                card.style.transitionDelay = `${index * 100}ms`;
+                card.style.animationFillMode = "forwards"; 
+
+                // UPDATE: Generate Category Badges instead of Tags
+                const categoriesHtml = tour.categories.map(cat => 
+                    `<span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground shadow-sm group-hover:bg-white/90 group-hover:text-black">${cat}</span>`
+                ).join('');
+
+                card.innerHTML = `
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="${tour.image}" alt="${tour.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                        
+                        <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+                            ${categoriesHtml}
+                        </div>
+
+                        <button class="like-btn absolute top-4 right-4 p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40 transition-all duration-300 text-white">
+                            <i data-lucide="heart" class="h-5 w-5 transition-transform"></i>
+                        </button>
+
+                        <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
+                            <span class="text-foreground text-sm font-medium">From <span class="text-primary font-semibold">R${parseFloat(tour.price).toLocaleString()}</span></span>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="flex items-center gap-1">
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <span class="text-foreground font-semibold text-sm">${tour.rating}</span>
+                            </div>
+                            <span class="text-muted-foreground text-sm">(${tour.reviews} reviews)</span>
+                        </div>
+
+                        <h3 class="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">${tour.title}</h3>
+                        <p class="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2">${tour.description}</p>
+                        
+                        <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-5">
+                            <div class="flex items-center gap-1.5"><i data-lucide="clock" class="h-4 w-4 text-primary"></i> <span>${tour.duration}</span></div>
+                            <div class="flex items-center gap-1.5"><i data-lucide="users" class="h-4 w-4 text-primary"></i> <span>${tour.groupSize}</span></div>
+                            <div class="flex items-center gap-1.5"><i data-lucide="map-pin" class="h-4 w-4 text-primary"></i> <span>${tour.location}</span></div>
+                        </div>
+                        
+                        <a href="/tours/${tour.slug}" class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-primary bg-transparent hover:bg-primary hover:text-primary-foreground h-10 px-4 py-2 w-full rounded-full group/btn transition-all duration-300">
+                            View Details <i data-lucide="arrow-right" class="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1"></i>
+                        </a>
+                    </div>
+                `;
+                grid.appendChild(card);
+                
+                setTimeout(() => {
+                    card.classList.remove('opacity-0', 'translate-y-10');
+                }, 50 + (index * 100));
+            });
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const icon = btn.querySelector('i');
+                    if (icon.classList.contains('fill-red-500')) {
+                        icon.classList.remove('fill-red-500', 'text-red-500');
+                        icon.classList.add('text-white');
+                        btn.classList.remove('scale-110');
+                    } else {
+                        icon.classList.add('fill-red-500', 'text-red-500');
+                        icon.classList.remove('text-white');
+                        btn.classList.add('scale-110');
+                    }
+                });
+            });
+        }
+        
+
+        function renderFeatures() {
+            const grid = document.getElementById('features-grid');
+            featuresData.forEach((feature, index) => {
+                const div = document.createElement('div');
+                div.className = "group relative p-8 rounded-2xl bg-card border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 opacity-0 translate-y-10 reveal-card";
+                div.style.transitionDelay = `${index * 100}ms`;
+                div.innerHTML = `
+                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+                    <div class="relative inline-flex items-center justify-center w-14 h-14 rounded-xl mb-6 transition-all duration-300 ${feature.bgColor} group-hover:scale-110">
+                        <i data-lucide="${feature.icon}" class="h-7 w-7 ${feature.color}"></i>
+                    </div>
+                    <h3 class="relative font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">${feature.title}</h3>
+                    <p class="relative text-muted-foreground leading-relaxed">${feature.description}</p>
+                    <div class="absolute bottom-0 right-0 w-20 h-20 rounded-tl-full transition-all duration-500 ${feature.bgColor} opacity-0 group-hover:opacity-30"></div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        let currentTestimonialIndex = 0;
+        function renderTestimonials() {
+            const track = document.getElementById('testimonial-track');
+            const dotsContainer = document.getElementById('testimonial-dots');
+            
+            track.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            testimonialsData.forEach((t, i) => {
+                // Cards
+                const div = document.createElement('div');
+                const offset = i - currentTestimonialIndex;
+                const isActive = i === currentTestimonialIndex;
+                const isPrev = offset === -1 || (currentTestimonialIndex === 0 && i === testimonialsData.length - 1);
+                const isNext = offset === 1 || (currentTestimonialIndex === testimonialsData.length - 1 && i === 0);
+                
+                // Hide non-adjacent items for cleaner carousel
+                const shouldShow = isActive || isPrev || isNext;
+                if (!shouldShow) return;
+
+                div.className = `w-[350px] sm:w-[400px] flex-shrink-0 transition-all duration-500 bg-card rounded-2xl p-8 border border-border relative ${isActive ? 'scale-100 shadow-xl opacity-100 z-10' : 'scale-90 shadow-sm opacity-60 z-0 hidden lg:block'}`;
+                
+                // Position logic simulated with transform in CSS, here just simpler flow
+                div.innerHTML = `
+                    <i data-lucide="quote" class="absolute top-6 right-6 h-10 w-10 text-primary/10"></i>
+                    <div class="flex gap-1 mb-6">
+                        ${Array(t.rating).fill(0).map(() => `<i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>`).join('')}
+                    </div>
+                    <p class="text-foreground text-lg leading-relaxed mb-8 line-clamp-4">"${t.content}"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"><span class="text-primary font-semibold text-sm">${t.avatar}</span></div>
+                        <div>
+                            <h4 class="font-semibold text-foreground">${t.name}</h4>
+                            <p class="text-sm text-muted-foreground">${t.role}</p>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-8 right-8"><span class="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">${t.tour}</span></div>
+                `;
+                track.appendChild(div);
+
+                // Dots
+                const dot = document.createElement('button');
+                dot.className = `h-2 rounded-full transition-all duration-300 ${isActive ? 'w-8 bg-primary' : 'w-2 bg-primary/30 hover:bg-primary/50'}`;
+                dot.onclick = () => { currentTestimonialIndex = i; renderTestimonials(); lucide.createIcons(); };
+                dotsContainer.appendChild(dot);
+            });
+            lucide.createIcons();
+        }
+
+        // --- 3. Event Listeners & Logic ---
+        
+        // Initial Render
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTours('All');
+
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-primary', 'text-primary-foreground', 'shadow-lg');
+                        b.classList.add('bg-secondary', 'text-secondary-foreground');
+                    });
+                    e.target.classList.remove('bg-secondary', 'text-secondary-foreground');
+                    e.target.classList.add('bg-primary', 'text-primary-foreground', 'shadow-lg');
+                    
+                    renderTours(e.target.dataset.filter);
+                });
+            });
+        });
+        renderFeatures();
+        renderTestimonials();
+
+        // Particle generation
         const particlesContainer = document.getElementById('particles-container');
         for(let i=0; i<20; i++) {
             const p = document.createElement('div');
@@ -530,7 +749,7 @@
             particlesContainer.appendChild(p);
         }
 
-        // Parallax
+        // Parallax Effect (Hero)
         const heroBg = document.getElementById('hero-bg');
         document.addEventListener('mousemove', (e) => {
             const x = (e.clientX / window.innerWidth) * -20;
@@ -538,7 +757,7 @@
             heroBg.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
         });
 
-        // Header Scroll Logic
+        // Header Scroll Effect
         const header = document.getElementById('main-header');
         const logoText = document.getElementById('header-logo-text');
         const logoIcon = document.getElementById('header-logo-icon');
@@ -559,12 +778,10 @@
                     link.classList.replace('hover:text-white', 'hover:text-primary');
                 });
                 
-                if(headerCta) {
-                    headerCta.classList.replace('bg-white', 'bg-primary');
-                    headerCta.classList.replace('text-foreground', 'text-primary-foreground');
-                    headerCta.classList.remove('hover:bg-white/90');
-                    headerCta.classList.add('hover:bg-primary/90');
-                }
+                headerCta.classList.replace('bg-white', 'bg-primary');
+                headerCta.classList.replace('text-foreground', 'text-primary-foreground');
+                headerCta.classList.remove('hover:bg-white/90');
+                headerCta.classList.add('hover:bg-primary/90');
             } else {
                 header.classList.remove('bg-background/95', 'backdrop-blur-md', 'shadow-sm', 'py-3');
                 header.classList.add('bg-transparent', 'py-5');
@@ -577,16 +794,14 @@
                     link.classList.replace('hover:text-primary', 'hover:text-white');
                 });
 
-                if(headerCta) {
-                    headerCta.classList.replace('bg-primary', 'bg-white');
-                    headerCta.classList.replace('text-primary-foreground', 'text-foreground');
-                    headerCta.classList.remove('hover:bg-primary/90');
-                    headerCta.classList.add('hover:bg-white/90');
-                }
+                headerCta.classList.replace('bg-primary', 'bg-white');
+                headerCta.classList.replace('text-primary-foreground', 'text-foreground');
+                headerCta.classList.remove('hover:bg-primary/90');
+                headerCta.classList.add('hover:bg-white/90');
             }
         });
 
-        // Mobile Menu
+        // Mobile Menu Toggle
         const mobileMenu = document.getElementById('mobile-menu');
         mobileMenuBtn.addEventListener('click', () => {
             if (mobileMenu.classList.contains('max-h-0')) {
@@ -597,26 +812,74 @@
                 mobileMenu.classList.remove('max-h-96', 'opacity-100');
             }
         });
-
-        // Scroll Animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    observer.unobserve(entry.target);
-                }
+        
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('max-h-0', 'opacity-0');
+                mobileMenu.classList.remove('max-h-96', 'opacity-100');
             });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        });
 
         // Newsletter Form
         document.getElementById('newsletter-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            e.target.style.display = 'none';
-            document.getElementById('newsletter-success').classList.remove('hidden');
-            document.getElementById('newsletter-success').classList.add('flex');
+            e.target.style.opacity = '0';
+            e.target.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                e.target.style.display = 'none';
+                document.getElementById('newsletter-success').classList.remove('hidden');
+                document.getElementById('newsletter-success').classList.add('flex');
+            }, 300);
         });
+
+        // Testimonial Navigation
+        document.getElementById('prev-testimonial').addEventListener('click', () => {
+            currentTestimonialIndex = (currentTestimonialIndex - 1 + testimonialsData.length) % testimonialsData.length;
+            renderTestimonials();
+        });
+        document.getElementById('next-testimonial').addEventListener('click', () => {
+            currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonialsData.length;
+            renderTestimonials();
+        });
+        // Auto rotate
+        setInterval(() => {
+            currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonialsData.length;
+            renderTestimonials();
+        }, 5000);
+
+        // Scroll Animations (Intersection Observer)
+        function observeElements() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        entry.target.classList.remove('opacity-0', 'translate-y-10'); 
+                        entry.target.classList.add('opacity-100', 'translate-y-0');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            document.querySelectorAll('.reveal-card').forEach(el => observer.observe(el));
+        }
+
+        observeElements();
+
+        // Filter Buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('bg-primary', 'text-primary-foreground', 'shadow-lg');
+                    b.classList.add('bg-secondary', 'text-secondary-foreground');
+                });
+                e.target.classList.remove('bg-secondary', 'text-secondary-foreground');
+                e.target.classList.add('bg-primary', 'text-primary-foreground', 'shadow-lg');
+                
+                renderTours(e.target.dataset.filter);
+            });
+        });
+
     </script>
 </body>
 </html>

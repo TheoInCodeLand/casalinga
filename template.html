@@ -1,1546 +1,881 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sales CRM - Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --background: 0 0% 100%;
-      --foreground: 222.2 84% 4.9%;
-      --card: 0 0% 100%;
-      --card-foreground: 222.2 84% 4.9%;
-      --popover: 0 0% 100%;
-      --popover-foreground: 222.2 84% 4.9%;
-      --primary: 221.2 83.2% 53.3%;
-      --primary-foreground: 210 40% 98%;
-      --secondary: 210 40% 96%;
-      --secondary-foreground: 222.2 84% 4.9%;
-      --muted: 210 40% 96%;
-      --muted-foreground: 215.4 16.3% 46.9%;
-      --accent: 210 40% 96%;
-      --accent-foreground: 222.2 84% 4.9%;
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 210 40% 98%;
-      --border: 214.3 31.8% 91.4%;
-      --input: 214.3 31.8% 91.4%;
-      --ring: 221.2 83.2% 53.3%;
-      --radius: 0.75rem;
-      --sidebar-background: 0 0% 98%;
-      --sidebar-foreground: 240 5.3% 26.1%;
-      --sidebar-primary: 240 5.9% 10%;
-      --sidebar-primary-foreground: 0 0% 98%;
-      --sidebar-accent: 240 4.8% 95.9%;
-      --sidebar-accent-foreground: 240 5.9% 10%;
-      --sidebar-border: 220 13% 91%;
-      --sidebar-ring: 217.2 91.2% 59.8%;
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: hsl(var(--background));
-      color: hsl(var(--foreground));
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* Layout */
-    .app-wrapper {
-      display: flex;
-      min-height: 100vh;
-      width: 100%;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 16rem;
-      height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      background-color: hsl(var(--sidebar-background));
-      border-right: 1px solid hsl(var(--border));
-      display: flex;
-      flex-direction: column;
-      z-index: 40;
-      transition: transform 0.2s ease-in-out;
-    }
-
-    .sidebar-header {
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .sidebar-logo {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .sidebar-logo-icon {
-      width: 2rem;
-      height: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 0.5rem;
-      background-color: hsl(var(--primary));
-      color: hsl(var(--primary-foreground));
-    }
-
-    .sidebar-logo-icon svg {
-      width: 1rem;
-      height: 1rem;
-    }
-
-    .sidebar-logo-text {
-      font-size: 1.125rem;
-      font-weight: 600;
-    }
-
-    .sidebar-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0.5rem;
-    }
-
-    .sidebar-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      list-style: none;
-    }
-
-    .sidebar-menu-item {
-      position: relative;
-    }
-
-    .sidebar-menu-button {
-      display: flex;
-      width: 100%;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
-      text-decoration: none;
-      color: hsl(var(--sidebar-foreground));
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.15s, color 0.15s;
-    }
-
-    .sidebar-menu-button:hover {
-      background-color: hsl(var(--sidebar-accent));
-      color: hsl(var(--sidebar-accent-foreground));
-    }
-
-    .sidebar-menu-button.active {
-      background-color: hsl(var(--sidebar-accent));
-      color: hsl(var(--sidebar-accent-foreground));
-      font-weight: 500;
-    }
-
-    .sidebar-menu-button svg {
-      width: 1rem;
-      height: 1rem;
-      flex-shrink: 0;
-    }
-
-    .sidebar-footer {
-      padding: 1rem;
-      border-top: 1px solid hsl(var(--border));
-    }
-
-    .sidebar-user {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .sidebar-user-avatar {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .sidebar-user-info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .sidebar-user-name {
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-
-    .sidebar-user-role {
-      font-size: 0.75rem;
-      color: hsl(var(--muted-foreground));
-    }
-
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      margin-left: 16rem;
-      overflow-x: hidden;
-    }
-
-    /* Topbar */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.5rem;
-      border-bottom: 1px solid hsl(var(--border));
-      background-color: hsl(var(--background));
-    }
-
-    .topbar-search {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex: 1;
-      max-width: 28rem;
-    }
-
-    .search-input-wrapper {
-      position: relative;
-      flex: 1;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: hsl(var(--muted-foreground));
-      width: 1rem;
-      height: 1rem;
-    }
-
-    .search-input {
-      width: 100%;
-      height: 2.5rem;
-      padding: 0.5rem 0.75rem 0.5rem 2.5rem;
-      font-size: 0.875rem;
-      border: 1px solid hsl(var(--input));
-      border-radius: var(--radius);
-      background-color: transparent;
-      outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-
-    .search-input:focus {
-      border-color: hsl(var(--ring));
-      box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
-    }
-
-    .search-input::placeholder {
-      color: hsl(var(--muted-foreground));
-    }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .icon-button {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 0.375rem;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: hsl(var(--foreground));
-      transition: background-color 0.15s;
-    }
-
-    .icon-button:hover {
-      background-color: hsl(var(--accent));
-    }
-
-    .icon-button svg {
-      width: 1rem;
-      height: 1rem;
-    }
-
-    .notification-badge {
-      position: absolute;
-      top: -0.25rem;
-      right: -0.25rem;
-      width: 1.25rem;
-      height: 1.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 500;
-      background-color: hsl(var(--primary));
-      color: hsl(var(--primary-foreground));
-      border-radius: 50%;
-    }
-
-    .avatar-button {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      overflow: hidden;
-      cursor: pointer;
-      border: none;
-      padding: 0;
-    }
-
-    .avatar-button img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Page Content */
-    .page-content {
-      flex: 1;
-      padding: 1.5rem 2rem 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-    }
-
-    .page-title {
-      font-size: 1.875rem;
-      font-weight: 700;
-      letter-spacing: -0.025em;
-    }
-
-    .page-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    /* Button */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-      white-space: nowrap;
-    }
-
-    .btn svg {
-      width: 1rem;
-      height: 1rem;
-    }
-
-    .btn-primary {
-      background-color: hsl(var(--primary));
-      color: hsl(var(--primary-foreground));
-      border: none;
-    }
-
-    .btn-primary:hover {
-      background-color: hsl(221.2 83.2% 46%);
-    }
-
-    .btn-outline {
-      background-color: transparent;
-      border: 1px solid hsl(var(--input));
-      color: hsl(var(--foreground));
-    }
-
-    .btn-outline:hover {
-      background-color: hsl(var(--accent));
-    }
-
-    .btn-sm {
-      height: 2rem;
-      padding: 0.25rem 0.75rem;
-      font-size: 0.75rem;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border: none;
-      color: hsl(var(--foreground));
-    }
-
-    .btn-ghost:hover {
-      background-color: hsl(var(--accent));
-    }
-
-    /* Date Range Picker */
-    .date-picker-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.375rem 0.75rem;
-      font-size: 0.875rem;
-      font-weight: 400;
-      border: 1px solid hsl(var(--input));
-      border-radius: var(--radius);
-      background: transparent;
-      color: hsl(var(--foreground));
-      cursor: pointer;
-      min-width: 16.25rem;
-      justify-content: flex-start;
-      text-align: left;
-    }
-
-    .date-picker-btn:hover {
-      background-color: hsl(var(--accent));
-    }
-
-    .date-picker-btn svg {
-      width: 1rem;
-      height: 1rem;
-      color: hsl(var(--muted-foreground));
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .tabs-list {
-      display: inline-flex;
-      height: 2.5rem;
-      align-items: center;
-      justify-content: flex-start;
-      border-radius: var(--radius);
-      background-color: hsl(var(--muted));
-      padding: 0.25rem;
-      gap: 0.25rem;
-    }
-
-    .tab-trigger {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.375rem 0.75rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      border-radius: calc(var(--radius) - 2px);
-      background: transparent;
-      border: none;
-      color: hsl(var(--muted-foreground));
-      cursor: pointer;
-      transition: background-color 0.15s, color 0.15s;
-      white-space: nowrap;
-    }
-
-    .tab-trigger:hover {
-      color: hsl(var(--foreground));
-    }
-
-    .tab-trigger.active {
-      background-color: hsl(var(--background));
-      color: hsl(var(--foreground));
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    /* Cards */
-    .card {
-      border-radius: var(--radius);
-      border: 1px solid hsl(var(--border));
-      background-color: hsl(var(--card));
-      color: hsl(var(--card-foreground));
-    }
-
-    .card-header {
-      display: flex;
-      flex-direction: column;
-      gap: 0.375rem;
-      padding: 1.5rem;
-    }
-
-    .card-header-row {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: 0.5rem;
-    }
-
-    .card-title {
-      font-size: 0.875rem;
-      font-weight: 500;
-      line-height: 1;
-    }
-
-    .card-title-lg {
-      font-size: 1.125rem;
-      font-weight: 600;
-    }
-
-    .card-description {
-      font-size: 0.875rem;
-      color: hsl(var(--muted-foreground));
-    }
-
-    .card-content {
-      padding: 0 1.5rem 1.5rem;
-    }
-
-    .card-icon {
-      width: 1rem;
-      height: 1rem;
-      color: hsl(var(--muted-foreground));
-    }
-
-    .card-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-
-    .card-subtitle {
-      font-size: 0.75rem;
-      color: hsl(var(--muted-foreground));
-    }
-
-    /* Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-    }
-
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 1rem;
-    }
-
-    .col-span-4 {
-      grid-column: span 4;
-    }
-
-    .col-span-3 {
-      grid-column: span 3;
-    }
-
-    /* Chart Container */
-    .chart-container {
-      height: 350px;
-      padding-left: 0.5rem;
-    }
-
-    /* Recent Sales */
-    .recent-sales {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .sale-item {
-      display: flex;
-      align-items: center;
-    }
-
-    .sale-avatar {
-      width: 2.25rem;
-      height: 2.25rem;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .sale-info {
-      margin-left: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .sale-name {
-      font-size: 0.875rem;
-      font-weight: 500;
-      line-height: 1;
-    }
-
-    .sale-company {
-      font-size: 0.875rem;
-      color: hsl(var(--muted-foreground));
-    }
-
-    .sale-amount {
-      margin-left: auto;
-      font-weight: 500;
-    }
-
-    /* Placeholder Content */
-    .placeholder-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 200px;
-      color: hsl(var(--muted-foreground));
-    }
-
-    /* Dropdown */
-    .dropdown {
-      position: relative;
-      display: inline-block;
-    }
-
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: calc(100% + 0.5rem);
-      min-width: 12rem;
-      background-color: hsl(var(--popover));
-      border: 1px solid hsl(var(--border));
-      border-radius: var(--radius);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-      z-index: 50;
-      padding: 0.25rem;
-      animation: slideIn 0.15s ease-out;
-    }
-
-    .dropdown-content.show {
-      display: block;
-    }
-
-    .dropdown-content.wide {
-      min-width: 20rem;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-0.5rem);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .dropdown-label {
-      padding: 0.5rem 0.5rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-    }
-
-    .dropdown-separator {
-      height: 1px;
-      background-color: hsl(var(--border));
-      margin: 0.25rem 0;
-    }
-
-    .dropdown-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      width: 100%;
-      padding: 0.5rem;
-      font-size: 0.875rem;
-      text-align: left;
-      background: none;
-      border: none;
-      cursor: pointer;
-      border-radius: calc(var(--radius) - 4px);
-      color: hsl(var(--foreground));
-    }
-
-    .dropdown-item:hover {
-      background-color: hsl(var(--accent));
-    }
-
-    .dropdown-item-title {
-      font-weight: 500;
-    }
-
-    .dropdown-item-desc {
-      font-size: 0.75rem;
-      color: hsl(var(--muted-foreground));
-    }
-
-    /* Mobile Toggle */
-    .mobile-toggle {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      width: 2.5rem;
-      height: 2.5rem;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: hsl(var(--foreground));
-    }
-
-    .mobile-toggle svg {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-
-    /* Sidebar Overlay */
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 35;
-    }
-
-    .sidebar-overlay.show {
-      display: block;
-    }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .charts-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .col-span-4,
-      .col-span-3 {
-        grid-column: span 1;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-
-      .sidebar.open {
-        transform: translateX(0);
-      }
-
-      .main-content {
-        margin-left: 0;
-      }
-
-      .mobile-toggle {
-        display: flex;
-      }
-
-      .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .page-actions {
-        flex-wrap: wrap;
-      }
-
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .topbar-search {
-        display: none;
-      }
-
-      .date-picker-btn {
-        min-width: auto;
-      }
-    }
-
-    /* Calendar Popup */
-    .calendar-popup {
-      display: none;
-      position: absolute;
-      top: calc(100% + 0.5rem);
-      left: 0;
-      background-color: hsl(var(--popover));
-      border: 1px solid hsl(var(--border));
-      border-radius: var(--radius);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      z-index: 50;
-      padding: 1rem;
-      animation: slideIn 0.15s ease-out;
-    }
-
-    .calendar-popup.show {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .calendar {
-      width: 280px;
-    }
-
-    .calendar-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-
-    .calendar-title {
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-
-    .calendar-nav {
-      display: flex;
-      gap: 0.25rem;
-    }
-
-    .calendar-nav-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 1.75rem;
-      height: 1.75rem;
-      border-radius: 0.25rem;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: hsl(var(--muted-foreground));
-    }
-
-    .calendar-nav-btn:hover {
-      background-color: hsl(var(--accent));
-      color: hsl(var(--foreground));
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 0.125rem;
-      text-align: center;
-    }
-
-    .calendar-day-header {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: hsl(var(--muted-foreground));
-      padding: 0.5rem 0;
-    }
-
-    .calendar-day {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 2rem;
-      height: 2rem;
-      font-size: 0.875rem;
-      border-radius: 0.25rem;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      margin: 0.125rem auto;
-    }
-
-    .calendar-day:hover {
-      background-color: hsl(var(--accent));
-    }
-
-    .calendar-day.selected {
-      background-color: hsl(var(--primary));
-      color: hsl(var(--primary-foreground));
-    }
-
-    .calendar-day.in-range {
-      background-color: hsl(var(--accent));
-    }
-
-    .calendar-day.other-month {
-      color: hsl(var(--muted-foreground));
-      opacity: 0.5;
-    }
-  </style>
-</head>
-<body>
-  <!-- Sidebar Overlay (Mobile) -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-  <div class="app-wrapper">
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">
-          <div class="sidebar-logo-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="18" y1="20" y2="10"></line><line x1="12" x2="12" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="14"></line></svg>
-          </div>
-          <span class="sidebar-logo-text">Casalinga Tours</span>
-        </div>
-      </div>
-      <nav class="sidebar-content">
-        <ul class="sidebar-menu">
-          <li class="sidebar-menu-item">
-            <a href="#" class="sidebar-menu-button active">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-              <span>Dashboard</span>
-            </a>
-          </li>
-          <li class="sidebar-menu-item">
-            <a href="/admin/tours" class="sidebar-menu-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-              <span>Tours</span>
-            </a>
-          </li>
-          <li class="sidebar-menu-item">
-            <a href="/admin/bookings" class="sidebar-menu-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><circle cx="12" cy="10" r="2"></circle><line x1="8" x2="8" y1="2" y2="4"></line><line x1="16" x2="16" y1="2" y2="4"></line></svg>
-              <span>Bookings</span>
-            </a>
-          </li>
-          <li class="sidebar-menu-item">
-            <a href="/admin/analytics" class="sidebar-menu-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="m9 12 2 2 4-4"></path></svg>
-              <span>Analytics</span>
-            </a>
-          </li>
-          <li class="sidebar-menu-item">
-            <a href="/admin/users" class="sidebar-menu-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              <span>Users</span>
-            </a>
-          </li>
-          <li class="sidebar-menu-item">
-            <a href="#" class="sidebar-menu-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              <span>Settings</span>
-            </a>
-          </li>
-          <li class="sidebar-menu-item">
-            <a href="/admin/settings/categories" class="sidebar-menu-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              <span>Categories</span>
-            </a>
-          </li>
-          <li class="sidebar-menu-item">
-            <a href="/admin/settings/amenities" class="sidebar-menu-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              <span>Amenities</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="sidebar-user">
-          <img class="sidebar-user-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe">
-          <div class="sidebar-user-info">
-            <span class="sidebar-user-name">John Doe</span>
-            <span class="sidebar-user-role">Sales Manager</span>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Topbar -->
-      <header class="topbar">
-        <div class="topbar-search">
-          <button class="mobile-toggle" id="mobileToggle">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path></svg>
-          </button>
-          <div class="search-input-wrapper">
-            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-            <input type="text" class="search-input" placeholder="Search deals, contacts, tasks...">
-          </div>
-        </div>
-
-        <div class="topbar-actions">
-          <div class="dropdown">
-            <button class="icon-button" id="notificationBtn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
-              <span class="notification-badge">3</span>
-            </button>
-            <div class="dropdown-content wide" id="notificationDropdown">
-              <div class="dropdown-label">Notifications</div>
-              <div class="dropdown-separator"></div>
-              <button class="dropdown-item">
-                <span class="dropdown-item-title">New deal created</span>
-                <span class="dropdown-item-desc">Sarah added a $25k deal with TechCorp</span>
-              </button>
-              <button class="dropdown-item">
-                <span class="dropdown-item-title">Task due soon</span>
-                <span class="dropdown-item-desc">Follow up with Acme Inc in 2 hours</span>
-              </button>
-              <button class="dropdown-item">
-                <span class="dropdown-item-title">Deal closed</span>
-                <span class="dropdown-item-desc">Mike closed a $15k deal with StartupXYZ</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="dropdown">
-            <button class="avatar-button" id="userBtn">
-              <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="John Doe">
-            </button>
-            <div class="dropdown-content" id="userDropdown">
-              <div class="dropdown-label">My Account</div>
-              <div class="dropdown-separator"></div>
-              <button class="dropdown-item">Profile</button>
-              <button class="dropdown-item">Settings</button>
-              <div class="dropdown-separator"></div>
-              <button class="dropdown-item">Log out</button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <!-- Page Content -->
-      <div class="page-content">
-        <div class="page-header">
-          <h2 class="page-title">Dashboard</h2>
-          <div class="page-actions">
-            <div class="dropdown">
-              <button class="date-picker-btn" id="datePickerBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
-                <span id="dateRangeText">Jan 20, 2023 - Feb 09, 2023</span>
-              </button>
-              <div class="calendar-popup" id="calendarPopup">
-                <div class="calendar">
-                  <div class="calendar-header">
-                    <span class="calendar-title">January 2023</span>
-                    <div class="calendar-nav">
-                      <button class="calendar-nav-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
-                      </button>
-                      <button class="calendar-nav-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="calendar-grid">
-                    <div class="calendar-day-header">Su</div>
-                    <div class="calendar-day-header">Mo</div>
-                    <div class="calendar-day-header">Tu</div>
-                    <div class="calendar-day-header">We</div>
-                    <div class="calendar-day-header">Th</div>
-                    <div class="calendar-day-header">Fr</div>
-                    <div class="calendar-day-header">Sa</div>
-                    <button class="calendar-day other-month">1</button>
-                    <button class="calendar-day other-month">2</button>
-                    <button class="calendar-day other-month">3</button>
-                    <button class="calendar-day other-month">4</button>
-                    <button class="calendar-day other-month">5</button>
-                    <button class="calendar-day other-month">6</button>
-                    <button class="calendar-day other-month">7</button>
-                    <button class="calendar-day">8</button>
-                    <button class="calendar-day">9</button>
-                    <button class="calendar-day">10</button>
-                    <button class="calendar-day">11</button>
-                    <button class="calendar-day">12</button>
-                    <button class="calendar-day">13</button>
-                    <button class="calendar-day">14</button>
-                    <button class="calendar-day">15</button>
-                    <button class="calendar-day">16</button>
-                    <button class="calendar-day">17</button>
-                    <button class="calendar-day">18</button>
-                    <button class="calendar-day">19</button>
-                    <button class="calendar-day selected">20</button>
-                    <button class="calendar-day in-range">21</button>
-                    <button class="calendar-day in-range">22</button>
-                    <button class="calendar-day in-range">23</button>
-                    <button class="calendar-day in-range">24</button>
-                    <button class="calendar-day in-range">25</button>
-                    <button class="calendar-day in-range">26</button>
-                    <button class="calendar-day in-range">27</button>
-                    <button class="calendar-day in-range">28</button>
-                    <button class="calendar-day in-range">29</button>
-                    <button class="calendar-day in-range">30</button>
-                    <button class="calendar-day in-range">31</button>
-                  </div>
-                </div>
-                <div class="calendar">
-                  <div class="calendar-header">
-                    <span class="calendar-title">February 2023</span>
-                    <div class="calendar-nav">
-                      <button class="calendar-nav-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
-                      </button>
-                      <button class="calendar-nav-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="calendar-grid">
-                    <div class="calendar-day-header">Su</div>
-                    <div class="calendar-day-header">Mo</div>
-                    <div class="calendar-day-header">Tu</div>
-                    <div class="calendar-day-header">We</div>
-                    <div class="calendar-day-header">Th</div>
-                    <div class="calendar-day-header">Fr</div>
-                    <div class="calendar-day-header">Sa</div>
-                    <button class="calendar-day in-range">1</button>
-                    <button class="calendar-day in-range">2</button>
-                    <button class="calendar-day in-range">3</button>
-                    <button class="calendar-day in-range">4</button>
-                    <button class="calendar-day in-range">5</button>
-                    <button class="calendar-day in-range">6</button>
-                    <button class="calendar-day in-range">7</button>
-                    <button class="calendar-day in-range">8</button>
-                    <button class="calendar-day selected">9</button>
-                    <button class="calendar-day">10</button>
-                    <button class="calendar-day">11</button>
-                    <button class="calendar-day">12</button>
-                    <button class="calendar-day">13</button>
-                    <button class="calendar-day">14</button>
-                    <button class="calendar-day">15</button>
-                    <button class="calendar-day">16</button>
-                    <button class="calendar-day">17</button>
-                    <button class="calendar-day">18</button>
-                    <button class="calendar-day">19</button>
-                    <button class="calendar-day">20</button>
-                    <button class="calendar-day">21</button>
-                    <button class="calendar-day">22</button>
-                    <button class="calendar-day">23</button>
-                    <button class="calendar-day">24</button>
-                    <button class="calendar-day">25</button>
-                    <button class="calendar-day">26</button>
-                    <button class="calendar-day">27</button>
-                    <button class="calendar-day">28</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button class="btn btn-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
-              Add New Deal
-            </button>
-          </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="tabs">
-          <div class="tabs-list">
-            <button class="tab-trigger active" data-tab="overview">Overview</button>
-            <button class="tab-trigger" data-tab="analytics">Analytics</button>
-            <button class="tab-trigger" data-tab="deals">All Deals</button>
-            <button class="tab-trigger" data-tab="reports">Reports</button>
-          </div>
-
-          <!-- Overview Tab -->
-          <div class="tab-content active" id="tab-overview">
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-              <div class="card">
-                <div class="card-header card-header-row">
-                  <h3 class="card-title">Monthly Revenue</h3>
-                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                </div>
-                <div class="card-content">
-                  <div class="card-value">$48,500</div>
-                  <p class="card-subtitle">+12.5% from last month</p>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-header card-header-row">
-                  <h3 class="card-title">New Deals Closed</h3>
-                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-                </div>
-                <div class="card-content">
-                  <div class="card-value">12</div>
-                  <p class="card-subtitle">+3 from last month</p>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-header card-header-row">
-                  <h3 class="card-title">Pipeline Value</h3>
-                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
-                </div>
-                <div class="card-content">
-                  <div class="card-value">$320,000</div>
-                  <p class="card-subtitle">+8.2% total pipeline</p>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-header card-header-row">
-                  <h3 class="card-title">Conversion Rate</h3>
-                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                </div>
-                <div class="card-content">
-                  <div class="card-value">18.4%</div>
-                  <p class="card-subtitle">+2.1% lead to close</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Charts Grid -->
-            <div class="charts-grid">
-              <div class="card col-span-4">
-                <div class="card-header">
-                  <h3 class="card-title card-title-lg">Revenue Overview</h3>
-                  <p class="card-description">Monthly revenue and deals closed over time</p>
-                </div>
-                <div class="card-content">
-                  <div class="chart-container">
-                    <canvas id="revenueChart"></canvas>
-                  </div>
-                </div>
-              </div>
-              <div class="card col-span-3">
-                <div class="card-header">
-                  <h3 class="card-title card-title-lg">Recent Sales</h3>
-                  <p class="card-description">Latest deals closed by your team</p>
-                </div>
-                <div class="card-content">
-                  <div class="recent-sales">
-                    <div class="sale-item">
-                      <img class="sale-avatar" src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face" alt="Jane Doe">
-                      <div class="sale-info">
-                        <p class="sale-name">Jane Doe</p>
-                        <p class="sale-company">Acme Inc.</p>
-                      </div>
-                      <span class="sale-amount">+$15,000</span>
-                    </div>
-                    <div class="sale-item">
-                      <img class="sale-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="Mike Roberts">
-                      <div class="sale-info">
-                        <p class="sale-name">Mike Roberts</p>
-                        <p class="sale-company">StartupXYZ</p>
-                      </div>
-                      <span class="sale-amount">+$12,500</span>
-                    </div>
-                    <div class="sale-item">
-                      <img class="sale-avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" alt="Sarah Johnson">
-                      <div class="sale-info">
-                        <p class="sale-name">Sarah Johnson</p>
-                        <p class="sale-company">TechCorp Inc.</p>
-                      </div>
-                      <span class="sale-amount">+$25,000</span>
-                    </div>
-                    <div class="sale-item">
-                      <img class="sale-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" alt="Alex Lee">
-                      <div class="sale-info">
-                        <p class="sale-name">Alex Lee</p>
-                        <p class="sale-company">Global Solutions</p>
-                      </div>
-                      <span class="sale-amount">+$8,500</span>
-                    </div>
-                    <div class="sale-item">
-                      <img class="sale-avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" alt="Emily Martinez">
-                      <div class="sale-info">
-                        <p class="sale-name">Emily Martinez</p>
-                        <p class="sale-company">Retail Chain Co.</p>
-                      </div>
-                      <span class="sale-amount">+$25,000</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Analytics Tab -->
-          <div class="tab-content" id="tab-analytics">
-            <div class="stats-grid">
-              <div class="card">
-                <div class="card-header card-header-row">
-                  <h3 class="card-title">Monthly Revenue</h3>
-                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                </div>
-                <div class="card-content">
-                  <div class="card-value">$48,500</div>
-                  <p class="card-subtitle">+12.5% from last month</p>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-header card-header-row">
-                  <h3 class="card-title">New Deals Closed</h3>
-                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-                </div>
-                <div class="card-content">
-                  <div class="card-value">12</div>
-                  <p class="card-subtitle">+3 from last month</p>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-header card-header-row">
-                  <h3 class="card-title">Pipeline Value</h3>
-                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
-                </div>
-                <div class="card-content">
-                  <div class="card-value">$320,000</div>
-                  <p class="card-subtitle">+8.2% total pipeline</p>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-header card-header-row">
-                  <h3 class="card-title">Conversion Rate</h3>
-                  <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                </div>
-                <div class="card-content">
-                  <div class="card-value">18.4%</div>
-                  <p class="card-subtitle">+2.1% lead to close</p>
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title card-title-lg">Analytics Dashboard</h3>
-                <p class="card-description">Detailed analytics and performance metrics coming soon</p>
-              </div>
-              <div class="card-content">
-                <div class="placeholder-content">
-                  Advanced analytics features will be available here
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Deals Tab -->
-          <div class="tab-content" id="tab-deals">
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title card-title-lg">All Deals</h3>
-                <p class="card-description">Comprehensive view of all deals with advanced filtering and sorting</p>
-              </div>
-              <div class="card-content">
-                <div class="placeholder-content">
-                  Data table with all deals will be displayed here
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Reports Tab -->
-          <div class="tab-content" id="tab-reports">
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title card-title-lg">Reports</h3>
-                <p class="card-description">Generate and download comprehensive sales reports</p>
-              </div>
-              <div class="card-content">
-                <div class="placeholder-content">
-                  Report generation features will be available here
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <script>
-    // Mobile Sidebar Toggle
-    const mobileToggle = document.getElementById('mobileToggle');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-    mobileToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      sidebarOverlay.classList.toggle('show');
-    });
-
-    sidebarOverlay.addEventListener('click', () => {
-      sidebar.classList.remove('open');
-      sidebarOverlay.classList.remove('show');
-    });
-
-    // Dropdown Toggles
-    function setupDropdown(buttonId, dropdownId) {
-      const button = document.getElementById(buttonId);
-      const dropdown = document.getElementById(dropdownId);
-
-      button.addEventListener('click', (e) => {
-        e.stopPropagation();
-        // Close all other dropdowns
-        document.querySelectorAll('.dropdown-content.show, .calendar-popup.show').forEach(el => {
-          if (el.id !== dropdownId) el.classList.remove('show');
-        });
-        dropdown.classList.toggle('show');
-      });
-    }
-
-    setupDropdown('notificationBtn', 'notificationDropdown');
-    setupDropdown('userBtn', 'userDropdown');
-    setupDropdown('datePickerBtn', 'calendarPopup');
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', () => {
-      document.querySelectorAll('.dropdown-content.show, .calendar-popup.show').forEach(el => {
-        el.classList.remove('show');
-      });
-    });
-
-    // Prevent dropdown from closing when clicking inside
-    document.querySelectorAll('.dropdown-content, .calendar-popup').forEach(el => {
-      el.addEventListener('click', (e) => e.stopPropagation());
-    });
-
-    // Tabs
-    const tabTriggers = document.querySelectorAll('.tab-trigger');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabTriggers.forEach(trigger => {
-      trigger.addEventListener('click', () => {
-        const targetTab = trigger.dataset.tab;
-
-        // Update active state on triggers
-        tabTriggers.forEach(t => t.classList.remove('active'));
-        trigger.classList.add('active');
-
-        // Update active state on content
-        tabContents.forEach(content => {
-          content.classList.remove('active');
-          if (content.id === `tab-${targetTab}`) {
-            content.classList.add('active');
-          }
-        });
-      });
-    });
-
-    // Sidebar menu active state
-    const menuButtons = document.querySelectorAll('.sidebar-menu-button');
-    menuButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        menuButtons.forEach(b => b.classList.remove('active'));
-        button.classList.add('active');
-        // Close mobile sidebar
-        sidebar.classList.remove('open');
-        sidebarOverlay.classList.remove('show');
-      });
-    });
-
-    // Revenue Chart
-    const ctx = document.getElementById('revenueChart').getContext('2d');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casalinga Tours | Discover Wellness Through Travel</title>
     
-    const data = [
-      { name: "Jan", total: 42000 },
-      { name: "Feb", total: 38000 },
-      { name: "Mar", total: 45000 },
-      { name: "Apr", total: 52000 },
-      { name: "May", total: 48500 },
-      { name: "Jun", total: 55000 },
-    ];
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
-    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
-    const hslToHex = (h, s, l) => {
-      l /= 100;
-      const a = s * Math.min(l, 1 - l) / 100;
-      const f = n => {
-        const k = (n + h / 30) % 12;
-        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-        return Math.round(255 * color).toString(16).padStart(2, '0');
-      };
-      return `#${f(0)}${f(8)}${f(4)}`;
-    };
-
-    // Parse HSL from CSS variable
-    const primaryHSL = primaryColor.split(' ').map(v => parseFloat(v));
-    const chartColor = hslToHex(primaryHSL[0], primaryHSL[1], primaryHSL[2]);
-
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: data.map(d => d.name),
-        datasets: [{
-          label: 'Revenue',
-          data: data.map(d => d.total),
-          backgroundColor: chartColor,
-          borderRadius: { topLeft: 4, topRight: 4 },
-          borderSkipped: false,
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return '$' + context.parsed.y.toLocaleString();
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: {
-              display: false
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                container: {
+                    center: true,
+                    padding: "2rem",
+                    screens: { "2xl": "1400px" },
+                },
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        border: "oklch(0.922 0 0)",
+                        input: "oklch(0.922 0 0)",
+                        ring: "oklch(0.708 0 0)",
+                        background: "#faf8f5",
+                        foreground: "oklch(0.145 0 0)",
+                        primary: {
+                            DEFAULT: "#1e6b38",
+                            foreground: "oklch(0.985 0 0)",
+                        },
+                        secondary: {
+                            DEFAULT: "#f2eadd",
+                            foreground: "oklch(0.205 0 0)",
+                        },
+                        muted: {
+                            DEFAULT: "oklch(0.97 0 0)",
+                            foreground: "oklch(0.556 0 0)",
+                        },
+                        accent: {
+                            DEFAULT: "oklch(0.97 0 0)",
+                            foreground: "oklch(0.205 0 0)",
+                        },
+                        destructive: {
+                            DEFAULT: "oklch(0.577 0.245 27.325)",
+                            foreground: "oklch(0.577 0.245 27.325)",
+                        },
+                        card: {
+                            DEFAULT: "oklch(1 0 0)",
+                            foreground: "oklch(0.145 0 0)",
+                        },
+                        // Chart colors matching your globals
+                        chart1: "oklch(0.646 0.222 41.116)",
+                        chart2: "oklch(0.6 0.118 184.704)",
+                        chart3: "oklch(0.398 0.07 227.392)",
+                    },
+                    borderRadius: {
+                        lg: "0.625rem",
+                        md: "calc(0.625rem - 2px)",
+                        sm: "calc(0.625rem - 4px)",
+                    },
+                    keyframes: {
+                        draw: {
+                            'from': { strokeDasharray: '0, 200' },
+                            'to': { strokeDasharray: '200, 200' },
+                        }
+                    },
+                    animation: {
+                        draw: 'draw 1.5s ease-out forwards',
+                    }
+                },
             },
-            ticks: {
-              color: '#888888',
-              font: {
-                size: 12
-              }
-            },
-            border: {
-              display: false
-            }
-          },
-          y: {
-            grid: {
-              color: 'rgba(0,0,0,0.05)',
-              drawBorder: false
-            },
-            ticks: {
-              color: '#888888',
-              font: {
-                size: 12
-              },
-              callback: function(value) {
-                return '$' + (value / 1000) + 'k';
-              }
-            },
-            border: {
-              display: false,
-              dash: [3, 3]
-            }
-          }
         }
-      }
-    });
+    </script>
 
-    // Keyboard shortcut for sidebar toggle (Ctrl/Cmd + B)
-    document.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
-        e.preventDefault();
-        sidebar.classList.toggle('open');
-        sidebarOverlay.classList.toggle('show');
-      }
-    });
-  </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom Styles matching your global css and component needs */
+        body { font-feature-settings: "rlig" 1, "calt" 1; }
+        
+        /* Reveal Animation Utilities */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hide Scrollbar */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* SVG Curve Animation */
+        .animate-draw {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: drawLine 2s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-background text-foreground overflow-x-hidden">
+
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out py-5 bg-transparent">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <nav class="flex items-center justify-between">
+                <a href="#home" class="flex items-center gap-2 group">
+                    <div class="relative">
+                        <i data-lucide="mountain" class="h-8 w-8 transition-colors duration-300 text-white" id="header-logo-icon"></i>
+                        <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                    <span id="header-logo-text" class="font-serif text-2xl font-semibold tracking-tight transition-colors duration-300 text-white">Casalinga</span>
+                </a>
+
+                <ul class="hidden md:flex items-center gap-1">
+                    <li><a href="/home" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Home</a></li>
+                    <li><a href="/tours" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Tours</a></li>
+                    <li><a href="/about" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">About</a></li>
+                    <li><a href="/testimonials" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Testimonials</a></li>
+                    <li><a href="/contact" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-white/90 hover:text-white hover:bg-primary/10">Contact</a></li>
+                </ul>
+
+                <!-- <div class="hidden md:flex items-center gap-3">
+                    <button id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                        Book Now
+                    </button>
+                </div> -->
+
+                <div class="hidden md:flex items-center gap-3">
+                    <% if (user) { %>
+                        <% if (user.role === 'admin') { %>
+                            <a href="/admin/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                                Dashboard
+                            </a>
+                        <% } else if (user.role === 'user') { %>
+                            <a href="/user/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                                Dashboard
+                            </a>
+                        <% } else if (user.role === 'manager') { %>
+                            <a href="/manager/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                                Dashboard
+                            </a>
+                        <% } %>
+                        
+                    <% } else { %>
+                        <a href="/auth/login" class="nav-link text-white/90 hover:text-white text-sm font-medium px-4">Login</a>
+                        <a href="/auth/register" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
+                            Sign Up
+                        </a>
+                    <% } %>
+                </div>
+
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg transition-colors text-white">
+                    <i data-lucide="menu" class="h-6 w-6"></i>
+                </button>
+            </nav>
+
+            <div id="mobile-menu" class="md:hidden overflow-hidden transition-all duration-300 ease-out max-h-0 opacity-0 mt-4">
+                <div class="bg-card rounded-2xl p-4 shadow-lg border border-border">
+                    <ul class="space-y-1">
+                        <li><a href="/home" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Home</a></li>
+                        <li><a href="/tours" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Tours</a></li>
+                        <li><a href="/about" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">About</a></li>
+                        <li><a href="/testimonials" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Testimonials</a></li>
+                        <li><a href="/contact" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Contact</a></li>
+                    </ul>
+
+                    <% if (user) { %>
+                        <% if (user.role === "admin") { %>
+                            <a href="/admin/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                                Dashboard
+                            </a>
+                        <% } else if (user.role === "manager") { %>
+                            <a href="/manager/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                                Dashboard
+                            </a>
+                        <% } else { %>
+                            <a href="/user/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                                Dashboard
+                            </a>
+                        <% } %>
+                    <% } else { %>
+                        <a href="/book" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                            Book Now
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </header>
+ 
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div id="hero-bg" class="absolute inset-0 scale-110 transition-transform duration-300 ease-out">
+            <img src="/images/hero-mountains.jpg" alt="Beautiful mountain landscape with camping" class="w-full h-full object-cover">
+        </div>
+
+        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30"></div>
+        
+        <div id="particles-container" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+        <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center pt-20">
+            <div class="reveal active transition-all duration-1000 ease-out">
+                <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 mb-8">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    <span class="text-white/90 text-sm font-medium">Now booking 2026 adventures</span>
+                </div>
+
+                <h1 class="text-white font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight mb-6 text-balance">
+                    Discover wellness through <br>
+                    <span class="relative inline-block">
+                        travel, adventure & nature
+                        <svg class="absolute -bottom-2 left-0 w-full h-3 text-secondary" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true">
+                            <path d="M0 8 Q50 0, 100 8 T200 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" class="animate-draw"></path>
+                        </svg>
+                    </span>
+                </h1>
+
+                <p class="text-white/80 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed reveal" style="transition-delay: 300ms;">
+                    Experience unforgettable outdoor adventures, horse riding, camping, and guided wellness retreats in the heart of nature.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 reveal" style="transition-delay: 500ms;">
+                    <button onclick="document.getElementById('tours').scrollIntoView({behavior: 'smooth'})" class="group inline-flex items-center justify-center whitespace-nowrap text-base ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-full px-8 py-6 font-medium shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 duration-300">
+                        Explore Tours
+                        <i data-lucide="arrow-right" class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"></i>
+                    </button>
+                    <button class="group inline-flex items-center justify-center whitespace-nowrap text-base ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 h-11 rounded-full px-8 py-6 font-medium duration-300">
+                        <i data-lucide="play" class="mr-2 h-5 w-5 transition-transform group-hover:scale-110"></i>
+                        Watch Our Story
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-8 mt-16 max-w-lg mx-auto reveal" style="transition-delay: 700ms;">
+                    <div class="text-center">
+                        <div class="text-white text-2xl sm:text-3xl font-serif font-semibold">500+</div>
+                        <div class="text-white/60 text-xs sm:text-sm mt-1">Happy Travelers</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-white text-2xl sm:text-3xl font-serif font-semibold">50+</div>
+                        <div class="text-white/60 text-xs sm:text-sm mt-1">Unique Tours</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-white text-2xl sm:text-3xl font-serif font-semibold">15+</div>
+                        <div class="text-white/60 text-xs sm:text-sm mt-1">Years Experience</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="document.getElementById('tours').scrollIntoView({ behavior: 'smooth' })" class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 hover:text-white transition-colors cursor-pointer animate-bounce">
+            <i data-lucide="chevron-down" class="h-8 w-8"></i>
+        </button>
+        
+        <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent"></div>
+    </section>
+
+    <section id="tours" class="py-24 sm:py-32 bg-background">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block text-primary text-sm font-semibold tracking-wider uppercase mb-4">Our Experiences</span>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6 text-balance">Featured Tours & Adventures</h2>
+                <p class="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">Handpicked experiences designed to connect you with nature, adventure, and your inner peace.</p>
+            </div>
+
+            <!-- <div class="flex flex-wrap justify-center gap-2 mb-12 reveal" style="transition-delay: 200ms;">
+                <button class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-primary text-primary-foreground shadow-lg shadow-primary/25" data-filter="All">All</button>
+                <button class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-secondary text-secondary-foreground hover:bg-secondary/80" data-filter="Adventure">Adventure</button>
+                <button class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-secondary text-secondary-foreground hover:bg-secondary/80" data-filter="Wellness">Wellness</button>
+                <button class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-secondary text-secondary-foreground hover:bg-secondary/80" data-filter="Wildlife">Wildlife</button>
+                <button class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-secondary text-secondary-foreground hover:bg-secondary/80" data-filter="Romantic">Romantic</button>
+            </div> -->
+
+            <div class="flex flex-wrap justify-center gap-2 mb-12 reveal" style="transition-delay: 200ms;">
+                <a href="/tours" class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-primary text-primary-foreground shadow-lg shadow-primary/25">All</a>
+                <% if(categories && categories.length > 0) { %>
+                    <% categories.forEach(cat => { %>
+                        <a href="/tours?category=<%= cat.name %>" class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                            <%= cat.name %>
+                        </a>
+                    <% }) %>
+                <% } %>
+            </div>
+
+            <div id="tours-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+            
+            <div class="text-center mt-16 reveal" style="transition-delay: 500ms;">
+                <button class="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-primary bg-transparent hover:bg-primary hover:text-primary-foreground h-11 rounded-full px-8 py-6 text-base font-medium text-primary transition-all duration-300">
+                    View All Tours
+                    <i data-lucide="arrow-right" class="ml-2 h-5 w-5"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 sm:py-32 bg-secondary/30">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block text-primary text-sm font-semibold tracking-wider uppercase mb-4">Why Choose Us</span>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6 text-balance">Why Casalinga?</h2>
+                <p class="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">We believe in creating transformative experiences that nurture the soul and inspire a deeper connection with the natural world.</p>
+            </div>
+
+            <div id="features-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+
+            <div class="mt-20 relative overflow-hidden rounded-3xl bg-primary p-10 sm:p-14 reveal" style="transition-delay: 300ms; background: url('./public/images/hero-mountains.jpg'); background-repeat: no-repeat; background-size: cover;">
+                <div class="absolute inset-0 background-white" style="background: rgba(52, 48, 0, 0.644);">
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="currentColor"></circle></pattern>
+                        <rect width="100%" height="100%" fill="url(#grid)"></rect>
+                    </svg>
+                </div>
+                <div class="relative flex flex-col lg:flex-row items-center justify-between gap-8">
+                    <div class="text-center lg:text-left">
+                        <h3 class="font-serif text-2xl sm:text-3xl font-semibold text-primary-foreground mb-3">Ready to start your adventure?</h3>
+                        <p class="text-primary-foreground/80 text-lg max-w-xl" style="color: rgb(215, 215, 215);">Join thousands of travelers who have discovered the magic of wellness travel with Casalinga.</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <button class="px-4 py-2 rounded-full bg-white text-primary font-semibold hover:bg-white/80 transition-all duration-300 hover:scale-105 shadow-lg">Book Your Tour</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="py-24 sm:py-32 bg-background overflow-hidden">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <span class="inline-block text-primary text-sm font-semibold tracking-wider uppercase mb-4">Testimonials</span>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6 text-balance">What Our Travelers Say</h2>
+                <p class="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">Real stories from real adventurers who discovered their best selves through our experiences.</p>
+            </div>
+
+            <div class="relative reveal" style="transition-delay: 200ms;">
+                <button id="prev-testimonial" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 p-3 rounded-full bg-card border border-border shadow-lg hover:bg-secondary transition-all duration-300 hidden lg:block">
+                    <i data-lucide="chevron-left" class="h-5 w-5 text-foreground"></i>
+                </button>
+                <button id="next-testimonial" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 p-3 rounded-full bg-card border border-border shadow-lg hover:bg-secondary transition-all duration-300 hidden lg:block">
+                    <i data-lucide="chevron-right" class="h-5 w-5 text-foreground"></i>
+                </button>
+
+                <div class="relative h-[400px] flex items-center justify-center overflow-hidden">
+                    <div id="testimonial-track" class="flex gap-6 transition-transform duration-500 ease-out absolute left-1/2 -translate-x-1/2">
+                        </div>
+                </div>
+
+                <div id="testimonial-dots" class="flex justify-center gap-2 mt-8">
+                </div>
+            </div>
+
+             <div class="mt-20 flex flex-wrap justify-center items-center gap-8 sm:gap-16 reveal" style="transition-delay: 400ms;">
+                <div class="text-center">
+                    <div class="text-3xl sm:text-4xl font-serif font-semibold text-primary">4.9</div>
+                    <div class="text-sm text-muted-foreground mt-1">Average Rating</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl sm:text-4xl font-serif font-semibold text-primary">500+</div>
+                    <div class="text-sm text-muted-foreground mt-1">Happy Clients</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl sm:text-4xl font-serif font-semibold text-primary">100%</div>
+                    <div class="text-sm text-muted-foreground mt-1">Safety Record</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl sm:text-4xl font-serif font-semibold text-primary">50+</div>
+                    <div class="text-sm text-muted-foreground mt-1">Unique Tours</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-24 sm:py-32 bg-secondary/30 relative overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative text-center reveal">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-8">
+                <i data-lucide="sparkles" class="h-8 w-8 text-primary"></i>
+            </div>
+            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6">Stay Inspired</h2>
+            <p class="text-muted-foreground text-lg max-w-xl mx-auto mb-10">Subscribe to our newsletter for exclusive deals, travel tips, and early access to new adventures.</p>
+
+            <form id="newsletter-form" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto transition-all duration-500">
+                <input type="email" placeholder="Enter your email" required class="flex h-14 w-full rounded-full border border-border bg-card px-6 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground">
+                <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-14 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+                    Subscribe <i data-lucide="send" class="ml-2 h-4 w-4"></i>
+                </button>
+            </form>
+            
+            <div id="newsletter-success" class="hidden mt-6 items-center justify-center gap-3 bg-primary/10 text-primary px-6 py-4 rounded-full max-w-fit mx-auto animate-in fade-in zoom-in duration-300">
+                <i data-lucide="check-circle" class="h-6 w-6"></i>
+                <span class="font-medium">You're subscribed! Check your inbox.</span>
+            </div>
+
+            <p class="text-sm text-muted-foreground mt-6 reveal" style="transition-delay: 200ms;">We respect your privacy. Unsubscribe at any time.</p>
+
+            <div class="flex flex-wrap justify-center items-center gap-6 mt-12 reveal" style="transition-delay: 300ms;">
+                <div class="flex -space-x-3">
+                    <div style="z-index:5" class="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"><span class="text-xs font-medium text-primary">JM</span></div>
+                    <div style="z-index:4" class="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"><span class="text-xs font-medium text-primary">SK</span></div>
+                    <div style="z-index:3" class="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"><span class="text-xs font-medium text-primary">PN</span></div>
+                    <div style="z-index:2" class="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"><span class="text-xs font-medium text-primary">MT</span></div>
+                    <div style="z-index:1" class="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center"><span class="text-xs font-medium text-primary">LC</span></div>
+                </div>
+                <span class="text-sm text-muted-foreground">Join <span class="font-semibold text-foreground">2,500+</span> adventure enthusiasts</span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-foreground text-background">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
+                <div class="lg:col-span-2">
+                    <a href="#home" class="flex items-center gap-2 mb-6">
+                        <i data-lucide="mountain" class="h-8 w-8 text-primary"></i>
+                        <span class="font-serif text-2xl font-semibold text-background">Casalinga</span>
+                    </a>
+                    <p class="text-background/70 leading-relaxed mb-8 max-w-sm">Discover wellness through travel, adventure, and connection with nature. Creating transformative experiences since 2010.</p>
+                    <div class="space-y-4">
+                        <a href="mailto:hello@casalinga.co.za" class="flex items-center gap-3 text-background/70 hover:text-background transition-colors">
+                            <i data-lucide="mail" class="h-5 w-5 text-primary"></i>
+                            <span>hello@casalinga.co.za</span>
+                        </a>
+                        <a href="tel:+27123456789" class="flex items-center gap-3 text-background/70 hover:text-background transition-colors">
+                            <i data-lucide="phone" class="h-5 w-5 text-primary"></i>
+                            <span>+27 12 345 6789</span>
+                        </a>
+                        <div class="flex items-start gap-3 text-background/70">
+                            <i data-lucide="map-pin" class="h-5 w-5 text-primary flex-shrink-0 mt-0.5"></i>
+                            <span>123 Adventure Lane<br />Cape Town, South Africa</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-background mb-6">Explore</h3>
+                    <ul class="space-y-4 text-background/70">
+                        <li><a href="#tours" class="hover:text-background transition-colors">All Tours</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Adventure Tours</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Wellness Retreats</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Safari Experiences</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Group Bookings</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-background mb-6">Company</h3>
+                    <ul class="space-y-4 text-background/70">
+                        <li><a href="#about" class="hover:text-background transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Our Team</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Press</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Partners</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-background mb-6">Support</h3>
+                    <ul class="space-y-4 text-background/70">
+                        <li><a href="#" class="hover:text-background transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Safety Info</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Cancellation Policy</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">Travel Insurance</a></li>
+                        <li><a href="#" class="hover:text-background transition-colors">FAQs</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-background/10">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-background/60 text-sm">&copy; 2026 Casalinga Tours. All rights reserved.</p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="p-2 rounded-full bg-background/10 hover:bg-background/20 text-background/70 hover:text-background"><i data-lucide="instagram" class="h-5 w-5"></i></a>
+                    <a href="#" class="p-2 rounded-full bg-background/10 hover:bg-background/20 text-background/70 hover:text-background"><i data-lucide="facebook" class="h-5 w-5"></i></a>
+                    <a href="#" class="p-2 rounded-full bg-background/10 hover:bg-background/20 text-background/70 hover:text-background"><i data-lucide="twitter" class="h-5 w-5"></i></a>
+                    <a href="#" class="p-2 rounded-full bg-background/10 hover:bg-background/20 text-background/70 hover:text-background"><i data-lucide="youtube" class="h-5 w-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. Data Sources ---
+        const rawTours = <%- JSON.stringify(featuredTours || []) %>;
+        const toursData = rawTours.map(tour => ({
+            id: tour.id || Math.random(),
+            title: tour.title,
+            // Map your DB field 'short_description' to template field 'description'
+            description: tour.short_description || "", 
+            // Map your DB field 'main_image' to template field 'image'
+            image: tour.main_image || '/images/placeholder-tour.jpg',
+            price: tour.price,
+            // Format duration
+            duration: tour.duration_days ? `${tour.duration_days} Days` : "Flexible",
+            location: tour.location,
+            slug: tour.slug,
+            
+            // DEFAULTS FOR MISSING DATA 
+            // (Since your DB might not have these specific fields yet, we set defaults to prevent errors)
+            groupSize: tour.group_size || "Small Group",
+            rating: tour.rating || 5.0,
+            reviews: tour.reviews_count || 0,
+            tags: tour.tags || ["General"] 
+        }));
+
+        const featuresData = [
+            { icon: "leaf", title: "Wellness Focus", description: "Every experience is designed with your mental and physical wellbeing at the core. Rejuvenate through nature.", color: "text-green-600", bgColor: "bg-green-100" },
+            { icon: "globe", title: "Outdoor Adventures", description: "From mountain trails to riverside camping, explore South Africa's most breathtaking landscapes.", color: "text-blue-600", bgColor: "bg-blue-100" },
+            { icon: "bus", title: "Guided Experiences", description: "Expert local guides ensure safe, educational, and unforgettable journeys into the wild.", color: "text-amber-600", bgColor: "bg-amber-100" },
+            { icon: "shield", title: "Safety First", description: "Rigorous safety protocols and experienced staff ensure peace of mind on every adventure.", color: "text-indigo-600", bgColor: "bg-indigo-100" },
+            { icon: "heart", title: "Small Groups", description: "Intimate group sizes mean personalized attention and meaningful connections with fellow travelers.", color: "text-rose-600", bgColor: "bg-rose-100" },
+            { icon: "sparkles", title: "Premium Quality", description: "Handpicked accommodations, gourmet meals, and carefully curated itineraries for exceptional experiences.", color: "text-violet-600", bgColor: "bg-violet-100" }
+        ];
+
+        const testimonialsData = [
+            { id: 1, name: "Sarah Mitchell", role: "Wellness Enthusiast", avatar: "SM", content: "The Wilderness Retreat was absolutely life-changing. Waking up to mountain views, practicing yoga at sunrise, and the incredible staff made this the best trip of my life.", rating: 5, tour: "Wilderness Retreat" },
+            { id: 2, name: "James van der Berg", role: "Adventure Seeker", avatar: "JV", content: "As someone who's done adventure tours worldwide, Casalinga stands out. The attention to detail, safety standards, and authentic experiences are unmatched.", rating: 5, tour: "Mountain Explorer" },
+            { id: 3, name: "Priya Naidoo", role: "Travel Blogger", avatar: "PN", content: "I've written about hundreds of travel experiences, but the LaVista Weekend left me speechless. The horseback riding through golden fields was magical.", rating: 5, tour: "LaVista Weekend" },
+            { id: 4, name: "Michael Thompson", role: "Family Traveler", avatar: "MT", content: "Took my family on the Safari Adventure. The kids haven't stopped talking about it! Safe, educational, and absolutely thrilling.", rating: 5, tour: "Safari Adventure" },
+            { id: 5, name: "Lisa Chen", role: "Corporate Executive", avatar: "LC", content: "The Wellness Journey was exactly what I needed to disconnect from work stress. Professional, serene, and transformative.", rating: 5, tour: "Wellness Journey" }
+        ];
+
+        // --- 2. Render Functions ---
+        function renderTours(filter) {
+            const grid = document.getElementById('tours-grid');
+            grid.innerHTML = '';
+
+            const filteredTours = toursData.filter(tour => {
+                if (filter === 'All') return true;
+                // robust check: looks in tags or title
+                return (tour.tags && tour.tags.includes(filter)) || tour.title.includes(filter);
+            });
+
+            if (filteredTours.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center text-muted-foreground py-12">
+                        <p>No tours found matching this filter.</p>
+                    </div>`;
+                return;
+            }
+
+            filteredTours.forEach((tour, index) => {
+                const card = document.createElement('div');
+                // Added 'reveal' class if you have scroll animations elsewhere
+                card.className = "group relative bg-card rounded-2xl overflow-hidden shadow-sm border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-2 opacity-0 translate-y-10 reveal-card";
+                card.style.transitionDelay = `${index * 100}ms`;
+                card.style.animationFillMode = "forwards"; // Ensure it stays visible after animation
+
+                // Generate Tags HTML safely
+                const tagsHtml = tour.tags.map(tag => 
+                    `<span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent ${tag === 'Best Seller' || tag === 'Popular' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}">${tag}</span>`
+                ).join('');
+
+                card.innerHTML = `
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="${tour.image}" alt="${tour.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                        
+                        <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+                            ${tagsHtml}
+                        </div>
+
+                        <button class="like-btn absolute top-4 right-4 p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40 transition-all duration-300 text-white">
+                            <i data-lucide="heart" class="h-5 w-5 transition-transform"></i>
+                        </button>
+
+                        <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
+                            <span class="text-foreground text-sm font-medium">From <span class="text-primary font-semibold">R${parseFloat(tour.price).toLocaleString()}</span></span>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="flex items-center gap-1">
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <span class="text-foreground font-semibold text-sm">${tour.rating}</span>
+                            </div>
+                            <span class="text-muted-foreground text-sm">(${tour.reviews} reviews)</span>
+                        </div>
+
+                        <h3 class="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">${tour.title}</h3>
+                        <p class="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2">${tour.description}</p>
+                        
+                        <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-5">
+                            <div class="flex items-center gap-1.5"><i data-lucide="clock" class="h-4 w-4 text-primary"></i> <span>${tour.duration}</span></div>
+                            <div class="flex items-center gap-1.5"><i data-lucide="users" class="h-4 w-4 text-primary"></i> <span>${tour.groupSize}</span></div>
+                            <div class="flex items-center gap-1.5"><i data-lucide="map-pin" class="h-4 w-4 text-primary"></i> <span>${tour.location}</span></div>
+                        </div>
+                        
+                        <a href="/tours/${tour.slug}" class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-primary bg-transparent hover:bg-primary hover:text-primary-foreground h-10 px-4 py-2 w-full rounded-full group/btn transition-all duration-300">
+                            View Details <i data-lucide="arrow-right" class="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1"></i>
+                        </a>
+                    </div>
+                `;
+                grid.appendChild(card);
+                
+                // Trigger a simple reflow to ensure the fade-in transition happens
+                setTimeout(() => {
+                    card.classList.remove('opacity-0', 'translate-y-10');
+                }, 50 + (index * 100));
+            });
+
+            // Re-initialize icons for the new elements
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
+            // Add like button logic
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent bubbling if inside a link (though it's not here)
+                    const icon = btn.querySelector('i');
+                    if (icon.classList.contains('fill-red-500')) {
+                        icon.classList.remove('fill-red-500', 'text-red-500');
+                        icon.classList.add('text-white');
+                        btn.classList.remove('scale-110');
+                    } else {
+                        icon.classList.add('fill-red-500', 'text-red-500');
+                        icon.classList.remove('text-white');
+                        btn.classList.add('scale-110');
+                    }
+                });
+            });
+        }
+        
+
+        function renderFeatures() {
+            const grid = document.getElementById('features-grid');
+            featuresData.forEach((feature, index) => {
+                const div = document.createElement('div');
+                div.className = "group relative p-8 rounded-2xl bg-card border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 opacity-0 translate-y-10 reveal-card";
+                div.style.transitionDelay = `${index * 100}ms`;
+                div.innerHTML = `
+                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+                    <div class="relative inline-flex items-center justify-center w-14 h-14 rounded-xl mb-6 transition-all duration-300 ${feature.bgColor} group-hover:scale-110">
+                        <i data-lucide="${feature.icon}" class="h-7 w-7 ${feature.color}"></i>
+                    </div>
+                    <h3 class="relative font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">${feature.title}</h3>
+                    <p class="relative text-muted-foreground leading-relaxed">${feature.description}</p>
+                    <div class="absolute bottom-0 right-0 w-20 h-20 rounded-tl-full transition-all duration-500 ${feature.bgColor} opacity-0 group-hover:opacity-30"></div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        let currentTestimonialIndex = 0;
+        function renderTestimonials() {
+            const track = document.getElementById('testimonial-track');
+            const dotsContainer = document.getElementById('testimonial-dots');
+            
+            track.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            testimonialsData.forEach((t, i) => {
+                // Cards
+                const div = document.createElement('div');
+                const offset = i - currentTestimonialIndex;
+                const isActive = i === currentTestimonialIndex;
+                const isPrev = offset === -1 || (currentTestimonialIndex === 0 && i === testimonialsData.length - 1);
+                const isNext = offset === 1 || (currentTestimonialIndex === testimonialsData.length - 1 && i === 0);
+                
+                // Hide non-adjacent items for cleaner carousel
+                const shouldShow = isActive || isPrev || isNext;
+                if (!shouldShow) return;
+
+                div.className = `w-[350px] sm:w-[400px] flex-shrink-0 transition-all duration-500 bg-card rounded-2xl p-8 border border-border relative ${isActive ? 'scale-100 shadow-xl opacity-100 z-10' : 'scale-90 shadow-sm opacity-60 z-0 hidden lg:block'}`;
+                
+                // Position logic simulated with transform in CSS, here just simpler flow
+                div.innerHTML = `
+                    <i data-lucide="quote" class="absolute top-6 right-6 h-10 w-10 text-primary/10"></i>
+                    <div class="flex gap-1 mb-6">
+                        ${Array(t.rating).fill(0).map(() => `<i data-lucide="star" class="h-5 w-5 fill-amber-400 text-amber-400"></i>`).join('')}
+                    </div>
+                    <p class="text-foreground text-lg leading-relaxed mb-8 line-clamp-4">"${t.content}"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center"><span class="text-primary font-semibold text-sm">${t.avatar}</span></div>
+                        <div>
+                            <h4 class="font-semibold text-foreground">${t.name}</h4>
+                            <p class="text-sm text-muted-foreground">${t.role}</p>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-8 right-8"><span class="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">${t.tour}</span></div>
+                `;
+                track.appendChild(div);
+
+                // Dots
+                const dot = document.createElement('button');
+                dot.className = `h-2 rounded-full transition-all duration-300 ${isActive ? 'w-8 bg-primary' : 'w-2 bg-primary/30 hover:bg-primary/50'}`;
+                dot.onclick = () => { currentTestimonialIndex = i; renderTestimonials(); lucide.createIcons(); };
+                dotsContainer.appendChild(dot);
+            });
+            lucide.createIcons();
+        }
+
+        // --- 3. Event Listeners & Logic ---
+        
+        // Initial Render
+        // Initial Render
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTours('All');
+
+            // Filter Button Logic
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-primary', 'text-primary-foreground', 'shadow-lg');
+                        b.classList.add('bg-secondary', 'text-secondary-foreground');
+                    });
+                    e.target.classList.remove('bg-secondary', 'text-secondary-foreground');
+                    e.target.classList.add('bg-primary', 'text-primary-foreground', 'shadow-lg');
+                    
+                    renderTours(e.target.dataset.filter);
+                });
+            });
+        });
+        renderFeatures();
+        renderTestimonials();
+
+        // Particle generation
+        const particlesContainer = document.getElementById('particles-container');
+        for(let i=0; i<20; i++) {
+            const p = document.createElement('div');
+            p.className = "absolute w-1 h-1 bg-white/30 rounded-full animate-pulse";
+            p.style.left = `${Math.random() * 100}%`;
+            p.style.top = `${Math.random() * 100}%`;
+            p.style.animationDelay = `${Math.random() * 3}s`;
+            p.style.animationDuration = `${2 + Math.random() * 3}s`;
+            particlesContainer.appendChild(p);
+        }
+
+        // Parallax Effect (Hero)
+        const heroBg = document.getElementById('hero-bg');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * -20;
+            const y = (e.clientY / window.innerHeight) * -20;
+            heroBg.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
+        });
+
+        // Header Scroll Effect
+        const header = document.getElementById('main-header');
+        const logoText = document.getElementById('header-logo-text');
+        const logoIcon = document.getElementById('header-logo-icon');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const headerCta = document.getElementById('header-cta');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('bg-background/95', 'backdrop-blur-md', 'shadow-sm', 'py-3');
+                header.classList.remove('bg-transparent', 'py-5');
+                logoText.classList.replace('text-white', 'text-foreground');
+                logoIcon.classList.replace('text-white', 'text-primary');
+                mobileMenuBtn.classList.replace('text-white', 'text-foreground');
+                
+                navLinks.forEach(link => {
+                    link.classList.replace('text-white/90', 'text-foreground');
+                    link.classList.replace('hover:text-white', 'hover:text-primary');
+                });
+                
+                headerCta.classList.replace('bg-white', 'bg-primary');
+                headerCta.classList.replace('text-foreground', 'text-primary-foreground');
+                headerCta.classList.remove('hover:bg-white/90');
+                headerCta.classList.add('hover:bg-primary/90');
+            } else {
+                header.classList.remove('bg-background/95', 'backdrop-blur-md', 'shadow-sm', 'py-3');
+                header.classList.add('bg-transparent', 'py-5');
+                logoText.classList.replace('text-foreground', 'text-white');
+                logoIcon.classList.replace('text-primary', 'text-white');
+                mobileMenuBtn.classList.replace('text-foreground', 'text-white');
+
+                navLinks.forEach(link => {
+                    link.classList.replace('text-foreground', 'text-white/90');
+                    link.classList.replace('hover:text-primary', 'hover:text-white');
+                });
+
+                headerCta.classList.replace('bg-primary', 'bg-white');
+                headerCta.classList.replace('text-primary-foreground', 'text-foreground');
+                headerCta.classList.remove('hover:bg-primary/90');
+                headerCta.classList.add('hover:bg-white/90');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            if (mobileMenu.classList.contains('max-h-0')) {
+                mobileMenu.classList.remove('max-h-0', 'opacity-0');
+                mobileMenu.classList.add('max-h-96', 'opacity-100');
+            } else {
+                mobileMenu.classList.add('max-h-0', 'opacity-0');
+                mobileMenu.classList.remove('max-h-96', 'opacity-100');
+            }
+        });
+        
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('max-h-0', 'opacity-0');
+                mobileMenu.classList.remove('max-h-96', 'opacity-100');
+            });
+        });
+
+        // Newsletter Form
+        document.getElementById('newsletter-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            e.target.style.opacity = '0';
+            e.target.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                e.target.style.display = 'none';
+                document.getElementById('newsletter-success').classList.remove('hidden');
+                document.getElementById('newsletter-success').classList.add('flex');
+            }, 300);
+        });
+
+        // Testimonial Navigation
+        document.getElementById('prev-testimonial').addEventListener('click', () => {
+            currentTestimonialIndex = (currentTestimonialIndex - 1 + testimonialsData.length) % testimonialsData.length;
+            renderTestimonials();
+        });
+        document.getElementById('next-testimonial').addEventListener('click', () => {
+            currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonialsData.length;
+            renderTestimonials();
+        });
+        // Auto rotate
+        setInterval(() => {
+            currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonialsData.length;
+            renderTestimonials();
+        }, 5000);
+
+        // Scroll Animations (Intersection Observer)
+        function observeElements() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        entry.target.classList.remove('opacity-0', 'translate-y-10'); 
+                        entry.target.classList.add('opacity-100', 'translate-y-0');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            document.querySelectorAll('.reveal-card').forEach(el => observer.observe(el));
+        }
+
+        observeElements();
+
+        // Filter Buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('bg-primary', 'text-primary-foreground', 'shadow-lg');
+                    b.classList.add('bg-secondary', 'text-secondary-foreground');
+                });
+                e.target.classList.remove('bg-secondary', 'text-secondary-foreground');
+                e.target.classList.add('bg-primary', 'text-primary-foreground', 'shadow-lg');
+                
+                renderTours(e.target.dataset.filter);
+            });
+        });
+
+    </script>
 </body>
 </html>

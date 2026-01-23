@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/css/admin/sidebar-styles.css">
   <style>
     /* Base Reset & Variables (Same as Dashboard) */
@@ -123,7 +124,7 @@
                         <div class="form-group">
                             <label class="form-label">Icon Class (FontAwesome)</label>
                             <input type="text" name="icon" class="form-control" placeholder="fas fa-mountain">
-                            <small style="color: hsl(var(--muted-foreground)); font-size: 0.75rem;">Check FontAwesome for codes</small>
+                            <small style="color: hsl(var(--muted-foreground)); font-size: 0.75rem;"><a href="https://fontawesome.com/search?s=regular&ic=free-collection" style="text-decoration: none; color: coral;">Check FontAwesome for codes</a></small>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Badge Color</label>
@@ -154,7 +155,7 @@
                             <tr>
                                 <td>
                                     <span class="category-badge" style="background-color: <%= cat.color %>">
-                                        <% if(cat.icon) { %><i class="<%= cat.icon %>"></i><% } %>
+                                        <% if(cat.icon) { %><i class="<%= cat.icon %> || fa-solid fa-question"></i><% } %>
                                         <%= cat.name %>
                                     </span>
                                 </td>

@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/css/admin/sidebar-styles.css">
-  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     /* --- BASE STYLES FROM TEMPLATE --- */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -254,7 +254,7 @@
                   <% amenities.forEach(am => { %>
                     <input type="checkbox" name="amenities" value="<%= am.id %>" id="am_<%= am.id %>" class="pill-input">
                     <label for="am_<%= am.id %>" class="pill-label">
-                      <i class="<%= am.icon %>"></i> <%= am.name %>
+                      <i class="<%= am.icon %> || fa-solid fa-question"></i> <%= am.name %>
                     </label>
                   <% }) %>
                 </div>
