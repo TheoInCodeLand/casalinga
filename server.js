@@ -23,23 +23,36 @@ const adminRoutes = require('./routes/admin');
 const userRoutes = require('./routes/user');
 const apiRoutes = require('./routes/api');
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      // Allow scripts from Tailwind CDN and Unpkg (for Lucide icons)
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://cdn.tailwindcss.com", "https://unpkg.com"],
-      // Allow styles from Google Fonts and Tailwind
-      styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
-      // Allow fonts from Google Fonts
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      // Allow images from anywhere (for your tour images) and data URIs
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://unpkg.com"], // Sometimes needed for icon fetching
-      upgradeInsecureRequests: null, // Optional: helps in local dev if https/http mix issues arise
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://cdnjs.cloudflare.com",
+          "https://cdn.tailwindcss.com",
+          "https://unpkg.com",
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://cdnjs.cloudflare.com",
+          "https://fonts.googleapis.com",
+        ],
+        fontSrc: [
+          "'self'",
+          "https://fonts.gstatic.com",
+          "https://cdnjs.cloudflare.com",
+        ],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://unpkg.com"],
+      },
     },
-  },
-}));
+  })
+);
+
 app.use(compression());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
