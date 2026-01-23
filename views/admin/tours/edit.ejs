@@ -601,9 +601,11 @@
             <a href="/tours/<%= tour.slug %>" target="_blank" class="btn btn-outline">
                 <i class="fas fa-eye" style="margin-right: 0.5rem;"></i> View Live
             </a>
-            <button type="button" class="btn btn-danger" onclick="openDeleteModal()">
-                <i class="fas fa-trash" style="margin-right: 0.5rem;"></i> Delete Tour
-            </button>
+            <form action="/admin/tours/<%= tour.id %>/delete" method="post">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash" style="margin-right: 0.5rem;"></i> Delete Tour
+                </button>
+            </form>
           </div>
         </div>
 

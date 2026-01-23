@@ -58,6 +58,7 @@ const adminController = {
                         COUNT(CASE WHEN role = 'user' THEN 1 END) as users
                     FROM users
                     WHERE is_active = true
+                    AND role != 'admin';
                 `),
 
                 // Recent bookings

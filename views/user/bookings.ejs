@@ -1,83 +1,371 @@
-<div class="bg-light py-5">
-    <div class="container">
-        <div class="row">
-            <%- include('../partials/user/sidebar') %>
-            
-            <div class="col-lg-9">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold">My Bookings</h4>
-                    <div class="btn-group">
-                        <a href="?status=" class="btn btn-outline-secondary <%= !statusFilter ? 'active' : '' %>">All</a>
-                        <a href="?status=confirmed" class="btn btn-outline-success <%= statusFilter === 'confirmed' ? 'active' : '' %>">Confirmed</a>
-                        <a href="?status=pending" class="btn btn-outline-warning <%= statusFilter === 'pending' ? 'active' : '' %>">Pending</a>
-                    </div>
-                </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings | Casalinga Tours</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    /* * COPIED STYLES FROM YOUR CRM TEMPLATE 
+     * Adapted slightly for EJS integration
+     */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-                <% if (bookings.length === 0) { %>
-                    <div class="card border-0 shadow-sm text-center py-5">
-                        <div class="card-body">
-                            <div class="mb-3 text-muted"><i class="fas fa-ticket-alt fa-3x opacity-25"></i></div>
-                            <h5>No bookings found</h5>
-                            <p class="text-muted mb-4">You haven't made any bookings matching this criteria.</p>
-                            <a href="/tours" class="btn btn-primary rounded-pill px-4">Browse Tours</a>
-                        </div>
-                    </div>
-                <% } %>
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 222.2 84% 4.9%;
+      --primary: 142 76% 36%; /* Adjusted to Green to match Casalinga Brand */
+      --primary-foreground: 210 40% 98%;
+      --secondary: 210 40% 96%;
+      --secondary-foreground: 222.2 84% 4.9%;
+      --muted: 210 40% 96%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --accent: 210 40% 96%;
+      --accent-foreground: 222.2 84% 4.9%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 210 40% 98%;
+      --warning: 38 92% 50%;
+      --warning-foreground: 48 96% 89%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 142 76% 36%;
+      --radius: 0.75rem;
+      --sidebar-background: 0 0% 98%;
+      --sidebar-foreground: 240 5.3% 26.1%;
+      --sidebar-accent: 240 4.8% 95.9%;
+      --sidebar-accent-foreground: 240 5.9% 10%;
+    }
 
-                <div class="row g-4">
-                    <% bookings.forEach(booking => { %>
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm overflow-hidden">
-                            <div class="row g-0">
-                                <div class="col-md-3 position-relative">
-                                    <img src="<%= booking.tour_image %>" class="h-100 w-100" style="object-fit: cover; min-height: 150px;">
-                                    <div class="position-absolute top-0 start-0 m-2">
-                                        <span class="badge bg-<%= booking.status === 'confirmed' ? 'success' : (booking.status === 'cancelled' ? 'danger' : 'warning text-dark') %>">
-                                            <%= booking.status.toUpperCase() %>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="card-body p-4">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <div>
-                                                <small class="text-muted font-monospace"><%= booking.booking_number %></small>
-                                                <h5 class="fw-bold mb-1"><%= booking.title %></h5>
-                                                <p class="text-muted small mb-0"><i class="fas fa-map-marker-alt me-1"></i> <%= booking.location %></p>
-                                            </div>
-                                            <div class="text-end">
-                                                <h5 class="fw-bold text-primary mb-0">R<%= parseFloat(booking.total_price).toLocaleString() %></h5>
-                                                <small class="text-muted"><%= booking.people_count %> Guests</small>
-                                            </div>
-                                        </div>
-                                        <hr class="my-3 border-light">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">Booked on <%= moment(booking.booked_at).format('MMM D, YYYY') %></small>
-                                            <a href="/user/bookings/<%= booking.id %>" class="btn btn-outline-primary btn-sm rounded-pill px-4">View Details</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <% }) %>
-                </div>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      line-height: 1.5;
+    }
 
-                <% if (totalPages > 1) { %>
-                <div class="mt-4">
-                    <nav>
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-                                <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
-                            </li>
-                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                                <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-                <% } %>
+    /* Layout */
+    .app-wrapper { display: flex; min-height: 100vh; width: 100%; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 16rem;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background-color: hsl(var(--sidebar-background));
+      border-right: 1px solid hsl(var(--border));
+      display: flex;
+      flex-direction: column;
+      z-index: 40;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .sidebar-header { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .sidebar-logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: inherit; }
+    
+    .sidebar-logo-icon {
+      width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center;
+      border-radius: 0.5rem; background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground));
+    }
+    .sidebar-logo-icon svg { width: 1rem; height: 1rem; }
+    .sidebar-logo-text { font-size: 1.125rem; font-weight: 600; }
+    
+    .sidebar-content { flex: 1; overflow-y: auto; padding: 0.5rem; }
+    .sidebar-menu { display: flex; flex-direction: column; gap: 0.25rem; list-style: none; }
+    
+    .sidebar-menu-button {
+      display: flex; width: 100%; align-items: center; gap: 0.5rem; padding: 0.5rem;
+      border-radius: 0.375rem; font-size: 0.875rem; text-decoration: none;
+      color: hsl(var(--sidebar-foreground)); background: transparent; border: none;
+      cursor: pointer; transition: background-color 0.15s, color 0.15s;
+    }
+    .sidebar-menu-button:hover, .sidebar-menu-button.active {
+      background-color: hsl(var(--sidebar-accent)); color: hsl(var(--sidebar-accent-foreground));
+    }
+    .sidebar-menu-button.active { font-weight: 500; }
+    .sidebar-menu-button svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+
+    .sidebar-footer { padding: 1rem; border-top: 1px solid hsl(var(--border)); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.75rem; }
+    .sidebar-user-avatar { width: 2rem; height: 2rem; border-radius: 50%; object-fit: cover; background: #ddd; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #555;}
+    .sidebar-user-info { display: flex; flex-direction: column; }
+    .sidebar-user-name { font-size: 0.875rem; font-weight: 500; }
+    .sidebar-user-role { font-size: 0.75rem; color: hsl(var(--muted-foreground)); }
+
+    /* Main Content */
+    .main-content { flex: 1; margin-left: 16rem; overflow-x: hidden; }
+
+    /* Topbar */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); background-color: hsl(var(--background));
+    }
+    .topbar-title h1 { font-size: 1.25rem; font-weight: 600; }
+    .topbar-actions { display: flex; align-items: center; gap: 1rem; }
+    
+    .icon-button {
+      display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem;
+      border-radius: 0.375rem; background: transparent; border: none; cursor: pointer;
+      color: hsl(var(--foreground)); transition: background-color 0.15s;
+    }
+    .icon-button:hover { background-color: hsl(var(--accent)); }
+    .icon-button svg { width: 1rem; height: 1rem; }
+
+    /* Page Content */
+    .page-content { flex: 1; padding: 1.5rem 2rem 2rem; display: flex; flex-direction: column; gap: 1rem; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 1rem; }
+    .page-title { font-size: 1.875rem; font-weight: 700; letter-spacing: -0.025em; }
+
+    /* Cards */
+    .card {
+      border-radius: var(--radius); border: 1px solid hsl(var(--border));
+      background-color: hsl(var(--card)); color: hsl(var(--card-foreground));
+      overflow: hidden;
+    }
+    .card-header { padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); }
+    .card-title { font-size: 1.125rem; font-weight: 600; }
+    .card-description { font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-top: 0.25rem; }
+    .card-content { padding: 0; }
+
+    /* Booking Table (Adapted from Template) */
+    .booking-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .booking-table th {
+      text-align: left; padding: 1rem 1.5rem; font-weight: 500; color: hsl(var(--muted-foreground));
+      border-bottom: 1px solid hsl(var(--border)); background: hsl(var(--muted) / 0.3);
+    }
+    .booking-table td {
+      padding: 1rem 1.5rem; border-bottom: 1px solid hsl(var(--border));
+      vertical-align: middle;
+    }
+    .booking-table tr:last-child td { border-bottom: none; }
+    .booking-table tr:hover { background-color: hsl(var(--accent) / 0.5); }
+
+    /* Status Badges */
+    .badge {
+      display: inline-flex; align-items: center; padding: 0.25rem 0.75rem;
+      border-radius: 9999px; font-size: 0.75rem; font-weight: 600;
+    }
+    .badge-confirmed { background-color: hsl(142 76% 36% / 0.1); color: hsl(142 76% 36%); }
+    .badge-pending { background-color: hsl(38 92% 50% / 0.15); color: hsl(38 92% 35%); }
+    .badge-cancelled { background-color: hsl(0 84.2% 60.2% / 0.1); color: hsl(0 84.2% 60.2%); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;
+      font-size: 0.875rem; font-weight: 500; border-radius: var(--radius);
+      cursor: pointer; text-decoration: none; transition: all 0.15s;
+    }
+    .btn-primary { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border: none; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-outline { background: transparent; border: 1px solid hsl(var(--input)); color: hsl(var(--foreground)); }
+    .btn-outline:hover { background-color: hsl(var(--accent)); }
+    .btn-sm { padding: 0.25rem 0.75rem; font-size: 0.75rem; }
+
+    /* Mobile Toggle */
+    .mobile-toggle { display: none; background: none; border: none; cursor: pointer; }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .mobile-toggle { display: block; }
+      .booking-table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"></path></svg>
+          </div>
+          <span class="sidebar-logo-text">Casalinga</span>
+        </a>
+      </div>
+      <nav class="sidebar-content">
+        <ul class="sidebar-menu">
+          <li class="sidebar-menu-item">
+            <a href="/user/dashboard" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
+              <span>Overview</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="/user/bookings" class="sidebar-menu-button active">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" x2="20" y1="8" y2="14"></line><line x1="23" x2="17" y1="11" y2="11"></line></svg>
+              <span>My Bookings</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="/user/favorites" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+              <span>Saved Tours</span>
+            </a>
+          </li>
+          <li class="sidebar-menu-item">
+            <a href="/user/profile" class="sidebar-menu-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <span>Profile Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">
+            <%= user.name.charAt(0).toUpperCase() %>
+          </div>
+          <div class="sidebar-user-info">
+            <span class="sidebar-user-name"><%= user.name %></span>
+            <a href="/auth/logout" style="font-size: 0.75rem; color: hsl(var(--destructive)); text-decoration: none;">Log out</a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <button class="mobile-toggle" id="mobileToggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path></svg>
+            </button>
+            <div class="topbar-title">
+                <h1>My Bookings</h1>
             </div>
         </div>
-    </div>
-</div>
+
+        <div class="topbar-actions">
+          <a href="/tours" class="btn btn-primary btn-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+            Browse Tours
+          </a>
+          <button class="icon-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <h2 class="page-title">All Bookings</h2>
+          <div class="page-actions">
+            <button class="btn btn-outline">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              Filter
+            </button>
+            <button class="btn btn-outline">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+              Download List
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Booking History</h3>
+            <p class="card-description">Manage your upcoming trips and view past adventures.</p>
+          </div>
+          <div class="card-content">
+            <% if (bookings && bookings.length > 0) { %>
+              <table class="booking-table">
+                <thead>
+                  <tr>
+                    <th>Ref #</th>
+                    <th>Tour Name</th>
+                    <th>Date</th>
+                    <th>Guests</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% bookings.forEach(booking => { %>
+                    <tr>
+                      <td style="font-family: monospace; color: hsl(var(--foreground)); font-weight: 600;">
+                        #<%= booking.booking_number.split('-').pop() %>
+                      </td>
+                      <td>
+                        <div style="font-weight: 500;"><%= booking.title %></div>
+                        <div style="font-size: 0.75rem; color: hsl(var(--muted-foreground));"><%= booking.location %></div>
+                      </td>
+                      <td>
+                        <%= moment(booking.start_date).format('MMM D, YYYY') %>
+                      </td>
+                      <td>
+                        <%= booking.people_count %>
+                      </td>
+                      <td style="font-weight: 600;">
+                        R<%= parseFloat(booking.total_price).toLocaleString() %>
+                      </td>
+                      <td>
+                        <% if (booking.status === 'confirmed') { %>
+                          <span class="badge badge-confirmed">Confirmed</span>
+                        <% } else if (booking.status === 'pending') { %>
+                          <span class="badge badge-pending">Pending</span>
+                        <% } else { %>
+                          <span class="badge badge-cancelled">Cancelled</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <a href="/user/bookings/<%= booking.id %>" class="btn btn-outline btn-sm">View Details</a>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            <% } else { %>
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 1rem; text-align: center;">
+                <div style="background: hsl(var(--muted)); padding: 1rem; border-radius: 50%; margin-bottom: 1rem;">
+                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--muted-foreground))" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
+                </div>
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No bookings found</h3>
+                <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1.5rem;">You haven't booked any adventures yet.</p>
+                <a href="/tours" class="btn btn-primary">Find an Adventure</a>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Mobile Sidebar Toggle Logic
+    const mobileToggle = document.getElementById('mobileToggle');
+    const sidebar = document.getElementById('sidebar');
+
+    if(mobileToggle) {
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768 && 
+            !sidebar.contains(e.target) && 
+            !mobileToggle.contains(e.target) && 
+            sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+        }
+    });
+  </script>
+</body>
+</html>

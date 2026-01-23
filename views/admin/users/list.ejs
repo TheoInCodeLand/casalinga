@@ -273,10 +273,11 @@
                             <div style="display: flex; gap: 0.25rem; justify-content: flex-end;">
                                 <% if(userData.id !== user.id) { %>
                                     <form action="/admin/users/<%= userData.id %>/role" method="POST" style="display: inline;">
-                                        <select name="role" onchange="this.form.submit()" style="padding: 0.25rem; border: 1px solid hsl(var(--border)); border-radius: 0.25rem; font-size: 0.75rem;">
+                                        <select name="role" onchange="alert('changed'); this.form.submit();" style="padding: 0.25rem; border: 1px solid hsl(var(--border)); border-radius: 0.25rem; font-size: 0.75rem;">
                                             <option value="user" <%= userData.role === 'user' ? 'selected' : '' %>>User</option>
                                             <option value="manager" <%= userData.role === 'manager' ? 'selected' : '' %>>Manager</option>
                                             <option value="admin" <%= userData.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                                            <!-- <select name="role" onchange="alert('changed'); this.form.submit();"></select> -->
                                         </select>
                                     </form>
 
