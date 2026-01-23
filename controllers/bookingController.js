@@ -69,7 +69,7 @@ const bookingController = {
                 `INSERT INTO bookings (
                     booking_number, user_id, tour_id, people_count,
                     total_price, special_requests, booked_at, status
-                ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), 'confirmed')
+                ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), 'pending')
                 RETURNING id, booking_number`,
                 [bookingNumber, userId, tour_id, people_count, 
                  totalPrice, special_requests]
