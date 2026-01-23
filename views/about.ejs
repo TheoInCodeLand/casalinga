@@ -1,18 +1,967 @@
-<div class="bg-light py-5 text-center">
-    <div class="container">
-        <h1 class="fw-bold">About Us</h1>
-        <p class="lead text-muted">We are Casalinga Tours.</p>
-    </div>
-</div>
-<div class="container py-5">
-    <div class="row align-items-center">
-        <div class="col-md-6">
-            <img src="/images/about-img.jpg" class="img-fluid rounded shadow" alt="About Casalinga">
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Story | Casalinga Tours</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                container: {
+                    center: true,
+                    padding: "2rem",
+                    screens: { "2xl": "1400px" },
+                },
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        border: "oklch(0.922 0 0)",
+                        input: "oklch(0.922 0 0)",
+                        ring: "oklch(0.708 0 0)",
+                        background: "#faf8f5",
+                        foreground: "oklch(0.145 0 0)",
+                        primary: {
+                            DEFAULT: "#1e6b38",
+                            foreground: "oklch(0.985 0 0)",
+                        },
+                        secondary: {
+                            DEFAULT: "#f2eadd",
+                            foreground: "oklch(0.205 0 0)",
+                        },
+                        muted: {
+                            DEFAULT: "oklch(0.97 0 0)",
+                            foreground: "oklch(0.556 0 0)",
+                        },
+                        accent: {
+                            DEFAULT: "oklch(0.97 0 0)",
+                            foreground: "oklch(0.205 0 0)",
+                        },
+                        destructive: {
+                            DEFAULT: "oklch(0.577 0.245 27.325)",
+                            foreground: "oklch(0.577 0.245 27.325)",
+                        },
+                        card: {
+                            DEFAULT: "oklch(1 0 0)",
+                            foreground: "oklch(0.145 0 0)",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "0.625rem",
+                        md: "calc(0.625rem - 2px)",
+                        sm: "calc(0.625rem - 4px)",
+                    },
+                    keyframes: {
+                        "fade-in-up": {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        "float": {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' }
+                        },
+                        "pulse-glow": {
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(30, 107, 56, 0.2)' },
+                            '50%': { boxShadow: '0 0 40px rgba(30, 107, 56, 0.4)' }
+                        },
+                        "text-reveal": {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' }
+                        }
+                    },
+                    animation: {
+                        "fade-in-up": 'fade-in-up 0.8s ease-out',
+                        "float": 'float 6s ease-in-out infinite',
+                        "pulse-glow": 'pulse-glow 4s ease-in-out infinite',
+                        "text-reveal": 'text-reveal 2s ease-out forwards'
+                    }
+                },
+            },
+        }
+    </script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom Styles */
+        body { 
+            font-feature-settings: "rlig" 1, "calt" 1;
+            overflow-x: hidden;
+        }
+        
+        /* Video container styling */
+        .video-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        /* Stats counter animation */
+        .stat-number {
+            transition: all 1s ease-out;
+        }
+        
+        /* Timeline styling */
+        .timeline-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #1e6b38 0%, transparent 100%);
+        }
+        
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            border: 3px solid #faf8f5;
+            box-shadow: 0 0 0 3px rgba(30, 107, 56, 0.2);
+        }
+        
+        /* Team card hover effect */
+        .team-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .team-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(30, 107, 56, 0.15);
+        }
+        
+        .team-card:hover .team-image {
+            transform: scale(1.05);
+        }
+        
+        /* Parallax section */
+        .parallax-section {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        /* Custom scrollbar for story section */
+        .story-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .story-scroll::-webkit-scrollbar-track {
+            background: rgba(30, 107, 56, 0.1);
+            border-radius: 10px;
+        }
+        
+        .story-scroll::-webkit-scrollbar-thumb {
+            background: #1e6b38;
+            border-radius: 10px;
+        }
+        
+        /* Typewriter effect */
+        .typewriter {
+            overflow: hidden;
+            border-right: 3px solid #1e6b38;
+            white-space: nowrap;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #1e6b38; }
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #1e6b38 0%, #2a8c4a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Organic shapes */
+        .organic-shape {
+            background: radial-gradient(circle at 30% 30%, rgba(30, 107, 56, 0.1) 0%, transparent 50%);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-background text-foreground">
+
+    <!-- Header -->
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out py-5 bg-background/95 backdrop-blur-md shadow-sm">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <nav class="flex items-center justify-between">
+                <a href="/" class="flex items-center gap-2 group">
+                    <div class="relative">
+                        <i data-lucide="mountain" class="h-8 w-8 transition-colors duration-300 text-primary"></i>
+                        <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                    <span class="font-serif text-2xl font-semibold tracking-tight transition-colors duration-300 text-foreground">Casalinga</span>
+                </a>
+
+                <ul class="hidden md:flex items-center gap-1">
+                    <li><a href="/" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-foreground/90 hover:text-primary hover:bg-primary/10">Home</a></li>
+                    <li><a href="/tours" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-foreground/90 hover:text-primary hover:bg-primary/10">Tours</a></li>
+                    <li><a href="/about" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full bg-primary/10 text-primary font-semibold">About</a></li>
+                    <li><a href="/testimonials" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-foreground/90 hover:text-primary hover:bg-primary/10">Testimonials</a></li>
+                    <li><a href="/contact" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-foreground/90 hover:text-primary hover:bg-primary/10">Contact</a></li>
+                </ul>
+
+                <% if (user) { %>
+                    <% if (user.role === "admin") { %>
+                        <div class="hidden md:flex items-center gap-3">
+                            <a href="/admin/dashboard" class="nav-link text-foreground/90 hover:text-primary text-sm font-medium px-4">Dashboard</a>
+                            <a href="/auth/logout" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90">
+                                Logout
+                            </a>
+                        </div>
+                    <% } else if (user.role === "user") { %>
+                        <div class="hidden md:flex items-center gap-3">
+                            <a href="/user/dashboard" class="nav-link text-foreground/90 hover:text-primary text-sm font-medium px-4">Dashboard</a>
+                            <a href="/auth/logout" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90">
+                                Logout
+                            </a>
+                        </div>
+                    <% } else if (user.role === "manager") { %>
+                        <div class="hidden md:flex items-center gap-3">
+                            <a href="/manager/dashboard" class="nav-link text-foreground/90 hover:text-primary text-sm font-medium px-4">Dashboard</a>
+                            <a href="/auth/logout" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90">
+                                Logout
+                            </a>
+                        </div>
+                    <% }%>
+                <% } else { %>
+                    <div class="hidden md:flex items-center gap-3">
+                        <!-- Your existing user/auth logic here -->
+                        <a href="/auth/login" class="nav-link text-foreground/90 hover:text-primary text-sm font-medium px-4">Login</a>
+                        <a href="/auth/register" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90">
+                            Sign Up
+                        </a>
+                    </div>
+                <% } %>
+
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg transition-colors text-foreground">
+                    <i data-lucide="menu" class="h-6 w-6"></i>
+                </button>
+            </nav>
         </div>
-        <div class="col-md-6">
-            <h3 class="fw-bold mb-3">Our Mission</h3>
-            <p>To digitize and revolutionize the tour booking experience while maintaining the warmth and personal touch of guided travel. We believe in wellness, nature, and seamless technology.</p>
-            <p>Founded in South Africa, Casalinga Tours specializes in curating experiences that disconnect you from the digital noise and reconnect you with the beautiful landscapes of our country.</p>
+    </header>
+
+    <!-- Hero Section with Live Video -->
+    <section class="pt-24 md:pt-32 relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+        <!-- Live Video Background -->
+        <div class="absolute inset-0 z-0">
+            <div class="relative w-full h-full">
+                <!-- Live Video Element -->
+                <video 
+                    id="hero-video"
+                    class="w-full h-full object-cover scale-110"
+                    autoplay 
+                    loop 
+                    muted 
+                    playsinline
+                    poster="/images/hero-mountains.jpg" <!-- Fallback image -->
+                >
+                    <!-- Multiple video sources for cross-browser compatibility -->
+                    <source src="/videos/casalinga-contact-page.mp4" type="video/mp4">
+                    <source src="/videos/casalinga-hero.webm" type="video/webm">
+                    <!-- Fallback text if video doesn't load -->
+                    Your browser does not support the video tag.
+                </video>
+                
+                <!-- Video overlay gradient -->
+                <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60"></div>
+                
+                <!-- Animated particles overlay -->
+                <div id="video-particles" class="absolute inset-0 opacity-30"></div>
+            </div>
         </div>
-    </div>
-</div>
+        
+        <!-- Video controls overlay (discreet) -->
+        <div class="absolute top-6 right-6 z-20 flex items-center gap-2">
+            <button id="video-mute" class="p-2 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-colors">
+                <i data-lucide="volume2" class="h-5 w-5" id="volume-icon"></i>
+            </button>
+            <button id="video-pause" class="p-2 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-colors">
+                <i data-lucide="pause" class="h-5 w-5" id="play-icon"></i>
+            </button>
+        </div>
+        
+        <!-- Hero Content -->
+        <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center pt-16">
+            <div class="animate-fade-in-up">
+                <!-- Animated badge -->
+                <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-5 py-3 rounded-full border border-white/20 mb-8 animate-pulse-glow">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
+                    <span class="text-white text-sm font-semibold tracking-wider">Since 2010 • 15 Years of Adventure</span>
+                </div>
+                
+                <!-- Main heading with typewriter effect -->
+                <h1 class="text-white font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight mb-6">
+                    <span class="block mb-4">Where Nature Meets</span>
+                    <span class="typewriter gradient-text bg-gradient-to-r from-white to-secondary">Human Connection</span>
+                </h1>
+                
+                <!-- Animated underline -->
+                <div class="relative w-48 h-1 mx-auto mb-10 overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent"></div>
+                    <div class="absolute inset-0 bg-white animate-text-reveal" style="animation-delay: 1s;"></div>
+                </div>
+                
+                <p class="text-white/80 text-lg sm:text-xl max-w-3xl mx-auto mb-10 leading-relaxed">
+                    At Casalinga Tours, we believe that the most profound journeys aren't just about where you go, 
+                    but how you connect—with nature, with people, and with yourself.
+                </p>
+                
+                <!-- Hero CTA buttons -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="#story" 
+                       class="group inline-flex items-center justify-center whitespace-nowrap text-base ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-8 font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 duration-300">
+                        Discover Our Story
+                        <i data-lucide="chevron-down" class="ml-2 h-5 w-5 transition-transform group-hover:translate-y-1 animate-bounce"></i>
+                    </a>
+                    <a href="/tours" 
+                       class="group inline-flex items-center justify-center whitespace-nowrap text-base ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-2 border-white/40 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 h-12 rounded-full px-8 font-medium duration-300">
+                        Explore Adventures
+                        <i data-lucide="compass" class="ml-2 h-5 w-5 transition-transform group-hover:rotate-90"></i>
+                    </a>
+                </div>
+                
+                <!-- Quick stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 max-w-2xl mx-auto">
+                    <div class="text-center">
+                        <div class="text-white text-3xl sm:text-4xl font-serif font-semibold mb-2">
+                            <span class="stat-number" data-target="5000">0</span>+
+                        </div>
+                        <div class="text-white/60 text-sm">Travelers Transformed</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-white text-3xl sm:text-4xl font-serif font-semibold mb-2">
+                            <span class="stat-number" data-target="15">0</span>+
+                        </div>
+                        <div class="text-white/60 text-sm">Years of Excellence</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-white text-3xl sm:text-4xl font-serif font-semibold mb-2">
+                            <span class="stat-number" data-target="98">0</span>%
+                        </div>
+                        <div class="text-white/60 text-sm">Satisfaction Rate</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-white text-3xl sm:text-4xl font-serif font-semibold mb-2">
+                            <span class="stat-number" data-target="50">0</span>+
+                        </div>
+                        <div class="text-white/60 text-sm">Expert Guides</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll indicator -->
+        <button onclick="document.getElementById('story').scrollIntoView({behavior: 'smooth'})" 
+                class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 hover:text-white transition-colors cursor-pointer animate-bounce">
+            <i data-lucide="chevron-down" class="h-8 w-8"></i>
+        </button>
+    </section>
+
+    <!-- Our Story Section -->
+    <section id="story" class="py-24 bg-background relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+        
+        <div class="container">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                <!-- Story Content -->
+                <div class="animate-fade-in-up">
+                    <div class="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-6">
+                        <i data-lucide="heart" class="h-4 w-4 text-primary"></i>
+                        <span class="text-primary text-sm font-semibold">Our Humble Beginnings</span>
+                    </div>
+                    
+                    <h2 class="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold mb-6">
+                        From a Simple Passion to a<br>
+                        <span class="gradient-text">Life-Changing Mission</span>
+                    </h2>
+                    
+                    <div class="story-scroll max-h-[400px] overflow-y-auto pr-4 mb-8">
+                        <div class="space-y-6">
+                            <p class="text-muted-foreground leading-relaxed">
+                                Casalinga Tours was born in 2010 from a simple yet profound realization: 
+                                the most meaningful travel experiences happen when we slow down, connect deeply, 
+                                and allow nature to work its restorative magic.
+                            </p>
+                            
+                            <p class="text-muted-foreground leading-relaxed">
+                                Founded by lifelong Mpumalanga residents with a deep love for their homeland, 
+                                we started with just one vehicle and a dream—to share the transformative power 
+                                of South Africa's natural wonders with travelers seeking more than just a vacation.
+                            </p>
+                            
+                            <p class="text-muted-foreground leading-relaxed">
+                                The name "Casalinga" (Italian for "homely" or "of the home") reflects our philosophy: 
+                                every journey should feel like coming home—to yourself, to nature, and to meaningful 
+                                human connections.
+                            </p>
+                            
+                            <p class="text-muted-foreground leading-relaxed">
+                                What began as personalized tours for friends and family has grown into a 
+                                respected adventure company, but our core values remain unchanged. 
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-6">
+                        <div class="flex -space-x-4">
+                            <div class="w-12 h-12 rounded-full border-2 border-background bg-primary/10 flex items-center justify-center">
+                                <span class="text-primary font-semibold text-sm">JL</span>
+                            </div>
+                            <div class="w-12 h-12 rounded-full border-2 border-background bg-primary/10 flex items-center justify-center">
+                                <span class="text-primary font-semibold text-sm">MS</span>
+                            </div>
+                            <div class="w-12 h-12 rounded-full border-2 border-background bg-primary/10 flex items-center justify-center">
+                                <span class="text-primary font-semibold text-sm">PK</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Founding Team</h4>
+                            <p class="text-sm text-muted-foreground">Still actively guiding adventures</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Story Timeline -->
+                <div class="relative animate-fade-in-up" style="animation-delay: 200ms;">
+                    <div class="timeline-line left-8 md:left-1/2 md:-translate-x-1/2"></div>
+                    
+                    <div class="space-y-12 relative">
+                        <!-- Timeline item 1 -->
+                        <div class="relative pl-12 md:pl-0 md:pr-12 md:text-right">
+                            <div class="absolute left-4 md:left-auto md:right-4 top-2">
+                                <div class="timeline-dot rounded-full bg-primary"></div>
+                            </div>
+                            <div class="bg-card p-6 rounded-2xl border border-border shadow-sm" style="background: linear-gradient(rgba(143, 143, 143, 0.196), rgb(255, 255, 255)), url('/images/timeline-1.jpg'); background-size: cover; background-position: center;">
+                                <div class="text-primary font-serif text-2xl font-semibold mb-2">2010</div>
+                                <h4 class="font-semibold text-lg mb-2">The Beginning</h4>
+                                <p class="text-gray-600 text-sm">First tour with a single 4x4 vehicle and a dream to share Mpumalanga's beauty.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Timeline item 2 -->
+                        <div class="relative pl-12 md:pl-12 md:text-left">
+                            <div class="absolute left-4 md:right-auto md:left-4 top-2">
+                                <div class="timeline-dot rounded-full bg-primary"></div>
+                            </div>
+                            <div class="bg-card p-6 rounded-2xl border border-border shadow-sm" style="background: linear-gradient(rgba(122, 122, 122, 0.188), rgb(255, 255, 255)), url('/images/timeline-1.jpg'); background-size: cover; background-position: center;">
+                                <div class="text-primary font-serif text-2xl font-semibold mb-2">2014</div>
+                                <h4 class="font-semibold text-lg mb-2">Expanding Horizons</h4>
+                                <p class="text-gray-600 text-sm">Added wellness retreats and partnered with local conservation initiatives.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Timeline item 3 -->
+                        <div class="relative pl-12 md:pl-0 md:pr-12 md:text-right">
+                            <div class="absolute left-4 md:left-auto md:right-4 top-2">
+                                <div class="timeline-dot rounded-full bg-primary"></div>
+                            </div>
+                            <div class="bg-card p-6 rounded-2xl border border-border shadow-sm" style="background: linear-gradient(rgba(140, 140, 140, 0.193), rgb(255, 255, 255)), url('/images/timeline-1.jpg'); background-size: cover; background-position: center;">
+                                <div class="text-primary font-serif text-2xl font-semibold mb-2">2018</div>
+                                <h4 class="font-semibold text-lg mb-2">Award Recognition</h4>
+                                <p class="text-gray-600 text-sm">Named "Best Eco-Tourism Experience" by South African Tourism Board.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Philosophy Section -->
+    <section class="py-24 bg-secondary/30 relative overflow-hidden">
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" style="animation-delay: 1s;"></div>
+        
+        <div class="container">
+            <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
+                <div class="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-6">
+                    <i data-lucide="sparkles" class="h-4 w-4 text-primary"></i>
+                    <span class="text-primary text-sm font-semibold">Our Guiding Principles</span>
+                </div>
+                
+                <h2 class="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold mb-6">
+                    More Than Tours:<br>
+                    <span class="gradient-text">Transformative Experiences</span>
+                </h2>
+                
+                <p class="text-muted-foreground text-lg">
+                    We don't just show you beautiful places—we create spaces for meaningful transformation, 
+                    connection, and personal growth.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Philosophy Card 1 -->
+                <div class="bg-card p-8 rounded-2xl border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-2 animate-fade-in-up">
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 mb-6">
+                        <i data-lucide="leaf" class="h-7 w-7 text-primary"></i>
+                    </div>
+                    <h3 class="font-serif text-xl font-semibold mb-4">Sustainable by Nature</h3>
+                    <p class="text-muted-foreground mb-6">
+                        We operate with deep respect for the environment, practicing Leave No Trace principles 
+                        and supporting local conservation efforts.
+                    </p>
+                    <div class="pt-4 border-t border-border">
+                        <ul class="space-y-2">
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="h-4 w-4 text-primary"></i> Carbon-neutral operations</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="h-4 w-4 text-primary"></i> Local community partnerships</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="h-4 w-4 text-primary"></i> Eco-friendly accommodations</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Philosophy Card 2 -->
+                <div class="bg-card p-8 rounded-2xl border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-2 animate-fade-in-up" style="animation-delay: 100ms;">
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 mb-6">
+                        <i data-lucide="users" class="h-7 w-7 text-primary"></i>
+                    </div>
+                    <h3 class="font-serif text-xl font-semibold mb-4">People First</h3>
+                    <p class="text-muted-foreground mb-6">
+                        From our expert guides to our travelers and local communities, every person matters 
+                        in the Casalinga experience.
+                    </p>
+                    <div class="pt-4 border-t border-border">
+                        <ul class="space-y-2">
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="h-4 w-4 text-primary"></i> Expert local guides</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="h-4 w-4 text-primary"></i> Fair wages & training</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="h-4 w-4 text-primary"></i> Cultural exchange focus</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Philosophy Card 3 -->
+                <div class="bg-card p-8 rounded-2xl border border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-2 animate-fade-in-up" style="animation-delay: 200ms;">
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 mb-6">
+                        <i data-lucide="heart" class="h-7 w-7 text-primary"></i>
+                    </div>
+                    <h3 class="font-serif text-xl font-semibold mb-4">Wellness Infused</h3>
+                    <p class="text-muted-foreground mb-6">
+                        Every experience is designed to nourish mind, body, and spirit through connection 
+                        with nature and mindful practices.
+                    </p>
+                    <div class="pt-4 border-t border-border">
+                        <ul class="space-y-2">
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="h-4 w-4 text-primary"></i> Mindful adventure design</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="h-4 w-4 text-primary"></i> Wellness activities included</li>
+                            <li class="flex items-center gap-2 text-sm"><i data-lucide="check" class="h-4 w-4 text-primary"></i> Digital detox opportunities</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Meet The Team Section -->
+    <section class="py-24 bg-background relative overflow-hidden">
+        <div class="container">
+            <div class="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
+                <div class="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-6">
+                    <i data-lucide="star" class="h-4 w-4 text-primary"></i>
+                    <span class="text-primary text-sm font-semibold">Our Adventure Family</span>
+                </div>
+                
+                <h2 class="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold mb-6">
+                    Guided by Passion,<br>
+                    <span class="gradient-text">Led by Experts</span>
+                </h2>
+                
+                <p class="text-muted-foreground text-lg">
+                    Meet the passionate individuals who bring Casalinga's vision to life—each an expert 
+                    in their field and a true ambassador of South African hospitality.
+                </p>
+            </div>
+            
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Team Member 1 -->
+                <div class="team-card bg-card rounded-2xl overflow-hidden border border-border group animate-fade-in-up">
+                    <div class="relative h-64 overflow-hidden" style="background: url('/images/stakeholder-1.jpeg'); background-repeat: no-repeat; background-size: cover; background-position: center;">
+                        <div class="team-image absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/30 transition-transform duration-700"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <div class="flex gap-1 mb-2">
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="font-serif text-xl font-semibold mb-1">James Moloi</h3>
+                        <p class="text-primary text-sm font-medium mb-4">Founder & Head Guide</p>
+                        <p class="text-muted-foreground text-sm mb-4">
+                            15+ years guiding experience. Expert in wildlife tracking and local ecology.
+                        </p>
+                        
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
+                                Safari Expert
+                            </span>
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
+                                Conservationist
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 2 -->
+                <div class="team-card bg-card rounded-2xl overflow-hidden border border-border group animate-fade-in-up" style="animation-delay: 100ms;">
+                    <div class="relative h-64 overflow-hidden" style="background: url('/images/stakeholder-2.jpeg'); background-repeat: no-repeat; background-size: cover; background-position: center;">
+                        <div class="team-image absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/30 transition-transform duration-700"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <div class="flex gap-1 mb-2">
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="font-serif text-xl font-semibold mb-1">Sarah Ndlovu</h3>
+                        <p class="text-primary text-sm font-medium mb-4">Wellness Director</p>
+                        <p class="text-muted-foreground text-sm mb-4">
+                            Certified yoga instructor and mindfulness coach with 10+ years experience.
+                        </p>
+                        
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
+                                Yoga Instructor
+                            </span>
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
+                                Nutritionist
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 3 -->
+                <div class="team-card bg-card rounded-2xl overflow-hidden border border-border group animate-fade-in-up" style="animation-delay: 200ms;">
+                    <div class="relative h-64 overflow-hidden" style="background: url('/images/stakeholder-1.jpeg'); background-repeat: no-repeat; background-size: cover; background-position: center;">
+                        <div class="team-image absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/30 transition-transform duration-700"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <div class="flex gap-1 mb-2">
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="font-serif text-xl font-semibold mb-1">Thomas van der Merwe</h3>
+                        <p class="text-primary text-sm font-medium mb-4">Adventure Specialist</p>
+                        <p class="text-muted-foreground text-sm mb-4">
+                            Mountain guide and survival expert with extensive knowledge of Mpumalanga trails.
+                        </p>
+                        
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
+                                Hiking Guide
+                            </span>
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
+                                First Aid Expert
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Member 4 -->
+                <div class="team-card bg-card rounded-2xl overflow-hidden border border-border group animate-fade-in-up" style="animation-delay: 300ms;">
+                    <div class="relative h-64 overflow-hidden" style="background: url('/images/stakeholder-2.jpeg'); background-repeat: no-repeat; background-size: cover; background-position: center;">
+                        <div class="team-image absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/30 transition-transform duration-700"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <div class="flex gap-1 mb-2">
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                                <i data-lucide="star" class="h-4 w-4 fill-amber-400 text-amber-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="font-serif text-xl font-semibold mb-1">Priya Singh</h3>
+                        <p class="text-primary text-sm font-medium mb-4">Cultural Ambassador</p>
+                        <p class="text-muted-foreground text-sm mb-4">
+                            Expert in local traditions and history with fluency in 5 South African languages.
+                        </p>
+                        
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
+                                Historian
+                            </span>
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground">
+                                Linguist
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-16">
+                <a href="/contact" 
+                   class="inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-2 border-primary bg-transparent hover:bg-primary hover:text-primary-foreground h-12 rounded-full px-8 text-base font-medium text-primary transition-all duration-300 group">
+                    Meet the Full Team
+                    <i data-lucide="arrow-right" class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parallax Quote Section -->
+    <section class="parallax-section py-32 relative overflow-hidden" style="background-image: url('/images/stakeholder-1.jpeg');">
+        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/80"></div>
+        
+        <div class="container relative z-10">
+            <div class="max-w-3xl mx-auto text-center animate-fade-in-up">
+                <i data-lucide="quote" class="h-16 w-16 text-primary/30 mx-auto mb-8"></i>
+                
+                <blockquote class="font-serif text-2xl md:text-3xl lg:text-4xl text-white leading-relaxed mb-10">
+                    "Our greatest adventure isn't finding new landscapes, but seeing familiar ones with new eyes—<br>
+                    <span class="text-secondary">through the hearts of those who call them home.</span>"
+                </blockquote>
+                
+                <div class="flex items-center justify-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center">
+                        <span class="text-white font-semibold text-sm">JM</span>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-semibold">James Moloi</h4>
+                        <p class="text-white/60 text-sm">Founder, Casalinga Tours</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-24 bg-secondary/30 relative overflow-hidden">
+        <div class="container">
+            <div class="max-w-4xl mx-auto bg-card rounded-3xl p-10 md:p-14 border border-border shadow-xl relative overflow-hidden animate-fade-in-up">
+                <!-- Background pattern -->
+                <div class="absolute top-0 right-0 w-64 h-64 organic-shape opacity-10"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 organic-shape opacity-10"></div>
+                
+                <div class="relative z-10 text-center">
+                    <h2 class="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold mb-6">
+                        Ready to Write Your<br>
+                        <span class="gradient-text">Own Adventure Story?</span>
+                    </h2>
+                    
+                    <p class="text-muted-foreground text-lg max-w-2xl mx-auto mb-10">
+                        Join thousands of travelers who have discovered the transformative power of connection 
+                        through our guided experiences.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="/tours" 
+                           class="inline-flex items-center justify-center h-12 px-8 rounded-full bg-primary text-primary-foreground font-semibold hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 group">
+                            Explore Our Tours
+                            <i data-lucide="arrow-right" class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"></i>
+                        </a>
+                        <a href="/contact" 
+                           class="inline-flex items-center justify-center h-12 px-8 rounded-full border-2 border-primary text-primary font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-300">
+                            Get Personalized Advice
+                        </a>
+                    </div>
+                    
+                    <p class="text-sm text-muted-foreground mt-8">
+                        Still have questions? <a href="/contact" class="text-primary font-semibold hover:underline">Contact our adventure consultants</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Reusing your existing footer) -->
+    <footer class="bg-foreground text-background">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+            <!-- Your existing footer content here -->
+            <div class="text-center">
+                <a href="/" class="flex items-center gap-2 justify-center mb-6">
+                    <i data-lucide="mountain" class="h-8 w-8 text-primary"></i>
+                    <span class="font-serif text-2xl font-semibold text-background">Casalinga</span>
+                </a>
+                <p class="text-background/70 max-w-md mx-auto">Where nature meets human connection since 2010.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Video Controls
+        const video = document.getElementById('hero-video');
+        const muteBtn = document.getElementById('video-mute');
+        const volumeIcon = document.getElementById('volume-icon');
+        const pauseBtn = document.getElementById('video-pause');
+        const playIcon = document.getElementById('play-icon');
+
+        // Mute/Unmute functionality
+        if (muteBtn) {
+            muteBtn.addEventListener('click', () => {
+                video.muted = !video.muted;
+                volumeIcon.setAttribute('data-lucide', video.muted ? 'volume-x' : 'volume2');
+                lucide.createIcons();
+            });
+        }
+
+        // Play/Pause functionality
+        if (pauseBtn) {
+            pauseBtn.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                    playIcon.setAttribute('data-lucide', 'pause');
+                } else {
+                    video.pause();
+                    playIcon.setAttribute('data-lucide', 'play');
+                }
+                lucide.createIcons();
+            });
+        }
+
+        // Animated counter for stats
+        function animateCounter(element) {
+            const target = parseInt(element.getAttribute('data-target'));
+            const duration = 2000; // 2 seconds
+            const step = target / (duration / 16); // 60fps
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    element.textContent = target + (element.textContent.includes('+') ? '+' : '');
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+
+        // Initialize counters when in view
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Animate counters
+                    document.querySelectorAll('.stat-number').forEach(counter => {
+                        if (!counter.classList.contains('animated')) {
+                            counter.classList.add('animated');
+                            animateCounter(counter);
+                        }
+                    });
+                    
+                    // Add animation classes to elements
+                    entry.target.querySelectorAll('.animate-fade-in-up').forEach((el, index) => {
+                        el.style.animationDelay = `${index * 100}ms`;
+                        el.classList.add('opacity-100', 'translate-y-0');
+                        el.classList.remove('opacity-0', 'translate-y-10');
+                    });
+                }
+            });
+        }, observerOptions);
+
+        // Observe sections
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Create particles for video overlay
+        function createParticles() {
+            const container = document.getElementById('video-particles');
+            if (!container) return;
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'absolute rounded-full bg-white/10';
+                particle.style.width = `${Math.random() * 4 + 1}px`;
+                particle.style.height = particle.style.width;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animation = `float ${Math.random() * 10 + 5}s ease-in-out infinite`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize particles
+        createParticles();
+
+        // Mobile menu toggle (simplified)
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                // Add your mobile menu toggle logic here
+                console.log('Mobile menu clicked');
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    e.preventDefault();
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add loading state for video
+        video.addEventListener('loadeddata', () => {
+            document.getElementById('hero-video').classList.add('opacity-100');
+            document.getElementById('hero-video').classList.remove('opacity-0');
+        });
+
+        // Fallback if video doesn't load
+        setTimeout(() => {
+            if (video.readyState < 2) { // HAVE_CURRENT_DATA or less
+                console.log('Video loading slowly, showing poster fallback');
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

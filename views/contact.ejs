@@ -1,45 +1,709 @@
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="text-center mb-5">
-                <h1 class="fw-bold">Contact Us</h1>
-                <p class="text-muted">Have a question? We'd love to hear from you.</p>
-            </div>
-            
-            <div class="card shadow border-0">
-                <div class="card-body p-5">
-                    <form id="contactForm">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Name</label>
-                                <input type="text" class="form-control" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" required>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Subject</label>
-                                <input type="text" class="form-control" required>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Message</label>
-                                <textarea class="form-control" rows="5" required></textarea>
-                            </div>
-                            <div class="col-12 text-center">
-                                <button type="submit" class="btn btn-primary px-5 py-3 rounded-pill">Send Message</button>
-                            </div>
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Casalinga Tours</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                container: {
+                    center: true,
+                    padding: "1.5rem", /* Adjusted padding for better mobile safety */
+                    screens: { "2xl": "1400px" },
+                },
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        border: "oklch(0.922 0 0)",
+                        input: "oklch(0.922 0 0)",
+                        ring: "oklch(0.708 0 0)",
+                        background: "#faf8f5",
+                        foreground: "oklch(0.145 0 0)",
+                        primary: {
+                            DEFAULT: "#1e6b38",
+                            foreground: "oklch(0.985 0 0)",
+                        },
+                        secondary: {
+                            DEFAULT: "#f2eadd",
+                            foreground: "oklch(0.205 0 0)",
+                        },
+                        muted: {
+                            DEFAULT: "oklch(0.97 0 0)",
+                            foreground: "oklch(0.556 0 0)",
+                        },
+                        accent: {
+                            DEFAULT: "oklch(0.97 0 0)",
+                            foreground: "oklch(0.205 0 0)",
+                        },
+                        destructive: {
+                            DEFAULT: "oklch(0.577 0.245 27.325)",
+                            foreground: "oklch(0.577 0.245 27.325)",
+                        },
+                        card: {
+                            DEFAULT: "oklch(1 0 0)",
+                            foreground: "oklch(0.145 0 0)",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "0.625rem",
+                        md: "calc(0.625rem - 2px)",
+                        sm: "calc(0.625rem - 4px)",
+                    },
+                    keyframes: {
+                        "fade-in": {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        "float": {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        "pulse-subtle": {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.8' }
+                        }
+                    },
+                    animation: {
+                        "fade-in": 'fade-in 0.6s ease-out',
+                        "float": 'float 6s ease-in-out infinite',
+                        "pulse-subtle": 'pulse-subtle 3s ease-in-out infinite'
+                    }
+                },
+            },
+        }
+    </script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom Styles */
+        body { font-feature-settings: "rlig" 1, "calt" 1; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f2eadd;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e6b38;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #16582c;
+        }
+
+        /* Form field focus effects */
+        .form-field:focus-within {
+            transform: translateY(-2px);
+            transition: transform 0.3s ease;
+        }
+
+        /* Floating label animation */
+        .floating-label {
+            transition: all 0.3s ease;
+        }
+
+        input:focus + .floating-label,
+        input:not(:placeholder-shown) + .floating-label,
+        textarea:focus + .floating-label,
+        textarea:not(:placeholder-shown) + .floating-label {
+            transform: translateY(-28px) scale(0.85);
+            color: #1e6b38;
+            font-weight: 600;
+        }
+
+        /* Contact card hover effects */
+        .contact-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(30, 107, 56, 0.1);
+        }
+
+        /* Map container styling */
+        .map-container {
+            filter: sepia(0.1) saturate(1.1);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Decorative elements */
+        .organic-shape {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .wave-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='20' viewBox='0 0 100 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21.184 20c.357-.13.72-.264 1.088-.402l1.768-.661C33.64 15.347 39.647 14 50 14c10.271 0 15.362 1.222 24.629 4.928.955.383 1.869.74 2.75 1.072h6.225c-2.51-.73-5.139-1.691-8.233-2.928C65.888 13.278 60.562 12 50 12c-10.626 0-16.855 1.397-26.66 5.063l-1.767.662c-2.475.923-4.66 1.674-6.724 2.275h6.335zm0-20C13.258 2.892 8.077 4 0 4V2c5.744 0 9.951-.574 14.85-2h6.334zM77.38 0C85.239 2.966 90.502 4 100 4V2c-6.842 0-11.386-.542-16.396-2h-6.225zM0 14c8.44 0 13.718-1.21 22.272-4.402l1.768-.661C33.64 5.347 39.647 4 50 4c10.271 0 15.362 1.222 24.629 4.928C84.112 12.722 89.438 14 100 14v-2c-10.271 0-15.362-1.222-24.629-4.928C65.888 3.278 60.562 2 50 2 39.374 2 33.145 3.397 23.34 7.063l-1.767.662C13.223 10.84 8.163 12 0 12v2z' fill='%231e6b38' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-background text-foreground">
+
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out py-4 md:py-5 bg-background/95 backdrop-blur-md shadow-sm">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <nav class="flex items-center justify-between">
+                <a href="/" class="flex items-center gap-2 group z-50">
+                    <div class="relative">
+                        <i data-lucide="mountain" class="h-8 w-8 transition-colors duration-300 text-primary"></i>
+                        <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                    <span class="font-serif text-2xl font-semibold tracking-tight transition-colors duration-300 text-foreground">Casalinga</span>
+                </a>
+
+                <ul class="hidden md:flex items-center gap-1">
+                    <li><a href="/" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-foreground/90 hover:text-primary hover:bg-primary/10">Home</a></li>
+                    <li><a href="/tours" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-foreground/90 hover:text-primary hover:bg-primary/10">Tours</a></li>
+                    <li><a href="/about" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-foreground/90 hover:text-primary hover:bg-primary/10">About</a></li>
+                    <li><a href="/testimonials" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full text-foreground/90 hover:text-primary hover:bg-primary/10">Testimonials</a></li>
+                    <li><a href="/contact" class="nav-link relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full bg-primary/10 text-primary font-semibold">Contact</a></li>
+                </ul>
+
+                <% if (user) { %>
+                    <% if (user.role === "admin") { %>
+                        <div class="hidden md:flex items-center gap-3">
+                            <a href="/admin/dashboard" class="nav-link text-foreground/90 hover:text-primary text-sm font-medium px-4">Admin Dashboard</a>
+                            <a href="/auth/logout" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90">
+                                Logout
+                            </a>
                         </div>
-                    </form>
+                    <% } else if (user.role === "user") { %>
+                        <div class="hidden md:flex items-center gap-3">
+                            <a href="/user/dashboard" class="nav-link text-foreground/90 hover:text-primary text-sm font-medium px-4">User Dashboard</a>
+                            <a href="/auth/logout" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90">
+                                Logout
+                            </a>
+                        </div>
+                    <% } else if (user.role === "manager") { %>
+                        <div class="hidden md:flex items-center gap-3">
+                            <a href="/guide/dashboard" class="nav-link text-foreground/90 hover:text-primary text-sm font-medium px-4">Guide Dashboard</a>
+                            <a href="/auth/logout" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90">
+                                Logout
+                            </a>
+                        </div>
+                    <% }%>
+                <% } else { %>
+                    <div class="hidden md:flex items-center gap-3">
+                        <a href="/auth/login" class="nav-link text-foreground/90 hover:text-primary text-sm font-medium px-4">Login</a>
+                        <a href="/auth/register" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90">
+                            Sign Up
+                        </a>
+                    <div class="hidden md:flex items-center gap-3">
+                <% } %>
+                
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg transition-colors text-foreground hover:bg-primary/10 z-50">
+                    <i data-lucide="menu" class="h-6 w-6"></i>
+                </button>
+            </nav>
+
+            <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg animate-fade-in">
+                <div class="px-4 py-6 space-y-4">
+                    <ul class="space-y-2">
+                        <li><a href="/" class="block px-4 py-3 text-base font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors">Home</a></li>
+                        <li><a href="/tours" class="block px-4 py-3 text-base font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors">Tours</a></li>
+                        <li><a href="/about" class="block px-4 py-3 text-base font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors">About</a></li>
+                        <li><a href="/testimonials" class="block px-4 py-3 text-base font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors">Testimonials</a></li>
+                        <li><a href="/contact" class="block px-4 py-3 text-base font-medium rounded-xl bg-primary/10 text-primary">Contact</a></li>
+                    </ul>
+                    
+                    <div class="h-px bg-border my-4"></div>
+                    
+
+                    <% if (user) { %>
+                    <% if (user.role === "admin") { %>
+                        <div class="flex flex-col gap-3 px-4">
+                            <a href="/admin/dashboard" class="text-center py-3 text-foreground/90 font-medium hover:text-primary transition-colors">Dashboard</a>
+                            <a href="/auth/logout" class="flex items-center justify-center h-12 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+                                Logout
+                            </a>
+                        </div>
+                    <% } else if (user.role === "user") { %>
+                        <div class="flex flex-col gap-3 px-4">
+                            <a href="/user/dashboard" class="text-center py-3 text-foreground/90 font-medium hover:text-primary transition-colors">Dashboard</a>
+                            <a href="/auth/logout" class="flex items-center justify-center h-12 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+                                Logout
+                            </a>
+                        </div>
+                    <% } else if (user.role === "manager") { %>
+                        <div class="flex flex-col gap-3 px-4">
+                            <a href="/manager/dashboard" class="text-center py-3 text-foreground/90 font-medium hover:text-primary transition-colors">Dashboard</a>
+                            <a href="/auth/logout" class="flex items-center justify-center h-12 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+                                Logout
+                            </a>
+                        </div>
+                    <% }%>
+                <% } else { %>
+                    <div class="flex flex-col gap-3 px-4">
+                        <a href="/auth/login" class="text-center py-3 text-foreground/90 font-medium hover:text-primary transition-colors">Login</a>
+                        <a href="/auth/register" class="flex items-center justify-center h-12 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+                            Sign Up
+                        </a>
+                    </div>
+                <% } %>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<script>
-document.getElementById('contactForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    alert('Thank you! Your message has been sent.');
-    e.target.reset();
-});
-</script>
+    </header>
+
+    <section class="pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/30"></div>
+        
+        <div class="absolute top-1/4 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-1/4 right-10 w-96 h-96 bg-secondary/30 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
+        
+        <div class="container relative z-10">
+            <div class="max-w-3xl mx-auto text-center animate-fade-in">
+                <div class="inline-flex items-center gap-2 bg-primary/10 backdrop-blur-sm px-4 py-2 rounded-full border border-primary/20 mb-8">
+                    <i data-lucide="message-circle" class="h-4 w-4 text-primary"></i>
+                    <span class="text-primary text-sm font-semibold">We're here to help</span>
+                </div>
+                
+                <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold leading-tight mb-6">
+                    Let's Start Your
+                    <span class="relative inline-block">
+                        Adventure
+                        <svg class="absolute -bottom-2 left-0 w-full h-3 text-primary" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true">
+                            <path d="M0 8 Q50 0, 100 8 T200 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                        </svg>
+                    </span>
+                </h1>
+                
+                <p class="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Have questions or ready to book? Our team of adventure experts is here to guide you every step of the way. Get in touch and let's create your perfect journey.
+                </p>
+                
+                <div class="flex flex-wrap justify-center gap-4 mt-8">
+                    <div class="flex items-center gap-3 px-4 py-2 bg-card rounded-full border border-border">
+                        <i data-lucide="clock" class="h-5 w-5 text-primary"></i>
+                        <span class="text-sm font-medium">Response time: 2-4 hours</span>
+                    </div>
+                    <div class="flex items-center gap-3 px-4 py-2 bg-card rounded-full border border-border">
+                        <i data-lucide="check-circle" class="h-5 w-5 text-primary"></i>
+                        <span class="text-sm font-medium">24/7 Booking Support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 md:py-24 bg-background relative">
+        <div class="container">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+                <div class="animate-fade-in">
+                    <div class="bg-card rounded-3xl p-6 sm:p-8 md:p-10 shadow-lg border border-border">
+                        <div class="mb-10">
+                            <h2 class="font-serif text-3xl font-semibold mb-4">Send us a message</h2>
+                            <p class="text-muted-foreground">Fill out the form below and we'll get back to you within 24 hours.</p>
+                        </div>
+                        
+                        <form id="contactForm" class="space-y-6">
+                            <div class="grid sm:grid-cols-2 gap-6">
+                                <div class="form-field">
+                                    <div class="relative">
+                                        <input type="text" id="firstName" placeholder=" " 
+                                               class="peer w-full h-14 px-4 rounded-xl border border-border bg-transparent focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 outline-none" />
+                                        <label for="firstName" class="floating-label absolute left-4 top-4 text-muted-foreground pointer-events-none">First Name</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-field">
+                                    <div class="relative">
+                                        <input type="text" id="lastName" placeholder=" " 
+                                               class="peer w-full h-14 px-4 rounded-xl border border-border bg-transparent focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 outline-none" />
+                                        <label for="lastName" class="floating-label absolute left-4 top-4 text-muted-foreground pointer-events-none">Last Name</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-field">
+                                <div class="relative">
+                                    <input type="email" id="email" placeholder=" " 
+                                           class="peer w-full h-14 px-4 rounded-xl border border-border bg-transparent focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 outline-none" />
+                                    <label for="email" class="floating-label absolute left-4 top-4 text-muted-foreground pointer-events-none">Email Address</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-field">
+                                <div class="relative">
+                                    <select id="inquiryType" 
+                                            class="w-full h-14 px-4 rounded-xl border border-border bg-transparent focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 outline-none appearance-none">
+                                        <option value="">Select inquiry type</option>
+                                        <option value="booking">Tour Booking</option>
+                                        <option value="custom">Custom Tour Request</option>
+                                        <option value="group">Group Booking</option>
+                                        <option value="partnership">Partnership</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="form-field">
+                                <div class="relative">
+                                    <textarea id="message" rows="5" placeholder=" " 
+                                              class="peer w-full px-4 py-4 rounded-xl border border-border bg-transparent focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 outline-none resize-none"></textarea>
+                                    <label for="message" class="floating-label absolute left-4 top-4 text-muted-foreground pointer-events-none">Your Message</label>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl">
+                                <i data-lucide="info" class="h-5 w-5 text-primary flex-shrink-0"></i>
+                                <p class="text-sm text-muted-foreground">For urgent inquiries, please call us directly at <a href="tel:+27815359007" class="text-primary font-semibold whitespace-nowrap">+27 81 535 9007</a></p>
+                            </div>
+                            
+                            <button type="submit" 
+                                    class="w-full h-14 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold flex items-center justify-center gap-3 transition-all duration-300 hover:shadow-xl hover:shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] group">
+                                <span>Send Message</span>
+                                <i data-lucide="send" class="h-5 w-5 transition-transform group-hover:translate-x-1"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="space-y-8 animate-fade-in" style="animation-delay: 200ms;">
+                    <div class="grid sm:grid-cols-2 gap-6">
+                        <div class="contact-card bg-card p-6 rounded-2xl border border-border hover:border-primary/30">
+                            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 mb-4">
+                                <i data-lucide="phone" class="h-6 w-6 text-primary"></i>
+                            </div>
+                            <h3 class="font-serif text-xl font-semibold mb-2">Call Us</h3>
+                            <p class="text-muted-foreground mb-3">Available 7 days a week</p>
+                            <a href="tel:+27815359007" class="text-foreground font-semibold text-lg hover:text-primary transition-colors">+27 81 535 9007</a>
+                        </div>
+                        
+                        <div class="contact-card bg-card p-6 rounded-2xl border border-border hover:border-primary/30">
+                            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 mb-4">
+                                <i data-lucide="mail" class="h-6 w-6 text-primary"></i>
+                            </div>
+                            <h3 class="font-serif text-xl font-semibold mb-2">Email Us</h3>
+                            <p class="text-muted-foreground mb-3">We respond quickly</p>
+                            <a href="mailto:aphangagroup@gmail.com" class="text-foreground font-semibold text-lg hover:text-primary transition-colors break-all">aphangagroup@gmail.com</a>
+                        </div>
+                        
+                        <div class="contact-card bg-card p-6 rounded-2xl border border-border hover:border-primary/30">
+                            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 mb-4">
+                                <i data-lucide="map-pin" class="h-6 w-6 text-primary"></i>
+                            </div>
+                            <h3 class="font-serif text-xl font-semibold mb-2">Visit Us</h3>
+                            <p class="text-muted-foreground mb-3">Our headquarters</p>
+                            <address class="text-foreground not-italic">
+                                Cnr R40 & D724 road<br />
+                                Mbombela, South Africa
+                            </address>
+                        </div>
+                        
+                        <div class="contact-card bg-card p-6 rounded-2xl border border-border hover:border-primary/30">
+                            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 mb-4">
+                                <i data-lucide="clock" class="h-6 w-6 text-primary"></i>
+                            </div>
+                            <h3 class="font-serif text-xl font-semibold mb-2">Business Hours</h3>
+                            <p class="text-muted-foreground mb-3">Local time (SAST)</p>
+                            <div class="space-y-1">
+                                <p class="text-foreground">Mon - Fri: 8:00 AM - 6:00 PM</p>
+                                <p class="text-foreground">Sat - Sun: 9:00 AM - 4:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-card p-6 rounded-2xl border border-border">
+                        <h3 class="font-serif text-xl font-semibold mb-4">Follow Our Journey</h3>
+                        <p class="text-muted-foreground mb-6">Stay connected for adventure inspiration, special offers, and behind-the-scenes moments.</p>
+                        <div class="flex gap-3 flex-wrap">
+                            <a href="#" class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 hover:bg-primary hover:text-primary-foreground transition-all duration-300 group">
+                                <i data-lucide="instagram" class="h-5 w-5 group-hover:scale-110 transition-transform"></i>
+                            </a>
+                            <a href="#" class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 hover:bg-primary hover:text-primary-foreground transition-all duration-300 group">
+                                <i data-lucide="facebook" class="h-5 w-5 group-hover:scale-110 transition-transform"></i>
+                            </a>
+                            <a href="#" class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 hover:bg-primary hover:text-primary-foreground transition-all duration-300 group">
+                                <i data-lucide="twitter" class="h-5 w-5 group-hover:scale-110 transition-transform"></i>
+                            </a>
+                            <a href="#" class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 hover:bg-primary hover:text-primary-foreground transition-all duration-300 group">
+                                <i data-lucide="youtube" class="h-5 w-5 group-hover:scale-110 transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-secondary/50 p-6 rounded-2xl border border-border">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0">
+                                <i data-lucide="help-circle" class="h-8 w-8 text-primary"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-serif text-xl font-semibold mb-2">Quick Questions?</h3>
+                                <p class="text-muted-foreground mb-4">Check our FAQ section for instant answers to common queries.</p>
+                                <a href="/faq" class="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
+                                    Visit FAQ <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 md:py-24 bg-background relative overflow-hidden">
+        <div class="container">
+            <div class="text-center mb-12 animate-fade-in">
+                <h2 class="font-serif text-3xl md:text-4xl font-semibold mb-4">Find Our Headquarters</h2>
+                <p class="text-muted-foreground max-w-2xl mx-auto">Nestled in the heart of Mpumalanga, our office is your gateway to unforgettable South African adventures.</p>
+            </div>
+            
+            <div class="map-container h-[400px] md:h-[500px] animate-fade-in" style="animation-delay: 300ms;">
+                <div class="w-full h-full bg-secondary flex items-center justify-center">
+                    <div class="text-center p-8">
+                        <i data-lucide="map" class="h-16 w-16 text-primary/30 mx-auto mb-4"></i>
+                        <h3 class="font-serif text-2xl font-semibold mb-2">Interactive Map</h3>
+                        <p class="text-muted-foreground mb-4">Google Maps integration would display here</p>
+                        <a href="https://maps.google.com/?q=Cnr+R40+%26+D724+road+Mbombela+South+Africa" 
+                           target="_blank" 
+                           class="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
+                            Open in Google Maps <i data-lucide="external-link" class="h-4 w-4"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6 mt-8">
+                <div class="flex items-center gap-4 p-4 bg-card rounded-xl border border-border">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i data-lucide="car" class="h-5 w-5 text-primary"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-1">Free Parking</h4>
+                        <p class="text-sm text-muted-foreground">Ample parking available on-site</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4 p-4 bg-card rounded-xl border border-border">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i data-lucide="coffee" class="h-5 w-5 text-primary"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-1">Visitor Lounge</h4>
+                        <p class="text-sm text-muted-foreground">Complimentary refreshments</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4 p-4 bg-card rounded-xl border border-border">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i data-lucide="wifi" class="h-5 w-5 text-primary"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-1">Wi-Fi Access</h4>
+                        <p class="text-sm text-muted-foreground">Free high-speed internet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 md:py-24 bg-secondary/30 relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 wave-pattern h-20 opacity-10"></div>
+        
+        <div class="container relative">
+            <div class="max-w-3xl mx-auto text-center animate-fade-in">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-8">
+                    <i data-lucide="users" class="h-8 w-8 text-primary"></i>
+                </div>
+                
+                <h2 class="font-serif text-3xl md:text-4xl font-semibold mb-6">Meet Your Adventure Team</h2>
+                <p class="text-muted-foreground text-lg mb-10 max-w-2xl mx-auto">
+                    Our passionate team of local experts, guides, and wellness professionals are dedicated to creating your perfect South African adventure experience.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/about#team" class="inline-flex items-center justify-center h-12 px-8 rounded-full bg-primary text-primary-foreground font-semibold hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 group">
+                        Meet the Team <i data-lucide="arrow-right" class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                    <a href="/tours" class="inline-flex items-center justify-center h-12 px-8 rounded-full border border-primary text-primary font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-300">
+                        Browse All Tours
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-foreground text-background">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
+                <div class="lg:col-span-2">
+                    <a href="/" class="flex items-center gap-2 mb-6">
+                        <i data-lucide="mountain" class="h-8 w-8 text-primary"></i>
+                        <span class="font-serif text-2xl font-semibold text-background">Casalinga</span>
+                    </a>
+                    <p class="text-background/70 leading-relaxed mb-8 max-w-sm">Discover wellness through travel, adventure, and connection with nature. Creating transformative experiences since 2010.</p>
+                    <div class="space-y-4">
+                        <a href="mailto:aphangagroup@gmail.com" class="flex items-center gap-3 text-background/70 hover:text-background transition-colors">
+                            <i data-lucide="mail" class="h-5 w-5 text-primary"></i>
+                            <span>aphangagroup@gmail.com</span>
+                        </a>
+                        <a href="tel:+27815359007" class="flex items-center gap-3 text-background/70 hover:text-background transition-colors">
+                            <i data-lucide="phone" class="h-5 w-5 text-primary"></i>
+                            <span>+27 81 535 9007</span>
+                        </a>
+                        <div class="flex items-start gap-3 text-background/70">
+                            <i data-lucide="map-pin" class="h-5 w-5 text-primary flex-shrink-0 mt-0.5"></i>
+                            <span>Cnr R40 & D724 road<br />Mbombela, South Africa</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // --- MOBILE MENU FUNCTIONALITY (ADDED) ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                // Toggle the 'hidden' class to show/hide menu
+                mobileMenu.classList.toggle('hidden');
+                
+                // Optional: Change icon (Menu <-> X)
+                const icon = mobileMenuBtn.querySelector('i');
+                if(mobileMenu.classList.contains('hidden')) {
+                     // If hidden, show menu icon
+                     // We need to re-render lucide icon or toggle classes
+                     // Simplest way with lucide loaded:
+                     mobileMenuBtn.innerHTML = '<i data-lucide="menu" class="h-6 w-6"></i>';
+                } else {
+                     // If visible, show close icon
+                     mobileMenuBtn.innerHTML = '<i data-lucide="x" class="h-6 w-6"></i>';
+                }
+                lucide.createIcons();
+            });
+        }
+
+        // Form Submission with Animation (Your existing logic)
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<span>Sending...</span><i data-lucide="loader" class="h-5 w-5 ml-2 animate-spin"></i>';
+            submitBtn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'mt-6 p-4 bg-primary/10 text-primary rounded-xl border border-primary/20 animate-fade-in';
+                successDiv.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="check-circle" class="h-5 w-5"></i>
+                        <div>
+                            <p class="font-semibold">Message sent successfully!</p>
+                            <p class="text-sm opacity-90">We'll get back to you within 24 hours.</p>
+                        </div>
+                    </div>
+                `;
+                
+                this.insertBefore(successDiv, this.lastElementChild);
+                
+                // Reset form and button
+                this.reset();
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                // Reinitialize floating labels
+                document.querySelectorAll('input, textarea').forEach(field => {
+                    field.dispatchEvent(new Event('input'));
+                });
+                
+                // Scroll to success message
+                successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Remove success message after 5 seconds
+                setTimeout(() => {
+                    successDiv.remove();
+                }, 5000);
+                
+            }, 1500);
+        });
+
+        // Floating Labels Enhancement
+        document.querySelectorAll('input, textarea, select').forEach(field => {
+            field.addEventListener('focus', function() {
+                this.parentElement.classList.add('form-field-active');
+            });
+            
+            field.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentElement.classList.remove('form-field-active');
+                }
+            });
+            
+            // Initialize on page load
+            if (field.value) {
+                field.dispatchEvent(new Event('input'));
+            }
+        });
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

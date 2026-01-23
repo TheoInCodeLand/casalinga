@@ -51,6 +51,7 @@
                 <a href="/" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary rounded-full transition-colors">Home</a>
                 <a href="/tours" class="px-4 py-2 text-sm font-medium text-primary bg-primary/10 rounded-full transition-colors">Tours</a>
                 <a href="/about" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary rounded-full transition-colors">About</a>
+                <a href="/testimonials" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary rounded-full transition-colors">Testimonial</a>
                 <a href="/contact" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary rounded-full transition-colors">Contact</a>
             </nav>
 
@@ -72,19 +73,34 @@
                 <a href="/" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Home</a>
                 <a href="/tours" class="block px-4 py-2 text-primary bg-primary/5 rounded-lg">Tours</a>
                 <a href="/about" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">About</a>
+                <a href="/testimonials" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Testimonial</a>
                 <a href="/contact" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Contact</a>
             </div>
         </div>
     </header>
 
     <section class="relative pt-32 pb-16 bg-primary/5">
+        <div id="hero-bg" class="absolute inset-0 scale-100 transition-transform duration-300 ease-out">
+            <video 
+                autoplay 
+                muted 
+                loop 
+                playsinline 
+                poster="/images/hero-mountains.jpg" 
+                class="w-full h-full object-cover"
+            >
+                <source src="/videos/casalinga-contact-page.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="absolute inset-0 bg-black/40"></div>
         <div class="mx-auto max-w-7xl px-4 text-center">
-            <span class="inline-block text-primary text-sm font-semibold tracking-wider uppercase mb-4 reveal">Discover Your Next Journey</span>
-            <h1 class="font-serif text-4xl md:text-6xl font-bold mb-6 text-gray-900 reveal" style="transition-delay: 100ms;">Explore Our Tours</h1>
-            <p class="text-gray-600 max-w-2xl mx-auto mb-10 text-lg reveal" style="transition-delay: 200ms;">From the mountains of Mpumalanga to the coast of the Garden Route.</p>
+            <span class="inline-block text-primary font-semibold tracking-wider uppercase mb-4 reveal">Discover Your Next Journey</span>
+            <h1 class="font-serif text-4xl md:text-6xl font-bold mb-6 text-white reveal" style="transition-delay: 100ms;">Explore Our Tours</h1>
+            <p class="text-gray-300 max-w-2xl mx-auto mb-10 text-lg reveal" style="transition-delay: 200ms;">From the mountains of Mpumalanga to the coast of the Garden Route.</p>
             
             <div class="max-w-3xl mx-auto reveal" style="transition-delay: 300ms;">
-                <form action="/tours" method="GET" class="bg-white p-2 rounded-full shadow-lg border border-gray-100 flex flex-col md:flex-row gap-2">
+                <form action="/tours" method="GET" class="bg-white p-2 shadow-lg border border-gray-100 flex flex-col md:flex-row gap-2" style="border-radius: 1em;">
                     <div class="flex-1 relative">
                         <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
                         <input type="text" name="search" value="<%= filters.search || '' %>" placeholder="Search destinations or experiences..." class="w-full pl-12 pr-4 py-3 rounded-full border-none focus:ring-0 text-gray-800 placeholder:text-gray-400 bg-transparent">
@@ -94,7 +110,7 @@
                          <i data-lucide="calendar" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
                         <input type="date" name="date" value="<%= filters.date || '' %>" class="w-full pl-12 pr-4 py-3 rounded-full border-none focus:ring-0 text-gray-800 bg-transparent text-sm">
                     </div>
-                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full font-medium transition-all shadow-md">
+                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-8 py-3 font-medium transition-all shadow-md" style="border-radius: 1em;">
                         Search
                     </button>
                 </form>
@@ -255,8 +271,8 @@
                 <div>
                     <h4 class="font-bold text-lg mb-6">Contact</h4>
                     <ul class="space-y-4 text-gray-400">
-                        <li class="flex items-center gap-3"><i data-lucide="mail" class="w-4 h-4 text-primary"></i> hello@casalinga.co.za</li>
-                        <li class="flex items-center gap-3"><i data-lucide="phone" class="w-4 h-4 text-primary"></i> +27 12 345 6789</li>
+                        <li class="flex items-center gap-3"><i data-lucide="mail" class="w-4 h-4 text-primary"></i> aphangagroup@gmail.com</li>
+                        <li class="flex items-center gap-3"><i data-lucide="phone" class="w-4 h-4 text-primary"></i> +27 81 535 9007</li>
                     </ul>
                 </div>
             </div>
