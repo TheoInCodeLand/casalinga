@@ -741,7 +741,7 @@
       </nav>
       <div class="sidebar-footer">
         <div class="sidebar-user">
-          <img class="sidebar-user-avatar" src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>">
+          <img class="sidebar-user-avatar" src="<%= user.avatar || '/images/user-avatar.jpg' %>" alt="<%= user.name %>">
           <div class="sidebar-user-info">
             <span class="sidebar-user-name"><%= user.name %></span>
             <span class="sidebar-user-role"><%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %></span>
@@ -788,7 +788,7 @@
 
           <div class="dropdown">
             <button class="avatar-button" id="userBtn">
-              <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>">
+              <img src="<%= user.avatar || '/images/user-avatar.jpg' %>" alt="<%= user.name %>">
             </button>
             <div class="dropdown-content" id="userDropdown">
               <div class="dropdown-label">My Account</div>

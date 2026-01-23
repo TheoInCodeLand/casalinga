@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/admin/sidebar-styles.css">
   
   <style>
     /* Base Variables & Reset */
@@ -124,33 +125,7 @@
 <body>
   <div class="app-wrapper">
     <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">
-          <div class="sidebar-logo-icon"><i class="fas fa-layer-group"></i></div>
-          <span>Casalinga Admin</span>
-        </div>
-      </div>
-      <nav class="sidebar-content">
-        <ul class="sidebar-menu">
-          <li><a href="/admin/dashboard" class="sidebar-menu-button"><i class="fas fa-th-large"></i> Dashboard</a></li>
-          <li><a href="/admin/bookings" class="sidebar-menu-button active"><i class="fas fa-calendar-check"></i> Bookings</a></li>
-          <li><a href="/admin/tours" class="sidebar-menu-button"><i class="fas fa-map-marked-alt"></i> Tours</a></li>
-          <% if (user.role === 'admin') { %>
-          <li><a href="/admin/users" class="sidebar-menu-button"><i class="fas fa-users"></i> Users</a></li>
-          <li><a href="/admin/analytics" class="sidebar-menu-button"><i class="fas fa-chart-line"></i> Analytics</a></li>
-          <% } %>
-          <li><a href="/admin/settings/categories" class="sidebar-menu-button"><i class="fas fa-cog"></i> Settings</a></li>
-        </ul>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="sidebar-user">
-          <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>">
-          <div class="sidebar-user-info">
-            <span style="font-weight: 600;"><%= user.name %></span>
-            <span style="color: hsl(var(--muted-foreground));"><%= user.role %></span>
-          </div>
-        </div>
-      </div>
+      <%- include('sidebar-partial') %>
     </aside>
 
     <main class="main-content">
@@ -158,7 +133,7 @@
         <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
         <div style="font-weight: 600;">Booking Management</div>
         <div class="topbar-actions">
-           <button class="avatar-button"><img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="User"></button>
+           <button class="avatar-button"><img src="<%= user.avatar || '/images/user-avatar.jpg' %>" alt="User"></button>
         </div>
       </header>
 

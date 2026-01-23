@@ -129,7 +129,7 @@
       </nav>
       <div class="sidebar-footer">
         <div class="sidebar-user">
-          <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>">
+          <img src="<%= user.avatar || '/images/user-avatar.jpg' %>" alt="<%= user.name %>">
           <div class="sidebar-user-info">
             <span style="font-weight: 600;"><%= user.name %></span>
             <span style="color: hsl(var(--muted-foreground));"><%= user.role %></span>
@@ -143,7 +143,7 @@
         <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
         <h4 style="margin: 0; font-weight: 600;">Business Intelligence</h4>
         <div class="topbar-actions">
-           <button class="avatar-button"><img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="User"></button>
+           <button class="avatar-button"><img src="<%= user.avatar || '/images/user-avatar.jpg' %>" alt="User"></button>
         </div>
       </header>
 
