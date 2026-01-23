@@ -142,14 +142,17 @@
                 <div class="hidden md:flex items-center gap-3">
                     <% if (user) { %>
                         <% if (user.role === 'admin') { %>
+                            <a href="/auth/logout" class="text-center py-3 text-foreground/90 font-medium hover:text-primary transition-colors">Logout</a>
                             <a href="/admin/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
                                 Dashboard
                             </a>
                         <% } else if (user.role === 'user') { %>
+                            <a href="/auth/logout" class="text-center py-3 text-foreground/90 font-medium hover:text-primary transition-colors">Logout</a>
                             <a href="/user/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
                                 Dashboard
                             </a>
                         <% } else if (user.role === 'manager') { %>
+                            <a href="/auth/logout" class="text-center py-3 text-foreground/90 font-medium hover:text-primary transition-colors">Logout</a>
                             <a href="/manager/dashboard" id="header-cta" class="inline-flex items-center justify-center whitespace-nowrap text-sm h-10 rounded-full px-6 font-medium transition-all duration-300 bg-white text-foreground hover:bg-white/90">
                                 Dashboard
                             </a>
@@ -168,29 +171,43 @@
                 </button>
             </nav>
 
-            <div id="mobile-menu" class="md:hidden overflow-hidden transition-all duration-300 ease-out max-h-0 opacity-0 mt-4">
-                <div class="bg-card rounded-2xl p-4 shadow-lg border border-border">
+            <div id="mobile-menu" class="md:hidden overflow-hidden transition-all duration-300 ease-out max-h-0 opacity-0 mt-4 ">
+                <div class=" rounded-2xl p-4 shadow-lg border border-border bg-white/45 backdrop-blur-sm">
                     <ul class="space-y-1">
                         <li><a href="/home" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Home</a></li>
                         <li><a href="/tours" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Tours</a></li>
                         <li><a href="/about" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">About</a></li>
-                        <li><a href="/testimonials" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Testimonials</a></li>
+                        <!-- <li><a href="/testimonials" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Testimonials</a></li> -->
                         <li><a href="/contact" class="block px-4 py-3 text-foreground font-medium rounded-xl hover:bg-secondary transition-colors mobile-link">Contact</a></li>
                     </ul>
 
                     <% if (user) { %>
                         <% if (user.role === "admin") { %>
-                            <a href="/admin/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                            <!-- <a href="/auth/logout" class="text-center py-3 text-foreground/90 font-medium hover:text-primary transition-colors">Logouts</a> -->
+                            <a href="/admin/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/70 h-10 px-4 py-2 rounded-full">
                                 Dashboard
+                            </a>
+                            <a href="/auth/logout" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-gray-800 hover:bg-white/60 h-10 px-4 py-2 rounded-full">
+                                Logout
                             </a>
                         <% } else if (user.role === "manager") { %>
-                            <a href="/manager/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                            <!-- <a href="/auth/logout" class="text-center py-3 text-foreground/90 font-medium hover:text-primary transition-colors">Logouts</a> -->
+                            <a href="/manager/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/70 h-10 px-4 py-2 rounded-full">
                                 Dashboard
                             </a>
+                            <a href="/auth/logout" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-gray-800 hover:bg-white/60 h-10 px-4 py-2 rounded-full">
+                                Logout
+                            </a>
+                            
                         <% } else { %>
-                            <a href="/user/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">
+                            <!-- <a href="/auth/logout" class="text-center py-3 text-foreground/90 font-medium hover:text-primary transition-colors">Logouts</a> -->
+                            <a href="/user/dashboard" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/70 h-10 px-4 py-2 rounded-full">
                                 Dashboard
                             </a>
+                            <a href="/auth/logout" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-gray-800 hover:bg-white/60 h-10 px-4 py-2 rounded-full">
+                                Logout
+                            </a>
+                            
                         <% } %>
                     <% } else { %>
                         <a href="/book" class="w-full mt-4 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-full">

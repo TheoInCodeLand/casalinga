@@ -919,7 +919,9 @@
                                                 <div class="flex items-center gap-4">
                                                     <span class="flex items-center gap-1 text-gray-500">
                                                         <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0"></i>
-                                                        <span class="truncate max-w-[100px]"><%= sim.location.split(',')[0] %></span>
+                                                        <span class="truncate max-w-[100px]">
+                                                            <%= sim.location ? sim.location.split(',')[0] : 'Location' %>
+                                                        </span>
                                                     </span>
                                                     <span class="flex items-center gap-1 text-gray-500">
                                                         <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-amber-400"></i>

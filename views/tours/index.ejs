@@ -56,8 +56,18 @@
             </nav>
 
             <div class="hidden md:flex items-center gap-3">
-                <% if (typeof user !== 'undefined' && user) { %>
+                <% if (user) { %>
+                    <% if ( user.role === "user") { %>
+                     <a href="/auth/logout" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary">Logout</a>
                     <a href="/user/dashboard" class="px-6 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all shadow-md">Dashboard</a>
+                    <% } else if ( user.role === "admin") { %>
+                     <a href="/auth/logout" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary">Logout</a>
+                    <a href="/admin/dashboard" class="px-6 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all shadow-md">Dashboard</a>
+                    <% } else if ( user.role === "manager") { %>
+                     <a href="/auth/logout" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary">Logout</a>
+                    <a href="/manager/dashboard" class="px-6 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all shadow-md">Dashboard</a>
+                    <% } %>
+                    
                 <% } else { %>
                     <a href="/auth/login" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary">Login</a>
                     <a href="/auth/register" class="px-6 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all shadow-md">Sign Up</a>
@@ -75,6 +85,21 @@
                 <a href="/about" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">About</a>
                 <a href="/testimonials" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Testimonial</a>
                 <a href="/contact" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Contact</a>
+                <% if (user) { %>
+                    <% if ( user.role === "user") { %>
+                     <a href="/auth/logout" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Logout</a>
+                    <a href="/user/dashboard" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Dashboard</a>
+                    <% } else if ( user.role === "admin") { %>
+                     <a href="/auth/logout" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Logout</a>
+                    <a href="/admin/dashboard" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Dashboard</a>
+                    <% } else if ( user.role === "manager") { %>
+                     <a href="/auth/logout" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Logout</a>
+                    <a href="/manager/dashboard" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Dashboard</a>
+                    <% } %>
+                <% } else { %>
+                    <a href="/auth/login" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Login</a>
+                    <a href="/auth/register" class="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">Sign Up</a>
+                <% } %>
             </div>
         </div>
     </header>

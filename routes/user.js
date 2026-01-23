@@ -22,7 +22,7 @@ router.post('/profile/avatar', isUser, uploadAvatar.single('avatar'), async (req
             return res.redirect('/user/profile');
         }
 
-        const avatarUrl = `/uploads/user-avatars/${req.file.filename}`;
+        const avatarUrl = req.file.path;
         
         // Update user avatar in database
         await db.query(

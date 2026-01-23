@@ -2,6 +2,7 @@ const db = require('../config/database');
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const moment = require('moment');
+const { storage } = require('../config/cloudinary');
 
 const userController = {
     // GET /user/dashboard

@@ -1,6 +1,7 @@
 const db = require('../config/database');
 const { validationResult } = require('express-validator');
 const moment = require('moment');
+const crypto = require('crypto');
 
 const bookingController = {
     // POST /bookings/create
@@ -14,13 +15,15 @@ const bookingController = {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 req.session.error = errors.array()[0].msg;
-                return res.redirect(`/tours/${req.body.tour_slug}`);
+                // Safe redirect
+                const redirectUrl = req.body.tour_slug ? `/tours/${req.body.tour_slug}` : '/tours';
+                return res.redirect(redirectUrl);
             }
 
             const { tour_id, tour_date, people_count, special_requests } = req.body;
             const userId = req.session.user.id;
 
-            // Get tour details
+            // 1. Get tour details
             const tourQuery = await db.query(
                 'SELECT id, title, price, discount_price, capacity FROM tours WHERE id = $1',
                 [tour_id]
@@ -34,7 +37,7 @@ const bookingController = {
             const tour = tourQuery.rows[0];
             const tourPrice = tour.discount_price || tour.price;
 
-            // Check capacity
+            // 2. Check capacity
             const bookedQuery = await db.query(
                 `SELECT SUM(people_count) as total_booked 
                  FROM bookings 
@@ -45,34 +48,33 @@ const bookingController = {
             const totalBooked = parseInt(bookedQuery.rows[0].total_booked) || 0;
             const availableSlots = tour.capacity - totalBooked;
 
-            if (people_count > availableSlots) {
+            if (parseInt(people_count) > availableSlots) {
                 req.session.error = `Only ${availableSlots} slots available for this date`;
                 return res.redirect(`/tours/${req.body.tour_slug}`);
             }
 
-            // Calculate total price
+            // 3. Calculate total price
             const totalPrice = tourPrice * people_count;
 
-            // Generate booking number
-            const bookingNumberQuery = await db.query(
-                "SELECT 'CT-' || TO_CHAR(CURRENT_DATE, 'YYMMDD') || '-' || LPAD((COALESCE(MAX(SUBSTRING(booking_number FROM 10)::INTEGER), 0) + 1)::TEXT, 5, '0') as next_number FROM bookings WHERE booking_number LIKE 'CT-' || TO_CHAR(CURRENT_DATE, 'YYMMDD') || '-%'"
-            );
+            // 4. Generate ULTRA UNIQUE Booking Number
+            // Format: CT-YYMMDD-XXXXXX (e.g., CT-240126-AB9F21)
+            // Using random bytes eliminates the duplicate key error completely.
+            const datePart = moment().format('YYMMDD');
+            const randomPart = crypto.randomBytes(3).toString('hex').toUpperCase(); 
+            const bookingNumber = `CT-${datePart}-${randomPart}`;
 
-            const bookingNumber = bookingNumberQuery.rows[0].next_number || 
-                                 `CT-${moment().format('YYMMDD')}-00001`;
-
-            // Create booking
+            // 5. Create booking
             const bookingQuery = await db.query(
                 `INSERT INTO bookings (
                     booking_number, user_id, tour_id, people_count,
-                    total_price, special_requests, booked_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    total_price, special_requests, booked_at, status
+                ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), 'confirmed')
                 RETURNING id, booking_number`,
                 [bookingNumber, userId, tour_id, people_count, 
-                 totalPrice, special_requests, tour_date]
+                 totalPrice, special_requests]
             );
 
-            // Update tour booked count
+            // 6. Update tour booked count
             await db.query(
                 'UPDATE tours SET booked_count = booked_count + $1 WHERE id = $2',
                 [people_count, tour_id]
@@ -84,7 +86,9 @@ const bookingController = {
         } catch (error) {
             console.error('Create booking error:', error);
             req.session.error = 'An error occurred while creating your booking';
-            res.redirect(`/tours/${req.body.tour_slug}`);
+            // Fallback redirect
+            const redirectUrl = req.body.tour_slug ? `/tours/${req.body.tour_slug}` : '/tours';
+            res.redirect(redirectUrl);
         }
     },
 

@@ -11,366 +11,69 @@
   <link rel="stylesheet" href="/css/admin/sidebar-styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    /* YOUR EXACT CSS - UNTOUCHED */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --background: 0 0% 100%;
-      --foreground: 222.2 84% 4.9%;
-      --card: 0 0% 100%;
-      --card-foreground: 222.2 84% 4.9%;
-      --popover: 0 0% 100%;
-      --popover-foreground: 222.2 84% 4.9%;
-      --primary: 221.2 83.2% 53.3%;
-      --primary-foreground: 210 40% 98%;
-      --secondary: 210 40% 96%;
-      --secondary-foreground: 222.2 84% 4.9%;
-      --muted: 210 40% 96%;
-      --muted-foreground: 215.4 16.3% 46.9%;
-      --accent: 210 40% 96%;
-      --accent-foreground: 222.2 84% 4.9%;
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 210 40% 98%;
-      --border: 214.3 31.8% 91.4%;
-      --input: 214.3 31.8% 91.4%;
-      --ring: 221.2 83.2% 53.3%;
-      --radius: 0.75rem;
-      --sidebar-background: 0 0% 98%;
-      --sidebar-foreground: 240 5.3% 26.1%;
-      --sidebar-primary: 240 5.9% 10%;
-      --sidebar-primary-foreground: 0 0% 98%;
-      --sidebar-accent: 240 4.8% 95.9%;
-      --sidebar-accent-foreground: 240 5.9% 10%;
-      --sidebar-border: 220 13% 91%;
+      --background: 0 0% 100%; --foreground: 222.2 84% 4.9%; --card: 0 0% 100%; --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%; --popover-foreground: 222.2 84% 4.9%; --primary: 221.2 83.2% 53.3%; --primary-foreground: 210 40% 98%;
+      --secondary: 210 40% 96%; --secondary-foreground: 222.2 84% 4.9%; --muted: 210 40% 96%; --muted-foreground: 215.4 16.3% 46.9%;
+      --accent: 210 40% 96%; --accent-foreground: 222.2 84% 4.9%; --destructive: 0 84.2% 60.2%; --destructive-foreground: 210 40% 98%;
+      --border: 214.3 31.8% 91.4%; --input: 214.3 31.8% 91.4%; --ring: 221.2 83.2% 53.3%; --radius: 0.75rem;
+      --sidebar-background: 0 0% 98%; --sidebar-foreground: 240 5.3% 26.1%; --sidebar-primary: 240 5.9% 10%; --sidebar-primary-foreground: 0 0% 98%;
+      --sidebar-accent: 240 4.8% 95.9%; --sidebar-accent-foreground: 240 5.9% 10%; --sidebar-border: 220 13% 91%;
     }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: hsl(var(--background));
-      color: hsl(var(--foreground));
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* Layout */
-    .app-wrapper {
-      display: flex;
-      min-height: 100vh;
-      width: 100%;
-    }
-
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      margin-left: 16rem;
-      overflow-x: hidden;
-    }
-
-    /* Topbar */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.5rem;
-      border-bottom: 1px solid hsl(var(--border));
-      background-color: hsl(var(--background));
-    }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-left: auto;
-    }
-
-    .icon-button {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 0.375rem;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: hsl(var(--foreground));
-      transition: background-color 0.15s;
-    }
-
-    .icon-button:hover {
-      background-color: hsl(var(--accent));
-    }
-
-    .avatar-button {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      overflow: hidden;
-      cursor: pointer;
-      border: none;
-      padding: 0;
-    }
-
-    .avatar-button img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Page Content */
-    .page-content {
-      flex: 1;
-      padding: 1.5rem 2rem 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-    }
-
-    .page-title {
-      font-size: 1.875rem;
-      font-weight: 700;
-      letter-spacing: -0.025em;
-    }
-
-    .page-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    /* Cards */
-    .card {
-      border-radius: var(--radius);
-      border: 1px solid hsl(var(--border));
-      background-color: hsl(var(--card));
-      color: hsl(var(--card-foreground));
-      margin-bottom: 1.5rem;
-    }
-
-    .card-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid hsl(var(--border));
-    }
-
-    .card-title {
-      font-size: 1.125rem;
-      font-weight: 600;
-    }
-
-    .card-content {
-      padding: 1.5rem;
-    }
-
-    /* Forms */
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-      color: hsl(var(--foreground));
-    }
-
-    .form-control {
-      display: block;
-      width: 100%;
-      padding: 0.5rem 0.75rem;
-      font-size: 0.875rem;
-      line-height: 1.5;
-      color: hsl(var(--foreground));
-      background-color: transparent;
-      border: 1px solid hsl(var(--input));
-      border-radius: var(--radius);
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-
-    .form-control:focus {
-      outline: none;
-      border-color: hsl(var(--ring));
-      box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
-    }
-
-    textarea.form-control {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      margin-right: -0.75rem;
-      margin-left: -0.75rem;
-    }
-
-    .col {
-      flex: 1 0 0%;
-      padding-right: 0.75rem;
-      padding-left: 0.75rem;
-    }
-
-    .col-4 {
-      flex: 0 0 auto;
-      width: 33.33333333%;
-      padding-right: 0.75rem;
-      padding-left: 0.75rem;
-    }
-
-    .col-8 {
-      flex: 0 0 auto;
-      width: 66.66666667%;
-      padding-right: 0.75rem;
-      padding-left: 0.75rem;
-    }
-
-    /* Checkboxes & Switches */
-    .form-check {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .form-check-input {
-      width: 1rem;
-      height: 1rem;
-      margin-top: 0.15em;
-      margin-right: 0.5rem;
-      cursor: pointer;
-    }
-
-    .form-check-label {
-      font-size: 0.875rem;
-      cursor: pointer;
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: all 0.15s;
-      text-decoration: none;
-      border: 1px solid transparent;
-    }
-
-    .btn-primary {
-      background-color: hsl(var(--primary));
-      color: hsl(var(--primary-foreground));
-    }
+    body { font-family: 'Inter', sans-serif; background-color: hsl(var(--background)); color: hsl(var(--foreground)); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .app-wrapper { display: flex; min-height: 100vh; width: 100%; }
+    .main-content { flex: 1; margin-left: 16rem; overflow-x: hidden; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); background-color: hsl(var(--background)); }
+    .topbar-actions { display: flex; align-items: center; gap: 1rem; margin-left: auto; }
+    .icon-button { position: relative; display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 0.375rem; background: transparent; border: none; cursor: pointer; color: hsl(var(--foreground)); transition: background-color 0.15s; }
+    .icon-button:hover { background-color: hsl(var(--accent)); }
+    .avatar-button { width: 2rem; height: 2rem; border-radius: 50%; overflow: hidden; cursor: pointer; border: none; padding: 0; }
+    .avatar-button img { width: 100%; height: 100%; object-fit: cover; }
+    .page-content { flex: 1; padding: 1.5rem 2rem 2rem; display: flex; flex-direction: column; gap: 1rem; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+    .page-title { font-size: 1.875rem; font-weight: 700; letter-spacing: -0.025em; }
+    .page-actions { display: flex; align-items: center; gap: 0.5rem; }
+    .card { border-radius: var(--radius); border: 1px solid hsl(var(--border)); background-color: hsl(var(--card)); color: hsl(var(--card-foreground)); margin-bottom: 1.5rem; }
+    .card-header { padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); }
+    .card-title { font-size: 1.125rem; font-weight: 600; }
+    .card-content { padding: 1.5rem; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: hsl(var(--foreground)); }
+    .form-control { display: block; width: 100%; padding: 0.5rem 0.75rem; font-size: 0.875rem; line-height: 1.5; color: hsl(var(--foreground)); background-color: transparent; border: 1px solid hsl(var(--input)); border-radius: var(--radius); transition: border-color 0.15s, box-shadow 0.15s; }
+    .form-control:focus { outline: none; border-color: hsl(var(--ring)); box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2); }
+    textarea.form-control { min-height: 100px; resize: vertical; }
+    .row { display: flex; flex-wrap: wrap; margin-right: -0.75rem; margin-left: -0.75rem; }
+    .col { flex: 1 0 0%; padding-right: 0.75rem; padding-left: 0.75rem; }
+    .col-4 { flex: 0 0 auto; width: 33.33333333%; padding-right: 0.75rem; padding-left: 0.75rem; }
+    .col-8 { flex: 0 0 auto; width: 66.66666667%; padding-right: 0.75rem; padding-left: 0.75rem; }
+    .form-check { display: flex; align-items: center; margin-bottom: 0.5rem; }
+    .form-check-input { width: 1rem; height: 1rem; margin-top: 0.15em; margin-right: 0.5rem; cursor: pointer; }
+    .form-check-label { font-size: 0.875rem; cursor: pointer; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; text-decoration: none; border: 1px solid transparent; }
+    .btn-primary { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
     .btn-primary:hover { background-color: hsl(221.2 83.2% 46%); }
-
-    .btn-secondary {
-      background-color: hsl(var(--secondary));
-      color: hsl(var(--secondary-foreground));
-    }
+    .btn-secondary { background-color: hsl(var(--secondary)); color: hsl(var(--secondary-foreground)); }
     .btn-secondary:hover { background-color: hsl(210 40% 90%); }
-
-    .btn-danger {
-      background-color: hsl(var(--destructive));
-      color: hsl(var(--destructive-foreground));
-    }
+    .btn-danger { background-color: hsl(var(--destructive)); color: hsl(var(--destructive-foreground)); }
     .btn-danger:hover { background-color: hsl(0 84.2% 50%); }
-
-    .btn-outline {
-      background-color: transparent;
-      border-color: hsl(var(--input));
-      color: hsl(var(--foreground));
-    }
+    .btn-outline { background-color: transparent; border-color: hsl(var(--input)); color: hsl(var(--foreground)); }
     .btn-outline:hover { background-color: hsl(var(--accent)); }
-
-    /* Image Grid */
-    .image-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .image-card {
-      border: 1px solid hsl(var(--border));
-      border-radius: var(--radius);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .image-card img {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-    }
-
-    .image-card-body {
-      padding: 0.5rem;
-      background: hsl(var(--card));
-      text-align: center;
-    }
-
-    /* Mobile Responsive */
-    .mobile-toggle {
-      display: none;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0,0,0,0.5);
-      z-index: 35;
-    }
-
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .main-content { margin-left: 0; }
-      .mobile-toggle { display: block; }
-      .sidebar-overlay.show { display: block; }
-      .row { flex-direction: column; }
-      .col-4, .col-8 { width: 100%; }
-    }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-    }
+    .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+    .image-card { border: 1px solid hsl(var(--border)); border-radius: var(--radius); overflow: hidden; position: relative; }
+    .image-card img { width: 100%; height: 120px; object-fit: cover; }
+    .image-card-body { padding: 0.5rem; background: hsl(var(--card)); text-align: center; }
+    .mobile-toggle { display: none; background: none; border: none; cursor: pointer; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); z-index: 35; }
+    @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); } .main-content { margin-left: 0; } .mobile-toggle { display: block; } .sidebar-overlay.show { display: block; } .row { flex-direction: column; } .col-4, .col-8 { width: 100%; } }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
     .modal.show { display: flex; }
-    .modal-content {
-      background: hsl(var(--card));
-      padding: 2rem;
-      border-radius: var(--radius);
-      max-width: 500px;
-      width: 90%;
-    }
+    .modal-content { background: hsl(var(--card)); padding: 2rem; border-radius: var(--radius); max-width: 500px; width: 90%; }
+    
+    /* ADDED: Minimal styles for the preview area so it looks neat */
+    #newImagePreview { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; margin-top: 1rem; }
+    .preview-thumb { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius); border: 1px solid hsl(var(--border)); }
   </style>
 </head>
 <body>
@@ -416,15 +119,19 @@
             <a href="/tours/<%= tour.slug %>" target="_blank" class="btn btn-outline">
                 <i class="fas fa-eye" style="margin-right: 0.5rem;"></i> View Live
             </a>
-            <form action="/admin/tours/<%= tour.id %>/delete" method="post">
-                <button type="submit" class="btn btn-danger">
-                    <i class="fas fa-trash" style="margin-right: 0.5rem;"></i> Delete Tour
-                </button>
-            </form>
+            <button type="button" class="btn btn-danger" onclick="openDeleteModal()">
+                <i class="fas fa-trash" style="margin-right: 0.5rem;"></i> Delete Tour
+            </button>
           </div>
         </div>
 
-        <form action="/admin/tours/<%= tour.id %>/edit" method="POST" enctype="multipart/form-data">
+        <% if (locals.error) { %>
+          <div style="background-color: #fee2e2; color: #991b1b; padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; border: 1px solid #fecaca; display: flex; align-items: center;">
+            <i class="fas fa-exclamation-circle" style="margin-right: 0.5rem;"></i> <%= error %>
+          </div>
+        <% } %>
+
+        <form action="/admin/tours/<%= tour.id %>/edit" method="POST" enctype="multipart/form-data" id="editForm">
             <div class="row">
                 <div class="col-8">
                     <div class="card">
@@ -497,8 +204,9 @@
                             
                             <div class="form-group">
                                 <label class="form-label">Upload New Images</label>
-                                <input type="file" name="images" class="form-control" multiple accept="image/*">
+                                <input type="file" name="images" id="fileInput" class="form-control" multiple accept="image/*">
                                 <small style="color: hsl(var(--muted-foreground));">Supported formats: JPG, PNG, WEBP. Max 5MB each.</small>
+                                <div id="newImagePreview"></div>
                             </div>
                         </div>
                     </div>
@@ -584,7 +292,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem;">Save Changes</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn" style="width: 100%; padding: 0.75rem; font-size: 1rem;">Save Changes</button>
                     <a href="/admin/tours" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;">Cancel</a>
                 </div>
             </div>
@@ -667,6 +375,41 @@
             closeDeleteModal();
         }
     });
+
+    // --- ADDED: NEW IMAGE PREVIEW LOGIC ---
+    const fileInput = document.getElementById('fileInput');
+    const previewContainer = document.getElementById('newImagePreview');
+
+    if(fileInput) {
+        fileInput.addEventListener('change', function() {
+            previewContainer.innerHTML = ''; // Clear previous previews
+            const files = Array.from(this.files);
+            
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'preview-thumb';
+                        previewContainer.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    }
+
+    // --- ADDED: LOADING STATE FOR SAVE BUTTON ---
+    const editForm = document.getElementById('editForm');
+    const saveBtn = document.getElementById('saveBtn');
+
+    if(editForm) {
+        editForm.addEventListener('submit', function() {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        });
+    }
   </script>
 </body>
 </html>

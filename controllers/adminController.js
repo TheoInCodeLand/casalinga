@@ -1,11 +1,26 @@
 const db = require('../config/database');
 const { validationResult } = require('express-validator');
 const moment = require('moment');
-const fs = require('fs').promises;
-const path = require('path');
+// const fs = require('fs').promises;
+// const path = require('path');
+const { cloudinary } = require('../config/cloudinary');
 
+const getPublicIdFromUrl = (url) => {
+    try {
+        if (!url || !url.includes('cloudinary')) return null;
+        
+        const splitUrl = url.split('/');
+        const filename = splitUrl.pop().split('.')[0]; 
+        const folder = splitUrl.pop();                 
+        const parentFolder = splitUrl.pop();           
+        
+        return `${parentFolder}/${folder}/${filename}`;
+    } catch (error) {
+        console.error('Error extracting public ID:', error);
+        return null;
+    }
+};
 const adminController = {
-    // GET /admin/dashboard
     getDashboard: async (req, res) => {
         try {
             // Get dashboard statistics
@@ -243,7 +258,7 @@ const adminController = {
             if (images.length > 0) {
                 for (let i = 0; i < images.length; i++) {
                     const image = images[i];
-                    const imageUrl = `/uploads/tour-images/${image.filename}`;
+                    const imageUrl = image.path;
                     await db.query(
                         `INSERT INTO tour_images (tour_id, image_url, is_main, alt_text, display_order) 
                          VALUES ($1, $2, $3, $4, $5)`,
@@ -336,21 +351,12 @@ const adminController = {
 
             const newImages = req.files || [];
 
-            // Update tour
+            // 1. Update tour details
             await db.query(
                 `UPDATE tours SET
-                    title = $1,
-                    short_description = $2,
-                    full_description = $3,
-                    location = $4,
-                    price = $5,
-                    discount_price = $6,
-                    start_date = $7,
-                    end_date = $8,
-                    duration_days = $9,
-                    capacity = $10,
-                    status = $11,
-                    featured = $12,
+                    title = $1, short_description = $2, full_description = $3, location = $4,
+                    price = $5, discount_price = $6, start_date = $7, end_date = $8,
+                    duration_days = $9, capacity = $10, status = $11, featured = $12,
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = $13`,
                 [
@@ -361,7 +367,7 @@ const adminController = {
                 ]
             );
 
-            // Handle new images
+            // 2. Handle NEW images (Cloudinary)
             if (newImages.length > 0) {
                 const currentImageCount = await db.query(
                     'SELECT COUNT(*) FROM tour_images WHERE tour_id = $1',
@@ -371,7 +377,9 @@ const adminController = {
                 
                 for (let i = 0; i < newImages.length; i++) {
                     const image = newImages[i];
-                    const imageUrl = `/uploads/tour-images/${image.filename}`;
+                    // CHANGE: Use image.path (Cloudinary URL) instead of local filename
+                    const imageUrl = image.path; 
+                    
                     await db.query(
                         `INSERT INTO tour_images (tour_id, image_url, is_main, alt_text, display_order) 
                          VALUES ($1, $2, $3, $4, $5)`,
@@ -380,7 +388,7 @@ const adminController = {
                 }
             }
 
-            // Handle removed images
+            // 3. Handle REMOVED images (Delete from Cloudinary)
             if (remove_images && remove_images.length > 0) {
                 const removeIds = Array.isArray(remove_images) ? remove_images : [remove_images];
                 
@@ -391,20 +399,26 @@ const adminController = {
                     );
                     
                     if (imageQuery.rows.length > 0) {
-                        // Delete file from server
-                        const imagePath = path.join(__dirname, '../public', imageQuery.rows[0].image_url);
-                        try {
-                            await fs.unlink(imagePath);
-                        } catch (fsError) {
-                            console.error('Error deleting image file:', fsError);
+                        const imageUrl = imageQuery.rows[0].image_url;
+                        
+                        // DELETE FROM CLOUDINARY
+                        const publicId = getPublicIdFromUrl(imageUrl);
+                        if (publicId) {
+                            try {
+                                await cloudinary.uploader.destroy(publicId);
+                            } catch (cloudError) {
+                                console.error('Error deleting image from Cloudinary:', cloudError);
+                                // Continue execution even if cloud delete fails, to ensure DB stays clean
+                            }
                         }
                     }
 
+                    // DELETE FROM DB
                     await db.query('DELETE FROM tour_images WHERE id = $1', [imageId]);
                 }
             }
 
-            // Update categories
+            // 4. Update categories (Many-to-Many)
             await db.query('DELETE FROM tour_categories WHERE tour_id = $1', [id]);
             if (categories && categories.length > 0) {
                 const categoryIds = Array.isArray(categories) ? categories : [categories];
@@ -416,7 +430,7 @@ const adminController = {
                 }
             }
 
-            // Update amenities
+            // 5. Update amenities (Many-to-Many)
             await db.query('DELETE FROM tour_amenities WHERE tour_id = $1', [id]);
             if (amenities && amenities.length > 0) {
                 const amenityIds = Array.isArray(amenities) ? amenities : [amenities];
@@ -434,7 +448,7 @@ const adminController = {
         } catch (error) {
             console.error('Update tour error:', error);
             req.session.error = 'An error occurred while updating the tour';
-            res.redirect(`/admin/tours/${id}/edit`);
+            res.redirect(`/admin/tours/${req.params.id}/edit`);
         }
     },
 
@@ -443,7 +457,7 @@ const adminController = {
         try {
             const { id } = req.params;
 
-            // Check if tour has bookings
+            // 1. Check if tour has bookings
             const bookingsQuery = await db.query(
                 "SELECT COUNT(*) FROM bookings WHERE tour_id = $1 AND status = 'confirmed'",
                 [id]
@@ -454,23 +468,25 @@ const adminController = {
                 return res.redirect('/admin/tours');
             }
 
-            // Get images to delete files
+            // 2. Get images to delete from Cloudinary
             const imagesQuery = await db.query(
                 'SELECT image_url FROM tour_images WHERE tour_id = $1',
                 [id]
             );
 
-            // Delete image files
+            // 3. Delete images from Cloudinary
             for (const image of imagesQuery.rows) {
-                try {
-                    const imagePath = path.join(__dirname, '../public', image.image_url);
-                    await fs.unlink(imagePath);
-                } catch (fsError) {
-                    console.error('Error deleting image file:', fsError);
+                const publicId = getPublicIdFromUrl(image.image_url);
+                if (publicId) {
+                    try {
+                        await cloudinary.uploader.destroy(publicId);
+                    } catch (cloudError) {
+                        console.error('Error deleting image from Cloudinary:', cloudError);
+                    }
                 }
             }
 
-            // Delete tour (cascade will handle related records)
+            // 4. Delete tour (Cascade handles related records in DB)
             await db.query('DELETE FROM tours WHERE id = $1', [id]);
 
             req.session.success = 'Tour deleted successfully';
