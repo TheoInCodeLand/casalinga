@@ -95,9 +95,9 @@
                     <% } %>
                     
                     <% if (booking.status === 'confirmed') { %>
-                        <button class="px-6 py-2 rounded-full bg-primary text-white font-medium hover:bg-primary/90 transition-all shadow-md text-sm flex items-center gap-2">
+                        <a href="/bookings/<%= booking.id %>/ticket" target="_blank" class="px-6 py-2 rounded-full bg-primary text-white font-medium hover:bg-primary/90 transition-all shadow-md text-sm flex items-center gap-2">
                             <i data-lucide="download" class="w-4 h-4"></i> Download Ticket
-                        </button>
+                        </a>
                     <% } %>
                 </div>
             </div>

@@ -6,7 +6,8 @@ const validationRules = require('../middleware/validation');
 
 // Create booking
 router.post('/create', isAuthenticated, validationRules.createBooking, bookingController.createBooking);
-
+// GET /bookings/:id/ticket
+router.get('/:id/ticket', isAuthenticated, bookingController.downloadTicket);
 // Check availability API
 router.post('/check-availability', bookingController.checkAvailability);
 

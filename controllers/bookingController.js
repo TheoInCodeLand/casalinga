@@ -2,6 +2,7 @@ const db = require('../config/database');
 const { validationResult } = require('express-validator');
 const moment = require('moment');
 const crypto = require('crypto');
+const PDFDocument = require('pdfkit');
 
 const bookingController = {
     // POST /bookings/create
@@ -373,7 +374,93 @@ const bookingController = {
             console.error('Check availability error:', error);
             res.status(500).json({ success: false, message: 'An error occurred' });
         }
+    },
+    downloadTicket: async (req, res) => {
+    try {
+        const { id } = req.params;
+        const booking = await Booking.findById(id);
+
+        // Security check: Ensure user owns this booking
+        if (!booking || booking.user_id !== req.session.user.id) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        // Create PDF Document
+        const doc = new PDFDocument({ size: 'A4', margin: 50 });
+        const filename = `Ticket-${booking.booking_number}.pdf`;
+
+        // Stream to browser
+        res.setHeader('Content-disposition', 'attachment; filename="' + filename + '"');
+        res.setHeader('Content-type', 'application/pdf');
+        doc.pipe(res);
+
+        // --- PDF DESIGN ---
+
+        // Header / Logo
+        doc.fillColor('#1e6b38') // Your primary green color
+           .fontSize(20)
+           .text('CASALINGA TOURS', { align: 'center' })
+           .moveDown(0.5);
+
+        doc.fillColor('black')
+           .fontSize(10)
+           .text('Experience the beauty of travel', { align: 'center' });
+
+        doc.moveDown(2);
+
+        // Ticket Title & Reference
+        doc.fontSize(16).text('OFFICIAL E-TICKET', { align: 'left' });
+        doc.moveDown(0.5);
+        
+        // Draw a green box for reference number
+        doc.rect(50, doc.y, 500, 30).fill('#f0f9f2'); // Light green background
+        doc.fillColor('#1e6b38')
+           .fontSize(14)
+           .text(`Booking Ref: ${booking.booking_number}`, 60, doc.y + 8);
+        
+        doc.moveDown(2);
+
+        // Tour Details
+        doc.fillColor('black').fontSize(14).text('Tour Details');
+        doc.lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke(); // Underline
+        doc.moveDown(0.5);
+
+        doc.fontSize(12).font('Helvetica-Bold').text(booking.tour_title);
+        doc.font('Helvetica').fontSize(10).text(booking.location);
+        doc.moveDown(1);
+
+        // Columns for Date
+        const topY = doc.y;
+        doc.text('Check-in:', 50, topY);
+        doc.font('Helvetica-Bold').text(moment(booking.start_date).format('MMM DD, YYYY'), 120, topY);
+        
+        doc.font('Helvetica').text('Check-out:', 300, topY);
+        doc.font('Helvetica-Bold').text(moment(booking.end_date).format('MMM DD, YYYY'), 370, topY);
+
+        doc.moveDown(2);
+
+        // Passenger Details
+        doc.font('Helvetica-Bold').fontSize(14).text('Passenger Details');
+        doc.lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+        doc.moveDown(0.5);
+
+        doc.fontSize(10).font('Helvetica').text(`Lead Passenger: ${req.session.user.name}`);
+        doc.text(`Total Guests: ${booking.people_count}`);
+        doc.text(`Payment Status: ${booking.payment_status === 'paid' ? 'Paid' : 'Pending'}`);
+
+        doc.moveDown(4);
+
+        // Footer / QR Code Placeholder
+        doc.fontSize(10).fillColor('gray').text('Please present this ticket upon arrival.', { align: 'center' });
+        doc.text('Need help? Contact support@casalingatours.com', { align: 'center' });
+
+        doc.end();
+
+    } catch (error) {
+        console.error('Download ticket error:', error);
+        res.status(500).send('Error generating ticket');
     }
+},
 };
 
 module.exports = bookingController;
