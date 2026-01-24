@@ -11,52 +11,91 @@ const chatController = {
         try {
             const { message } = req.body;
             const userId = req.session.user ? req.session.user.id : null;
+            const userName = req.session.user ? req.session.user.name : "Traveler";
 
-            // 1. FETCH REAL-TIME DATA FROM DB
-            // Get all available tours
+            // 1. FETCH LIVE TOUR DATA (FIXED QUERY)
+            // We use a subquery to fetch category names and join them into a string (e.g., "Adventure, Safari")
             const toursQuery = await db.query(`
-                SELECT id, title, location, price, start_date, duration_days, short_description 
-                FROM tours 
-                WHERE status IN ('available', 'upcoming')
+                SELECT 
+                    t.id, 
+                    t.title, 
+                    t.location, 
+                    t.price, 
+                    t.start_date, 
+                    t.duration_days, 
+                    t.short_description, 
+                    t.slug, 
+                    t.capacity,
+                    COALESCE((
+                        SELECT STRING_AGG(c.name, ', ')
+                        FROM tour_categories tc
+                        JOIN categories c ON tc.category_id = c.id
+                        WHERE tc.tour_id = t.id
+                    ), 'General') as category
+                FROM tours t 
+                WHERE t.status IN ('available', 'upcoming')
             `);
 
-            // (Optional) Get User's Bookings if logged in
-            let userContext = "The user is a guest.";
+            // 2. DEFINE STATIC KNOWLEDGE
+            const companyInfo = {
+                name: "Casalinga Tours",
+                phone: "+27 65 921 4974",
+                email: "samkecassy01@gmail.com",
+                address: "Cnr R40 & D724 road, Mbombela, South Africa",
+                website_links: {
+                    home: "/",
+                    all_tours: "/tours",
+                    contact: "/contact",
+                    login: "/auth/login",
+                    register: "/auth/register",
+                    dashboard: "/user/dashboard"
+                }
+            };
+
+            // 3. GET USER CONTEXT
+            let userContext = `The user is a guest named '${userName}'.`;
             if (userId) {
                 const bookings = await db.query(`
-                    SELECT b.booking_number, t.title, b.status 
+                    SELECT b.booking_number, t.title, b.status, b.total_price 
                     FROM bookings b JOIN tours t ON b.tour_id = t.id 
                     WHERE b.user_id = $1
+                    ORDER BY b.booked_at DESC LIMIT 3
                 `, [userId]);
                 
                 if (bookings.rows.length > 0) {
-                    userContext = `The user is logged in. Their bookings: ${JSON.stringify(bookings.rows)}`;
+                    userContext = `User '${userName}' is logged in. 
+                    Recent Bookings: ${JSON.stringify(bookings.rows)}.
+                    If they ask about their booking, summarize the status.`;
                 } else {
-                    userContext = "The user is logged in but has no bookings yet.";
+                    userContext = `User '${userName}' is logged in but has no bookings yet.`;
                 }
+            } else {
+                userContext += " Encourage them to Login (/auth/login) to book tours.";
             }
 
-            // 2. CONSTRUCT THE "BRAIN" (System Prompt)
+            // 4. CONSTRUCT THE "BRAIN"
             const contextPrompt = `
-                You are 'Casi', the AI assistant for Casalinga Tours.
-                Your tone is friendly, professional, and South African (use polite terms).
+                You are 'Casi', the advanced AI concierge for Casalinga Tours.
                 
-                HERE IS OUR LIVE DATABASE OF TOURS:
-                ${JSON.stringify(toursQuery.rows)}
-
-                USER CONTEXT:
-                ${userContext}
-
-                YOUR RULES:
-                1. ONLY recommend tours from the list above. If it's not there, say we don't have it.
-                2. If asked about prices, always include the "R" symbol (ZAR).
-                3. If the user asks "Where can I go in December?", look at the 'start_date' in the data and recommend matching tours.
-                4. Keep answers short (max 3 sentences) unless asked for details.
+                --- KNOWLEDGE BASE ---
+                COMPANY DETAILS: ${JSON.stringify(companyInfo)}
+                AVAILABLE TOURS: ${JSON.stringify(toursQuery.rows)}
+                CURRENT USER: ${userContext}
                 
-                USER QUESTION: "${message}"
+                --- INSTRUCTIONS ---
+                1. **LINKS:** When mentioning a specific tour, ALWAYS provide a clickable HTML link using this format: 
+                   <a href="/tours/TOUR_SLUG" class="text-primary font-bold hover:underline">Tour Title</a>.
+                2. **PAGES:** If the user wants to login, contact support, or register, use the links from COMPANY DETAILS.
+                   Example: <a href="/auth/login" class="text-primary font-bold underline">Login here</a>.
+                3. **PRICING:** Always format prices as 'R' (ZAR). Example: R15,000.
+                4. **RECOMMENDATIONS:** If asked for recommendations, look at the TOUR LIST categories/locations and recommend specific matches with links.
+                5. **FORMATTING:** Use <br> for line breaks and <strong> for emphasis. Do not use Markdown.
+
+                --- USER QUERY ---
+                "${message}"
             `;
 
-            // 3. ASK GEMINI
+            // 5. ASK GEMINI
             const result = await model.generateContent(contextPrompt);
             const response = result.response.text();
 
@@ -64,7 +103,7 @@ const chatController = {
 
         } catch (error) {
             console.error('Chatbot Error:', error);
-            res.status(500).json({ success: false, reply: "I'm having a little trouble connecting to headquarters. Please try again!" });
+            res.status(500).json({ success: false, reply: "I'm having a little trouble connecting to headquarters. Please try again later! 🔌" });
         }
     }
 };
