@@ -3,413 +3,621 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analytics - Casalinga Tours</title>
+  <title>Analytics Intelligence - Casalinga Tours</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="shortcut icon" href="/images/favicon.PNG" type="image/x-icon">
-  <style>
-    /* Base Variables & Reset */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --background: 0 0% 100%; --foreground: 222.2 84% 4.9%; 
-      --card: 0 0% 100%; --card-foreground: 222.2 84% 4.9%;
-      --popover: 0 0% 100%; --popover-foreground: 222.2 84% 4.9%; 
-      --primary: 221.2 83.2% 53.3%; --primary-foreground: 210 40% 98%;
-      --muted: 210 40% 96%; --muted-foreground: 215.4 16.3% 46.9%; 
-      --accent: 210 40% 96%; --accent-foreground: 222.2 84% 4.9%; 
-      --destructive: 0 84.2% 60.2%; --destructive-foreground: 210 40% 98%;
-      --success: 142.1 76.2% 36.3%; --warning: 38 92% 50%;
-      --border: 214.3 31.8% 91.4%; --input: 214.3 31.8% 91.4%; 
-      --radius: 0.75rem;
-      --sidebar-background: 0 0% 98%; --sidebar-foreground: 240 5.3% 26.1%; 
-      --sidebar-primary: 240 5.9% 10%; --sidebar-accent: 240 4.8% 95.9%;
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/admin/sidebar-styles.css">
+    
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            primary: "#1a5d2c",
+            "primary-light": "#e8f5e9",
+            secondary: "#f8f5ee",
+            accent: "#d4a574",
+            border: "hsl(214.3 31.8% 91.4%)",
+            background: "#f8f9fc" // Slightly grey background for dashboard contrast
+          },
+          boxShadow: {
+            'dashboard': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)'
+          }
+        }
+      }
     }
-    body { font-family: 'Inter', sans-serif; background-color: hsl(var(--background)); color: hsl(var(--foreground)); line-height: 1.5; }
+  </script>
 
-    /* Layout */
-    .app-wrapper { display: flex; min-height: 100vh; width: 100%; }
+  <style>
+    /* Dashboard specific overrides */
+    body { background-color: #f3f4f6; }
     
-    /* Sidebar */
-    .sidebar { width: 16rem; height: 100vh; position: fixed; left: 0; top: 0; background-color: hsl(var(--sidebar-background)); border-right: 1px solid hsl(var(--border)); display: flex; flex-direction: column; z-index: 40; transition: transform 0.2s; }
-    .sidebar-header { padding: 1.5rem; }
-    .sidebar-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 1.125rem; }
-    .sidebar-logo-icon { width: 2rem; height: 2rem; border-radius: 0.5rem; background: hsl(var(--primary)); color: white; display: flex; align-items: center; justify-content: center; }
-    .sidebar-content { flex: 1; overflow-y: auto; padding: 0.5rem; }
-    .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; }
-    .sidebar-menu-button { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-radius: 0.375rem; color: hsl(var(--sidebar-foreground)); text-decoration: none; transition: 0.15s; }
-    .sidebar-menu-button:hover, .sidebar-menu-button.active { background-color: hsl(var(--sidebar-accent)); font-weight: 500; }
-    .sidebar-footer { padding: 1rem; border-top: 1px solid hsl(var(--border)); }
-    .sidebar-user { display: flex; align-items: center; gap: 0.75rem; }
-    .sidebar-user img { width: 2rem; height: 2rem; border-radius: 50%; object-fit: cover; }
-    .sidebar-user-info { display: flex; flex-direction: column; font-size: 0.875rem; }
+    /* Power BI Style Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-auto-rows: minmax(140px, auto);
+      gap: 1.5rem;
+    }
 
-    /* Main Content */
-    .main-content { flex: 1; margin-left: 16rem; overflow-x: hidden; }
-    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); }
-    .topbar-actions { margin-left: auto; display: flex; gap: 1rem; }
-    .avatar-button { width: 2rem; height: 2rem; border-radius: 50%; overflow: hidden; border: none; cursor: pointer; padding: 0; }
-    .avatar-button img { width: 100%; height: 100%; object-fit: cover; }
-
-    /* Page Content */
-    .page-content { padding: 1.5rem 2rem; }
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    .page-title { font-size: 1.875rem; font-weight: 700; letter-spacing: -0.025em; }
-    .date-range-picker { display: inline-flex; align-items: center; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); padding: 0.5rem 1rem; border-radius: var(--radius); font-size: 0.875rem; font-weight: 500; color: hsl(var(--foreground)); cursor: pointer; }
+    /* Card Styling */
+    .bi-card {
+      background: white;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(229, 231, 235, 0.5);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
     
-    /* KPI Cards */
-    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
-    .kpi-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); padding: 1.5rem; position: relative; overflow: hidden; transition: transform 0.2s; }
-    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-    .kpi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-    .kpi-title { font-size: 0.875rem; font-weight: 500; color: hsl(var(--muted-foreground)); }
-    .kpi-icon { width: 2.5rem; height: 2.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
-    .kpi-value { font-size: 1.875rem; font-weight: 700; margin-bottom: 0.25rem; }
-    .kpi-trend { font-size: 0.875rem; display: flex; align-items: center; gap: 0.25rem; }
-    .trend-up { color: hsl(var(--success)); }
-    .trend-down { color: hsl(var(--destructive)); }
+    .bi-card:hover {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
 
-    /* Chart Sections */
-    .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-    .chart-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; }
-    .chart-header { margin-bottom: 1.5rem; }
-    .chart-title { font-size: 1.125rem; font-weight: 600; }
-    .chart-subtitle { font-size: 0.875rem; color: hsl(var(--muted-foreground)); }
-    .chart-container { position: relative; flex: 1; min-height: 300px; width: 100%; }
+    .bi-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-    /* Tables */
-    .table-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); overflow: hidden; }
-    .table { width: 100%; border-collapse: collapse; }
-    .table th, .table td { padding: 1rem; text-align: left; border-bottom: 1px solid hsl(var(--border)); }
-    .table th { background: hsl(var(--muted)); font-size: 0.75rem; text-transform: uppercase; color: hsl(var(--muted-foreground)); font-weight: 600; }
-    .table tr:last-child td { border-bottom: none; }
+    .bi-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #374151;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .bi-content {
+      padding: 1.5rem;
+      flex: 1;
+      position: relative;
+    }
+
+    /* KPI Value styling */
+    .kpi-value { font-size: 2rem; font-weight: 700; color: #111827; line-height: 1; }
+    .kpi-label { font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; }
+    .kpi-trend { font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem; margin-top: 0.75rem; }
     
-    /* Buttons */
-    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; border-radius: var(--radius); font-size: 0.875rem; font-weight: 500; cursor: pointer; border: none; text-decoration: none; transition: 0.15s; }
-    .btn-outline { background: transparent; border: 1px solid hsl(var(--input)); color: hsl(var(--foreground)); }
-    .btn-outline:hover { background: hsl(var(--accent)); }
+    /* Grid Spans */
+    .col-span-12 { grid-column: span 12; }
+    .col-span-8 { grid-column: span 8; }
+    .col-span-6 { grid-column: span 6; }
+    .col-span-4 { grid-column: span 4; }
+    .col-span-3 { grid-column: span 3; }
     
-    /* Mobile */
-    .mobile-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    .row-span-2 { grid-row: span 2; }
+
+    /* Ensure charts have proper dimensions */
+    canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    /* Fix table responsiveness */
+    .overflow-x-auto {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Ensure proper spacing in KPI cards */
+    .kpi-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.2;
+        margin-top: 0.25rem;
+    }
+
+    /* Improve chart container sizing */
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+
+    /* Fix for mobile view */
+    @media (max-width: 768px) {
+        .bi-card {
+            margin-bottom: 1rem;
+        }
+        
+        .kpi-value {
+            font-size: 1.5rem;
+        }
+        
+        .dashboard-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+
+    @media (max-width: 1280px) {
+      .xl\:col-span-6 { grid-column: span 6; }
+      .xl\:col-span-12 { grid-column: span 12; }
+    }
     @media (max-width: 1024px) {
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-      .charts-row { grid-template-columns: 1fr; }
+      .lg\:col-span-12 { grid-column: span 12; }
+      .dashboard-grid { gap: 1rem; }
     }
     @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .main-content { margin-left: 0; }
-      .kpi-grid { grid-template-columns: 1fr; }
-      .mobile-toggle { display: block; }
+      .dashboard-grid { display: flex; flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <div class="app-wrapper">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">
-          <div class="sidebar-logo-icon"><i class="fas fa-layer-group"></i></div>
-          <span>Casalinga Admin</span>
-        </div>
-      </div>
-      <nav class="sidebar-content">
-        <ul class="sidebar-menu">
-          <li><a href="/admin/dashboard" class="sidebar-menu-button"><i class="fas fa-th-large"></i> Dashboard</a></li>
-          <li><a href="/admin/bookings" class="sidebar-menu-button"><i class="fas fa-calendar-check"></i> Bookings</a></li>
-          <li><a href="/admin/tours" class="sidebar-menu-button"><i class="fas fa-map-marked-alt"></i> Tours</a></li>
-          <% if (user.role === 'admin') { %>
-          <li><a href="/admin/users" class="sidebar-menu-button"><i class="fas fa-users"></i> Users</a></li>
-          <li><a href="/admin/analytics" class="sidebar-menu-button active"><i class="fas fa-chart-line"></i> Analytics</a></li>
-          <% } %>
-          <li><a href="/admin/settings/categories" class="sidebar-menu-button"><i class="fas fa-cog"></i> Settings</a></li>
-        </ul>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="sidebar-user">
-          <img src="<%= user.avatar || '/images/user-avatar.jpg' %>" alt="<%= user.name %>">
-          <div class="sidebar-user-info">
-            <span style="font-weight: 600;"><%= user.name %></span>
-            <span style="color: hsl(var(--muted-foreground));"><%= user.role %></span>
-          </div>
-        </div>
-      </div>
+  
+  <div class="app-wrapper flex h-screen overflow-hidden">
+    <aside class="sidebar bg-white border-r border-gray-200 w-64 fixed inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300" id="sidebar">
+        <%- include('admin-sidebar') %>
     </aside>
 
-    <main class="main-content">
-      <header class="topbar">
-        <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
-        <h4 style="margin: 0; font-weight: 600;">Business Intelligence</h4>
-        <div class="topbar-actions">
-           <button class="avatar-button"><img src="<%= user.avatar || '/images/user-avatar.jpg' %>" alt="User"></button>
+    <main class="main-content flex-1 ml-0 md:ml-64 flex flex-col h-full overflow-hidden">
+      
+      <header class="bg-white border-b border-gray-200 sticky top-0 z-30 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <button id="mobileToggle" class="md:hidden text-gray-500 hover:text-gray-700">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Analytics Intelligence</h1>
+            <p class="text-sm text-gray-500">Real-time insights and performance metrics</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <div class="hidden md:flex bg-gray-100 rounded-lg p-1">
+            <a href="?period=month" class="px-3 py-1.5 text-sm font-medium rounded-md <%= period === 'month' ? 'bg-white text-primary shadow-sm' : 'text-gray-500 hover:text-gray-700' %> transition-all">Monthly</a>
+            <a href="?period=year" class="px-3 py-1.5 text-sm font-medium rounded-md <%= period === 'year' ? 'bg-white text-primary shadow-sm' : 'text-gray-500 hover:text-gray-700' %> transition-all">Yearly</a>
+          </div>
+          <button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-green-800 transition-colors shadow-sm">
+            <i class="fas fa-file-export"></i> Export Report
+          </button>
         </div>
       </header>
 
-      <div class="page-content">
-        <div class="page-header">
-          <h2 class="page-title">Performance Analytics</h2>
-          <div style="display: flex; gap: 1rem;">
-             <div class="date-range-picker">
-                <i class="far fa-calendar" style="margin-right: 0.5rem; color: hsl(var(--muted-foreground));"></i>
-                Last 30 Days
-             </div>
-             <button class="btn btn-outline"><i class="fas fa-download" style="margin-right: 0.5rem;"></i> Export Report</button>
+      <div class="flex-1 overflow-y-auto p-6">
+        
+        <div class="dashboard-grid">
+
+          <div class="bi-card col-span-3">
+            <div class="bi-content">
+              <div class="flex justify-between items-start">
+                <div>
+                  <div class="text-xs font-semibold text-accent uppercase tracking-wider">Total Revenue</div>
+                  <div class="kpi-value mt-2" id="kpi-revenue">R0</div>
+                </div>
+                <div class="p-2 bg-green-50 rounded-lg text-primary">
+                  <i class="fas fa-sack-dollar text-xl"></i>
+                </div>
+              </div>
+              <div class="kpi-trend text-green-600">
+                <i class="fas fa-arrow-trend-up"></i>
+                <span id="kpi-revenue-trend">0%</span>
+                <span class="text-gray-400 font-normal ml-1">vs last period</span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">Total Revenue</span>
-                    <div class="kpi-icon" style="background: hsl(142, 76%, 96%); color: hsl(142, 76%, 36%);">
-                        <i class="fas fa-wallet"></i>
-                    </div>
+          <div class="bi-card col-span-3">
+            <div class="bi-content">
+              <div class="flex justify-between items-start">
+                <div>
+                  <div class="text-xs font-semibold text-accent uppercase tracking-wider">Total Bookings</div>
+                  <div class="kpi-value mt-2" id="kpi-bookings">0</div>
                 </div>
-                <div class="kpi-value">R<%= (analytics.total_revenue || 0).toLocaleString() %></div>
-                <div class="kpi-trend trend-up">
-                    <i class="fas fa-arrow-up"></i> 12.5% <span style="color: hsl(var(--muted-foreground)); margin-left: 4px;">vs last month</span>
+                <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                  <i class="fas fa-ticket text-xl"></i>
                 </div>
+              </div>
+              <div class="kpi-trend text-blue-600">
+                <i class="fas fa-chart-bar"></i>
+                <span class="text-gray-600 font-normal ml-1">Avg Price: <span id="kpi-avg-price" class="font-bold">R0</span></span>
+              </div>
             </div>
+          </div>
 
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">Total Bookings</span>
-                    <div class="kpi-icon" style="background: hsl(217, 91%, 96%); color: hsl(217, 91%, 60%);">
-                        <i class="fas fa-ticket-alt"></i>
-                    </div>
+          <div class="bi-card col-span-3">
+            <div class="bi-content">
+              <div class="flex justify-between items-start">
+                <div>
+                  <div class="text-xs font-semibold text-accent uppercase tracking-wider">New Customers</div>
+                  <div class="kpi-value mt-2" id="kpi-customers">0</div>
                 </div>
-                <div class="kpi-value"><%= analytics.total_bookings || 0 %></div>
-                <div class="kpi-trend trend-up">
-                    <i class="fas fa-arrow-up"></i> 8.2% <span style="color: hsl(var(--muted-foreground)); margin-left: 4px;">vs last month</span>
+                <div class="p-2 bg-purple-50 rounded-lg text-purple-600">
+                  <i class="fas fa-users text-xl"></i>
                 </div>
+              </div>
+              <div class="mt-4 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-purple-500 rounded-full" style="width: 65%"></div>
+              </div>
+              <div class="kpi-label mt-2">Conversion Rate: <span class="font-bold text-gray-800">4.2%</span></div>
             </div>
+          </div>
 
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">Active Customers</span>
-                    <div class="kpi-icon" style="background: hsl(280, 80%, 96%); color: hsl(280, 80%, 60%);">
-                        <i class="fas fa-users"></i>
-                    </div>
+          <div class="bi-card col-span-3">
+            <div class="bi-content">
+              <div class="flex justify-between items-start">
+                <div>
+                  <div class="text-xs font-semibold text-accent uppercase tracking-wider">Top Category</div>
+                  <div class="text-xl font-bold text-gray-900 mt-2 truncate" id="kpi-top-category">Loading...</div>
                 </div>
-                <div class="kpi-value"><%= analytics.active_users || 0 %></div>
-                <div class="kpi-trend trend-up">
-                    <i class="fas fa-arrow-up"></i> 5.0% <span style="color: hsl(var(--muted-foreground)); margin-left: 4px;">new signups</span>
+                <div class="p-2 bg-orange-50 rounded-lg text-orange-600">
+                  <i class="fas fa-crown text-xl"></i>
                 </div>
+              </div>
+              <div class="kpi-trend text-orange-600">
+                <span id="kpi-top-cat-value">R0</span>
+                <span class="text-gray-400 font-normal ml-1">revenue generated</span>
+              </div>
             </div>
+          </div>
 
-            <div class="kpi-card">
-                <div class="kpi-header">
-                    <span class="kpi-title">Avg. Booking Value</span>
-                    <div class="kpi-icon" style="background: hsl(38, 92%, 96%); color: hsl(38, 92%, 50%);">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                </div>
-                <div class="kpi-value">R<%= Math.round((analytics.total_revenue / (analytics.total_bookings || 1))) %></div>
-                <div class="kpi-trend trend-down">
-                    <i class="fas fa-arrow-down"></i> 1.2% <span style="color: hsl(var(--muted-foreground)); margin-left: 4px;">vs last month</span>
-                </div>
+          <div class="bi-card col-span-8 row-span-2">
+            <div class="bi-header">
+              <span class="bi-title">Revenue Performance Trend</span>
+              <div class="flex gap-2">
+                <span class="w-3 h-3 rounded-full bg-primary inline-block"></span>
+                <span class="text-xs text-gray-500">Revenue</span>
+                <span class="w-3 h-3 rounded-full bg-accent inline-block ml-2"></span>
+                <span class="text-xs text-gray-500">Bookings</span>
+              </div>
             </div>
-        </div>
+            <div class="bi-content">
+              <canvas id="revenueChart" style="max-height: 350px;"></canvas>
+            </div>
+          </div>
 
-        <div class="charts-row">
-            <div class="chart-card">
-                <div class="chart-header">
-                    <div class="chart-title">Revenue Overview</div>
-                    <div class="chart-subtitle">Income over the last 6 months</div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="revenueChart"></canvas>
+          <div class="bi-card col-span-4 row-span-2">
+            <div class="bi-header">
+              <span class="bi-title">Revenue by Category</span>
+            </div>
+            <div class="bi-content flex flex-col justify-center items-center">
+              <div class="relative w-full h-64">
+                <canvas id="categoryChart"></canvas>
+              </div>
+              <div class="mt-4 w-full" id="category-legend">
                 </div>
             </div>
+          </div>
 
-            <div class="chart-card">
-                <div class="chart-header">
-                    <div class="chart-title">Sales by Category</div>
-                    <div class="chart-subtitle">Revenue distribution</div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="categoryChart"></canvas>
-                </div>
+          <div class="bi-card col-span-6">
+            <div class="bi-header">
+              <span class="bi-title">VIP Customers</span>
+              <a href="/admin/users" class="text-xs text-primary hover:underline">View All</a>
             </div>
-        </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+                  <tr>
+                    <th class="px-6 py-3">Customer</th>
+                    <th class="px-6 py-3 text-center">Trips</th>
+                    <th class="px-6 py-3 text-right">LTV (Spend)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100" id="top-customers-body">
+                  <% if (topCustomers && topCustomers.length > 0) { %>
+                    <% topCustomers.forEach(customer => { %>
+                      <tr class="hover:bg-gray-50/80 transition-colors">
+                        <td class="px-6 py-3 font-medium text-gray-900 flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                            <%= customer.name.charAt(0).toUpperCase() %>
+                          </div>
+                          <div>
+                            <div class="font-semibold"><%= customer.name %></div>
+                            <div class="text-xs text-gray-500"><%= customer.email %></div>
+                          </div>
+                        </td>
+                        <td class="px-6 py-3 text-center">
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                            <%= customer.total_bookings %>
+                          </span>
+                        </td>
+                        <td class="px-6 py-3 text-right font-bold text-gray-900">
+                          R<%= parseFloat(customer.total_spent).toLocaleString() %>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">No data available</td></tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-        <div class="charts-row" style="grid-template-columns: 1fr 1fr;">
-            <div class="chart-card">
-                <div class="chart-header">
-                    <div class="chart-title">Top Performing Tours</div>
-                    <div class="chart-subtitle">Based on total bookings</div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="topToursChart"></canvas>
-                </div>
+          <div class="bi-card col-span-6">
+            <div class="bi-header">
+              <span class="bi-title">Customer Acquisition</span>
             </div>
-            
-            <div class="table-card">
-                <div style="padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); font-weight: 600;">Top Customers</div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Customer</th>
-                            <th>Bookings</th>
-                            <th>Total Spent</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% topCustomers.forEach(customer => { %>
-                        <tr>
-                            <td style="font-weight: 500;"><%= customer.name %></td>
-                            <td><%= customer.total_bookings %></td>
-                            <td style="color: hsl(var(--success)); font-weight: 600;">R<%= parseFloat(customer.total_spent).toLocaleString() %></td>
-                        </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
+            <div class="bi-content">
+              <canvas id="customerChart" style="max-height: 250px;"></canvas>
             </div>
+          </div>
+
+        </div> <div class="mt-8 text-center text-xs text-gray-400">
+          Generated on <%= moment().format('MMMM Do YYYY, h:mm:ss a') %> • Casalinga Tours Admin System
         </div>
 
       </div>
     </main>
   </div>
 
-  <script>
-    // Sidebar Toggle
-    const mobileToggle = document.getElementById('mobileToggle');
-    const sidebar = document.getElementById('sidebar');
-    if(mobileToggle) mobileToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+<script>
+    // --- 1. DATA INGESTION ---
+    const revenueData = <%- JSON.stringify(revenueTrend || []) %>;
+    const categoryData = <%- JSON.stringify(revenueByCategory || []) %>;
+    const customerData = <%- JSON.stringify(customerDemographics || []) %>;
 
-    // --- Chart.js Configuration ---
-    
-    // Common Options
+    // Format numbers with R prefix
+    function formatCurrency(amount) {
+        return 'R' + parseFloat(amount || 0).toLocaleString('en-ZA', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+    }
+
+    // --- 2. SMART CALCULATIONS ---
+    const calculateStats = () => {
+        // Total Revenue from server-side calculation
+        document.getElementById('kpi-revenue').innerText = formatCurrency(<%= kpis.totalRevenue %>);
+        
+        // Total Bookings
+        document.getElementById('kpi-bookings').innerText = <%= kpis.totalBookings %>.toLocaleString();
+        
+        // Average Booking Value
+        document.getElementById('kpi-avg-price').innerText = formatCurrency(<%= kpis.avgBookingValue %>);
+        
+        // Total New Customers
+        document.getElementById('kpi-customers').innerText = <%= kpis.totalCustomers %>.toLocaleString();
+        
+        // Revenue Trend Percentage
+        const trendElement = document.getElementById('kpi-revenue-trend');
+        const trendPercentage = <%= kpis.revenueTrendPercentage %>;
+        trendElement.innerText = Math.abs(trendPercentage) + '%';
+        
+        // Set trend color and icon
+        const trendIcon = trendElement.previousElementSibling;
+        if (trendPercentage > 0) {
+            trendElement.className = 'text-green-600';
+            trendIcon.className = 'fas fa-arrow-trend-up';
+        } else if (trendPercentage < 0) {
+            trendElement.className = 'text-red-600';
+            trendIcon.className = 'fas fa-arrow-trend-down';
+        } else {
+            trendElement.className = 'text-gray-600';
+            trendIcon.className = 'fas fa-minus';
+        }
+        
+        // Top Category
+        <% if (kpis.topCategory) { %>
+            document.getElementById('kpi-top-category').innerText = '<%= kpis.topCategory.category %>';
+            document.getElementById('kpi-top-cat-value').innerText = formatCurrency(<%= kpis.topCategory.revenue %>);
+        <% } else { %>
+            document.getElementById('kpi-top-category').innerText = 'No data';
+            document.getElementById('kpi-top-cat-value').innerText = 'R0';
+        <% } %>
+    };
+
+    // Call on page load
+    document.addEventListener('DOMContentLoaded', calculateStats);
+
+    // --- 3. CHART.JS CONFIGURATION ---
     Chart.defaults.font.family = "'Inter', sans-serif";
-    Chart.defaults.color = '#64748b';
-    Chart.defaults.scale.grid.color = 'rgba(0,0,0,0.05)';
-
-    // Data from Backend
-    const revenueData = <%- JSON.stringify(revenueTrend) %>;
-    const categoryData = <%- JSON.stringify(revenueByCategory) %>;
-    const topToursData = <%- JSON.stringify(popularTours) %>;
-
-    // 1. Revenue Chart (Line)
-    const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
-    const gradient = ctxRevenue.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)'); // Primary color fade
-    gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-
-    new Chart(ctxRevenue, {
-        type: 'line',
-        data: {
-            labels: revenueData.map(d => new Date(d.month).toLocaleDateString('en-ZA', { month: 'short', year: '2-digit' })),
-            datasets: [{
-                label: 'Revenue (R)',
-                data: revenueData.map(d => d.revenue),
-                borderColor: '#3b82f6',
-                backgroundColor: gradient,
-                borderWidth: 2,
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#3b82f6',
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: '#1e293b',
-                    padding: 12,
-                    callbacks: {
-                        label: function(context) {
-                            return 'R ' + context.parsed.y.toLocaleString();
+    Chart.defaults.color = '#6b7280';
+    
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#1f2937',
+                titleFont: { size: 13 },
+                bodyFont: { size: 13 },
+                padding: 10,
+                cornerRadius: 8,
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) label += ': ';
+                        if (context.parsed.y !== null) {
+                            if (label.includes('Revenue') || context.dataset.label === 'Revenue') {
+                                return label + formatCurrency(context.parsed.y);
+                            } else {
+                                return label + context.parsed.y;
+                            }
                         }
+                        return label;
                     }
                 }
+            }
+        },
+        scales: {
+            x: { 
+                grid: { display: false },
+                ticks: { maxRotation: 45 }
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    border: { display: false },
-                    ticks: { callback: (val) => 'R ' + (val/1000) + 'k' }
-                },
-                x: {
-                    grid: { display: false },
-                    border: { display: false }
+            y: { 
+                grid: { color: '#f3f4f6' },
+                beginAtZero: true
+            }
+        }
+    };
+
+    // Wait for DOM to be fully loaded before creating charts
+    document.addEventListener('DOMContentLoaded', function() {
+        // Revenue Chart
+        if (revenueData.length > 0) {
+            const ctxRev = document.getElementById('revenueChart');
+            if (ctxRev) {
+                new Chart(ctxRev.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: revenueData.map(d => new Date(d.month).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })),
+                        datasets: [
+                            {
+                                label: 'Revenue',
+                                data: revenueData.map(d => d.revenue),
+                                borderColor: '#1a5d2c',
+                                backgroundColor: 'rgba(26, 93, 44, 0.05)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: true,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Bookings',
+                                data: revenueData.map(d => d.bookings),
+                                type: 'bar',
+                                backgroundColor: 'rgba(212, 165, 116, 0.7)',
+                                borderRadius: 4,
+                                barThickness: 12,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        ...commonOptions,
+                        interaction: { mode: 'index', intersect: false },
+                        scales: {
+                            x: { grid: { display: false } },
+                            y: { 
+                                position: 'left',
+                                type: 'linear',
+                                ticks: { 
+                                    callback: (value) => 'R' + (value / 1000).toFixed(0) + 'k'
+                                }
+                            },
+                            y1: {
+                                position: 'right',
+                                type: 'linear',
+                                grid: { drawOnChartArea: false },
+                                ticks: { 
+                                    callback: (value) => value.toFixed(0)
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Category Chart
+        if (categoryData.length > 0) {
+            const ctxCat = document.getElementById('categoryChart');
+            if (ctxCat) {
+                // Define a color palette
+                const colors = [
+                    '#1a5d2c', '#2e7d32', '#4caf50', '#81c784', '#a5d6a7',
+                    '#d4a574', '#bc8a5f', '#a47148', '#8b5a2b', '#654321'
+                ];
+                
+                const catChart = new Chart(ctxCat.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: categoryData.map(d => d.category),
+                        datasets: [{
+                            data: categoryData.map(d => d.revenue),
+                            backgroundColor: colors.slice(0, categoryData.length),
+                            borderWidth: 0,
+                            hoverOffset: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        return `${context.label}: ${formatCurrency(context.raw)}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Update custom legend
+                const legendContainer = document.getElementById('category-legend');
+                if (legendContainer) {
+                    legendContainer.innerHTML = '';
+                    categoryData.forEach((item, index) => {
+                        const color = colors[index % colors.length];
+                        legendContainer.innerHTML += `
+                            <div class="flex items-center justify-between text-xs mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full" style="background-color: ${color}"></span>
+                                    <span class="text-gray-600 truncate">${item.category}</span>
+                                </div>
+                                <span class="font-bold text-gray-900">${formatCurrency(item.revenue)}</span>
+                            </div>
+                        `;
+                    });
                 }
+            }
+        }
+
+        // Customer Chart
+        if (customerData.length > 0) {
+            const ctxCust = document.getElementById('customerChart');
+            if (ctxCust) {
+                new Chart(ctxCust.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: customerData.map(d => new Date(d.month).toLocaleDateString('en-US', { month: 'short' })),
+                        datasets: [{
+                            label: 'New Customers',
+                            data: customerData.map(d => d.new_customers),
+                            backgroundColor: '#1a5d2c',
+                            borderRadius: 4,
+                            barThickness: 20
+                        }]
+                    },
+                    options: commonOptions
+                });
             }
         }
     });
 
-    // 2. Category Chart (Doughnut)
-    const ctxCategory = document.getElementById('categoryChart').getContext('2d');
-    new Chart(ctxCategory, {
-        type: 'doughnut',
-        data: {
-            labels: categoryData.map(d => d.category),
-            datasets: [{
-                data: categoryData.map(d => d.revenue),
-                backgroundColor: [
-                    '#3b82f6', // blue
-                    '#10b981', // green
-                    '#f59e0b', // yellow
-                    '#ef4444', // red
-                    '#8b5cf6'  // purple
-                ],
-                borderWidth: 0,
-                hoverOffset: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '70%',
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: { usePointStyle: true, padding: 20 }
+    // Mobile Sidebar Toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (mobileToggle && sidebar) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth < 768 && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== mobileToggle && 
+                    !mobileToggle.contains(e.target)) {
+                    sidebar.classList.add('-translate-x-full');
                 }
-            }
+            });
         }
     });
-
-    // 3. Top Tours Chart (Bar)
-    const ctxTours = document.getElementById('topToursChart').getContext('2d');
-    new Chart(ctxTours, {
-        type: 'bar',
-        data: {
-            labels: topToursData.map(t => t.title.substring(0, 15) + '...'),
-            datasets: [{
-                label: 'Bookings',
-                data: topToursData.map(t => t.bookings_count),
-                backgroundColor: '#10b981',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { borderDash: [2, 4] },
-                    border: { display: false }
-                },
-                x: {
-                    grid: { display: false },
-                    border: { display: false }
-                }
-            }
-        }
-    });
-  </script>
+</script>
 </body>
 </html>

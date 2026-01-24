@@ -759,73 +759,136 @@ const adminController = {
     getAnalytics: async (req, res) => {
         try {
             const { period = 'month' } = req.query;
+            const moment = require('moment');
 
-            // Revenue by month for the last 12 months
+            // 1. SMART REVENUE TREND
             const revenueTrend = await db.query(`
+                WITH months AS (
+                    SELECT generate_series(
+                        DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '11 months',
+                        DATE_TRUNC('month', CURRENT_DATE),
+                        '1 month'::interval
+                    ) AS month
+                )
                 SELECT 
-                    DATE_TRUNC('month', booked_at) as month,
-                    SUM(total_price) as revenue,
-                    COUNT(*) as bookings
-                FROM bookings
-                WHERE status = 'confirmed' AND booked_at >= CURRENT_DATE - INTERVAL '12 months'
-                GROUP BY DATE_TRUNC('month', booked_at)
-                ORDER BY month
+                    TO_CHAR(m.month, 'YYYY-MM-DD') as month,
+                    COALESCE(SUM(b.total_price), 0) as revenue,
+                    COUNT(b.id) as bookings
+                FROM months m
+                LEFT JOIN bookings b 
+                    ON DATE_TRUNC('month', b.booked_at) = m.month 
+                    AND b.status = 'confirmed'
+                GROUP BY m.month
+                ORDER BY m.month ASC
             `);
 
-            // Revenue by tour category
+            // 2. REVENUE BY CATEGORY
             const revenueByCategory = await db.query(`
                 SELECT 
+                    c.id,
                     c.name as category,
-                    SUM(b.total_price) as revenue,
+                    COALESCE(SUM(b.total_price), 0) as revenue,
                     COUNT(b.id) as bookings
-                FROM bookings b
-                JOIN tours t ON b.tour_id = t.id
-                JOIN tour_categories tc ON t.id = tc.tour_id
-                JOIN categories c ON tc.category_id = c.id
-                WHERE b.status = 'confirmed'
-                GROUP BY c.name
+                FROM categories c
+                LEFT JOIN tour_categories tc ON c.id = tc.category_id
+                LEFT JOIN bookings b ON tc.tour_id = b.tour_id AND b.status = 'confirmed'
+                GROUP BY c.id, c.name
+                HAVING COALESCE(SUM(b.total_price), 0) > 0
                 ORDER BY revenue DESC
             `);
 
-            // Customer demographics
+            // 3. CUSTOMER ACQUISITION
             const customerDemographics = await db.query(`
+                WITH months AS (
+                    SELECT generate_series(
+                        DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '11 months',
+                        DATE_TRUNC('month', CURRENT_DATE),
+                        '1 month'::interval
+                    ) AS month
+                )
                 SELECT 
-                    DATE_TRUNC('month', created_at) as month,
-                    COUNT(*) as new_customers
-                FROM users
-                WHERE role = 'user' AND created_at >= CURRENT_DATE - INTERVAL '12 months'
-                GROUP BY DATE_TRUNC('month', created_at)
-                ORDER BY month
+                    TO_CHAR(m.month, 'YYYY-MM-DD') as month,
+                    COUNT(u.id) as new_customers
+                FROM months m
+                LEFT JOIN users u 
+                    ON DATE_TRUNC('month', u.created_at) = m.month 
+                    AND u.role = 'user'
+                GROUP BY m.month
+                ORDER BY m.month ASC
             `);
 
-            // Top customers
+            // 4. VIP CUSTOMERS
             const topCustomers = await db.query(`
                 SELECT 
+                    u.id,
                     u.name,
                     u.email,
                     COUNT(b.id) as total_bookings,
-                    SUM(b.total_price) as total_spent
+                    COALESCE(SUM(b.total_price), 0) as total_spent
                 FROM users u
                 LEFT JOIN bookings b ON u.id = b.user_id AND b.status = 'confirmed'
                 WHERE u.role = 'user'
                 GROUP BY u.id, u.name, u.email
-                ORDER BY total_spent DESC NULLS LAST
-                LIMIT 10
+                HAVING COUNT(b.id) > 0
+                ORDER BY total_spent DESC
+                LIMIT 7
             `);
 
+            // Calculate KPIs
+            const totalRevenue = revenueTrend.rows.reduce((sum, row) => sum + parseFloat(row.revenue), 0);
+            const totalBookings = revenueTrend.rows.reduce((sum, row) => sum + parseInt(row.bookings), 0);
+            const avgBookingValue = totalBookings > 0 ? totalRevenue / totalBookings : 0;
+            const totalCustomers = customerDemographics.rows.reduce((sum, row) => sum + parseInt(row.new_customers), 0);
+            
+            // Calculate revenue trend percentage
+            let revenueTrendPercentage = 0;
+            if (revenueTrend.rows.length >= 2) {
+                const currentMonthRevenue = parseFloat(revenueTrend.rows[revenueTrend.rows.length - 1].revenue);
+                const prevMonthRevenue = parseFloat(revenueTrend.rows[revenueTrend.rows.length - 2].revenue);
+                if (prevMonthRevenue > 0) {
+                    revenueTrendPercentage = ((currentMonthRevenue - prevMonthRevenue) / prevMonthRevenue * 100).toFixed(1);
+                }
+            }
+
             res.render('admin/analytics/overview', {
-                title: 'Analytics Dashboard - Casalinga Tours',
+                title: 'Analytics Intelligence - Casalinga Tours',
                 revenueTrend: revenueTrend.rows,
                 revenueByCategory: revenueByCategory.rows,
                 customerDemographics: customerDemographics.rows,
                 topCustomers: topCustomers.rows,
                 period,
-                moment
+                moment,
+                // Pass calculated KPIs
+                kpis: {
+                    totalRevenue,
+                    totalBookings,
+                    avgBookingValue,
+                    totalCustomers,
+                    revenueTrendPercentage,
+                    topCategory: revenueByCategory.rows.length > 0 ? revenueByCategory.rows[0] : null
+                }
             });
 
         } catch (error) {
-            console.error('Get analytics error:', error);
-            res.status(500).render('error/500', { title: 'Server Error' });
+            console.error('Analytics Intelligence Error:', error);
+            const moment = require('moment');
+            res.render('admin/analytics/overview', {
+                title: 'Analytics Intelligence - Casalinga Tours',
+                revenueTrend: [],
+                revenueByCategory: [],
+                customerDemographics: [],
+                topCustomers: [],
+                period,
+                moment,
+                kpis: {
+                    totalRevenue: 0,
+                    totalBookings: 0,
+                    avgBookingValue: 0,
+                    totalCustomers: 0,
+                    revenueTrendPercentage: 0,
+                    topCategory: null
+                }
+            });
         }
     },
 
