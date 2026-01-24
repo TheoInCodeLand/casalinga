@@ -5,6 +5,7 @@ const analyticsController = require('../controllers/analyticsController');
 const { isAdmin, isManager } = require('../middleware/auth');
 const { uploadTourImages } = require('../middleware/upload');
 const validationRules = require('../middleware/validation');
+const adminChatController = require('../controllers/adminChatController');
 
 // Dashboard routes
 router.get('/dashboard', isAdmin, adminController.getDashboard);
@@ -112,5 +113,10 @@ router.get('/reports/bookings', isManager, async (req, res) => {
         res.status(500).render('error/500', { title: 'Server Error' });
     }
 });
+
+// --- AI Chatbot Training Routes ---
+router.get('/chatbot', isManager, adminChatController.getChatbotKnowledge);
+router.post('/chatbot/train', isManager, adminChatController.addChatbotKnowledge);
+router.post('/chatbot/delete/:id', isManager, adminChatController.deleteChatbotKnowledge);
 
 module.exports = router;

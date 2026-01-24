@@ -1,0 +1,293 @@
+<div id="admin-ai-widget" class="fixed bottom-6 right-6 z-[100] flex flex-col items-end font-sans pointer-events-none">
+
+    <div id="admin-chat-window" class="pointer-events-auto hidden bg-gray-900 w-[400px] h-[600px] rounded-xl shadow-2xl border border-gray-700 flex flex-col overflow-hidden mb-4 transition-all duration-300 origin-bottom-right scale-95 opacity-0 translate-y-4">
+        
+        <div class="bg-gray-800 px-5 py-4 flex justify-between items-center border-b border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="brain-circuit" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <span class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-gray-800 rounded-full animate-pulse"></span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-lg leading-tight">Casi Trainer</h3>
+                    <p class="text-xs text-gray-400">Test & Teach Mode</p>
+                </div>
+            </div>
+            <button id="admin-chat-close-btn" class="text-gray-400 hover:text-white transition-colors p-1 rounded-md hover:bg-gray-700">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="flex border-b border-gray-700 bg-gray-800/50">
+            <button id="tab-test" class="flex-1 py-3 text-sm font-medium text-white border-b-2 border-indigo-500 bg-gray-800/50 transition-colors">
+                <i data-lucide="message-square" class="w-4 h-4 inline mr-2"></i> Simulator
+            </button>
+            <button id="tab-train" class="flex-1 py-3 text-sm font-medium text-gray-400 hover:text-white border-b-2 border-transparent hover:bg-gray-800 transition-colors">
+                <i data-lucide="plus-circle" class="w-4 h-4 inline mr-2"></i> Add Fact
+            </button>
+        </div>
+
+        <div id="view-test" class="flex-1 flex flex-col h-full overflow-hidden">
+            <div id="admin-chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-900 space-y-4 scroll-smooth">
+                <div class="flex justify-center my-4">
+                    <span class="text-xs text-gray-500 bg-gray-800 px-3 py-1 rounded-full border border-gray-700">Test Session Started</span>
+                </div>
+            </div>
+            
+            <form id="admin-chat-form" class="p-3 bg-gray-800 border-t border-gray-700 flex gap-2">
+                <input type="text" id="admin-chat-input" class="flex-1 bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none placeholder-gray-500" placeholder="Ask a question..." autocomplete="off">
+                <button type="submit" class="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors shadow-lg">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
+
+        <div id="view-train" class="hidden flex-1 flex-col h-full overflow-y-auto bg-gray-900 p-5">
+            <p class="text-sm text-gray-400 mb-4 bg-gray-800 p-3 rounded border border-gray-700">
+                <i data-lucide="info" class="w-3 h-3 inline mr-1"></i> Did Casi get something wrong? Teach her the right answer here.
+            </p>
+            
+            <form id="train-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Topic</label>
+                    <select name="topic" id="train-topic" class="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm focus:border-indigo-500 outline-none">
+                        <option value="General">General Info</option>
+                        <option value="Policies">Policies (Refunds, etc)</option>
+                        <option value="Tours">Specific Tour Details</option>
+                        <option value="Pricing">Pricing & Payments</option>
+                        <option value="Fun">Fun Facts / Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">User Question</label>
+                    <input type="text" name="question" id="train-question" class="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm focus:border-indigo-500 outline-none" placeholder="e.g. Do you accept Bitcoin?" required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Correct Answer</label>
+                    <textarea name="answer" id="train-answer" rows="4" class="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm focus:border-indigo-500 outline-none" placeholder="e.g. No, currently we only accept Credit Cards and EFT." required></textarea>
+                </div>
+
+                <button type="submit" id="train-submit-btn" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all hover:translate-y-[-1px]">
+                    <i data-lucide="save" class="w-4 h-4"></i> Save to Brain
+                </button>
+            </form>
+
+            <div id="train-success" class="hidden mt-4 p-3 bg-green-900/30 border border-green-800 text-green-400 rounded-lg text-sm text-center animate-pulse">
+                <i data-lucide="check-circle" class="w-4 h-4 inline mr-1"></i> Knowledge Saved!
+            </div>
+        </div>
+
+    </div>
+
+    <button 
+        id="admin-chat-toggle-btn"
+        class="pointer-events-auto group w-14 h-14 bg-indigo-600 text-white rounded-full shadow-2xl hover:bg-indigo-500 hover:scale-105 transition-all duration-300 flex items-center justify-center border-2 border-gray-900 ring-2 ring-indigo-500/50"
+    >
+        <i data-lucide="bot" class="w-7 h-7 transition-transform group-hover:rotate-12"></i>
+    </button>
+
+</div>
+
+<script>
+(function() {
+    // 1. Elements
+    const widget = document.getElementById('admin-chat-window');
+    const toggleBtn = document.getElementById('admin-chat-toggle-btn');
+    const closeBtn = document.getElementById('admin-chat-close-btn');
+    const tabTest = document.getElementById('tab-test');
+    const tabTrain = document.getElementById('tab-train');
+    const viewTest = document.getElementById('view-test');
+    const viewTrain = document.getElementById('view-train');
+    const chatForm = document.getElementById('admin-chat-form');
+    const trainForm = document.getElementById('train-form');
+
+    // 2. Toggling
+    function toggleChat() {
+        const isHidden = widget.classList.contains('hidden');
+        if (isHidden) {
+            widget.classList.remove('hidden');
+            // Small delay for animation
+            setTimeout(() => {
+                widget.classList.remove('opacity-0', 'translate-y-4', 'scale-95');
+                widget.classList.add('opacity-100', 'translate-y-0', 'scale-100');
+                document.getElementById('admin-chat-input').focus();
+            }, 10);
+        } else {
+            widget.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
+            widget.classList.add('opacity-0', 'translate-y-4', 'scale-95');
+            setTimeout(() => widget.classList.add('hidden'), 300);
+        }
+    }
+
+    if(toggleBtn) toggleBtn.addEventListener('click', toggleChat);
+    if(closeBtn) closeBtn.addEventListener('click', toggleChat);
+
+    // 3. Tab Switching
+    function switchTab(mode) {
+        if (mode === 'test') {
+            viewTest.classList.remove('hidden');
+            viewTrain.classList.add('hidden');
+            
+            tabTest.classList.add('border-indigo-500', 'text-white', 'bg-gray-800/50');
+            tabTest.classList.remove('border-transparent', 'text-gray-400');
+            
+            tabTrain.classList.remove('border-indigo-500', 'text-white', 'bg-gray-800/50');
+            tabTrain.classList.add('border-transparent', 'text-gray-400');
+            
+            document.getElementById('admin-chat-input').focus();
+        } else {
+            viewTest.classList.add('hidden');
+            viewTrain.classList.remove('hidden');
+
+            tabTrain.classList.add('border-indigo-500', 'text-white', 'bg-gray-800/50');
+            tabTrain.classList.remove('border-transparent', 'text-gray-400');
+
+            tabTest.classList.remove('border-indigo-500', 'text-white', 'bg-gray-800/50');
+            tabTest.classList.add('border-transparent', 'text-gray-400');
+            
+            document.getElementById('train-question').focus();
+        }
+    }
+
+    if(tabTest) tabTest.addEventListener('click', () => switchTab('test'));
+    if(tabTrain) tabTrain.addEventListener('click', () => switchTab('train'));
+
+    // 4. Simulator Logic
+    if(chatForm) {
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('admin-chat-input');
+            const messages = document.getElementById('admin-chat-messages');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // User Message
+            messages.innerHTML += `
+                <div class="flex justify-end animate-fade-in-up">
+                    <div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[85%] shadow-sm">${text}</div>
+                </div>`;
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+
+            // Loading
+            const loadingId = 'adm-' + Date.now();
+            messages.innerHTML += `
+                <div id="${loadingId}" class="flex justify-start animate-fade-in-up">
+                    <div class="bg-gray-800 text-gray-400 p-3 rounded-2xl rounded-tl-none text-sm border border-gray-700 italic flex items-center gap-2">
+                        <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Thinking...
+                    </div>
+                </div>`;
+            messages.scrollTop = messages.scrollHeight;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+                
+                const loader = document.getElementById(loadingId);
+                if(loader) loader.remove();
+                
+                const reply = data.success ? data.reply : "Error connecting to bot.";
+                
+                // AI Message with "Quick Fix" button
+                // We use encodeURIComponent to safely pass the question to the function
+                const safeQuestion = encodeURIComponent(text);
+                
+                messages.innerHTML += `
+                    <div class="flex justify-start animate-fade-in-up">
+                        <div class="bg-gray-800 text-gray-200 p-3 rounded-2xl rounded-tl-none text-sm border border-gray-700 max-w-[90%] shadow-sm">
+                            ${reply}
+                            <button data-question="${safeQuestion}" class="quick-train-btn block mt-3 text-xs text-indigo-400 hover:text-indigo-300 hover:underline flex items-center gap-1 border-t border-gray-700 pt-2 w-full">
+                                <i data-lucide="wrench" class="w-3 h-3"></i> Wrong answer? Fix it here
+                            </button>
+                        </div>
+                    </div>`;
+                
+                messages.scrollTop = messages.scrollHeight;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    }
+
+    // 5. Delegate Click for "Quick Fix" buttons (Event Delegation)
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.quick-train-btn')) {
+            const btn = e.target.closest('.quick-train-btn');
+            const question = decodeURIComponent(btn.dataset.question);
+            switchTab('train');
+            document.getElementById('train-question').value = question;
+            document.getElementById('train-answer').focus();
+        }
+    });
+
+    // 6. Training Logic
+    if(trainForm) {
+        trainForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('train-submit-btn');
+            const topic = document.getElementById('train-topic').value;
+            const question = document.getElementById('train-question').value;
+            const answer = document.getElementById('train-answer').value;
+
+            btn.disabled = true;
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+
+            try {
+                const res = await fetch('/admin/chatbot/train', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic, question, answer })
+                });
+
+                if (res.ok) {
+                    const successMsg = document.getElementById('train-success');
+                    successMsg.classList.remove('hidden');
+                    document.getElementById('train-question').value = '';
+                    document.getElementById('train-answer').value = '';
+                    
+                    setTimeout(() => {
+                        successMsg.classList.add('hidden');
+                        switchTab('test');
+                    }, 1500);
+                }
+            } catch (err) {
+                alert('Failed to save knowledge');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        });
+    }
+
+    // Initialize Icons
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+})();
+</script>
+
+<style>
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up {
+        animation: fadeInUp 0.3s ease-out forwards;
+    }
+    #admin-chat-messages::-webkit-scrollbar { width: 6px; }
+    #admin-chat-messages::-webkit-scrollbar-track { background: #111827; }
+    #admin-chat-messages::-webkit-scrollbar-thumb { background-color: #374151; border-radius: 20px; }
+</style>

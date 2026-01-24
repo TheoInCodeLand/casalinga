@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Train Casi AI | Casalinga Admin</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/admin/sidebar-styles.css"> <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#1a5d2c",
+            secondary: "#f8f5ee",
+            accent: "#d4a574"
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900">
+
+  <div class="flex min-h-screen">
+    
+    <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:inset-0">
+        <%- include('../partials/admin-sidebar') %>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+      
+      <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <i data-lucide="brain-circuit" class="text-primary"></i>
+            AI Training Center
+        </h1>
+        <div class="text-sm text-gray-500">Teach Casi new facts about your business</div>
+      </header>
+
+      <div class="flex-1 overflow-auto p-6">
+
+        <% if (locals.success) { %>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6">
+                <%= success %>
+            </div>
+        <% } %>
+        <% if (locals.error) { %>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-5 h-5"></i> Add New Knowledge
+                    </h2>
+                    
+                    <form action="/admin/chatbot/train" method="POST" class="space-y-4">
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Topic</label>
+                            <select name="topic" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                                <option value="General">General Info</option>
+                                <option value="Refunds">Refunds & Policies</option>
+                                <option value="Contact">Contact Details</option>
+                                <option value="Tips">Travel Tips</option>
+                                <option value="Fun">Fun Facts</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">User Question (Trigger)</label>
+                            <input type="text" name="question" placeholder="e.g. Can I bring my dog?" required
+                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                            <p class="text-xs text-gray-500 mt-1">What might a user ask?</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">AI Answer</label>
+                            <textarea name="answer" rows="4" placeholder="e.g. Unfortunately, pets are not allowed on the bus..." required
+                                      class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
+                            <p class="text-xs text-gray-500 mt-1">The exact fact the AI should use.</p>
+                        </div>
+
+                        <button type="submit" class="w-full bg-primary text-white font-bold py-2.5 rounded-lg hover:bg-green-800 transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> Save to Brain
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                        <h2 class="text-lg font-bold text-gray-900">Current Knowledge Base</h2>
+                        <span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-full">
+                            <%= knowledge.length %> Facts
+                        </span>
+                    </div>
+
+                    <% if (knowledge.length > 0) { %>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-gray-50 text-gray-500 font-medium">
+                                    <tr>
+                                        <th class="px-6 py-3">Topic</th>
+                                        <th class="px-6 py-3">Question & Answer</th>
+                                        <th class="px-6 py-3 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <% knowledge.forEach(item => { %>
+                                        <tr class="hover:bg-gray-50 transition-colors group">
+                                            <td class="px-6 py-4 align-top">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                    <%= item.topic %>
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <p class="font-bold text-gray-900 mb-1">Q: <%= item.question %></p>
+                                                <p class="text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
+                                                    <span class="font-semibold text-primary">AI:</span> <%= item.answer %>
+                                                </p>
+                                            </td>
+                                            <td class="px-6 py-4 text-right align-top">
+                                                <form action="/admin/chatbot/delete/<%= item.id %>" method="POST" onsubmit="return confirm('Forget this fact?');">
+                                                    <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1">
+                                                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="p-12 text-center text-gray-500">
+                            <i data-lucide="brain" class="w-12 h-12 mx-auto mb-3 text-gray-300"></i>
+                            <p>Casi's brain is empty! Add some knowledge to get started.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
