@@ -50,6 +50,14 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/vlog', (req, res) => {
+    res.render('vlog', { 
+        title: 'My Vlog Page',
+        videoUrl: '/videos/my-tour.mp4',
+        posterUrl: '/images/thumbnail.jpg' 
+    });
+});
+
 router.get('/about', (req, res) => {
     res.render('about', {
         title: 'About Us - Casalinga Tours'
