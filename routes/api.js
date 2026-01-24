@@ -4,6 +4,8 @@ const apiController = require('../controllers/apiController');
 const { isAuthenticated } = require('../middleware/auth');
 const { check } = require('express-validator');
 const tourController = require('../controllers/tourController');
+const chatController = require('../controllers/chatController');
+const db = require('../config/database');
 
 // Public API endpoints
 router.get('/tours', apiController.getTours);
@@ -21,7 +23,7 @@ router.post('/bookings', [
 ], apiController.createBooking);
 
 router.get('/bookings/:booking_number', apiController.getBooking);
-
+router.post('/chat', chatController.handleChat);
 // Contact form
 router.post('/contact', [
     check('name').notEmpty().withMessage('Name is required'),

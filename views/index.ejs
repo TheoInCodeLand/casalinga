@@ -119,8 +119,7 @@
             <nav class="flex items-center justify-between">
                 <a href="#home" class="flex items-center gap-2 group">
                     <div class="relative">
-                        <i data-lucide="mountain" class="h-8 w-8 transition-colors duration-300 text-white" id="header-logo-icon"></i>
-                        <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <img src="/images/favicon.png" alt="" style="max-height: 2.5rem;">
                     </div>
                     <span id="header-logo-text" class="font-serif text-2xl font-semibold tracking-tight transition-colors duration-300 text-white">Casalinga</span>
                 </a>
@@ -449,6 +448,7 @@
             </div>
         </div>
     </section>
+   
 
     <!-- <section style="height: 2rem; background: linear-gradient(to bottom, #f8f4ee, #00000051);"></section> -->
     
@@ -520,6 +520,7 @@
             </div>
         </div>
     </footer>
+
 
     <script>
         // --- 1. Data Sources ---
@@ -907,5 +908,6 @@
         });
 
     </script>
+     <%- include('../partials/chat-widget') %>
 </body>
 </html>

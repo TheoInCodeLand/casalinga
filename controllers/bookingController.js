@@ -16,15 +16,20 @@ const bookingController = {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 req.session.error = errors.array()[0].msg;
-                // Safe redirect
                 const redirectUrl = req.body.tour_slug ? `/tours/${req.body.tour_slug}` : '/tours';
                 return res.redirect(redirectUrl);
             }
 
-            const { tour_id, tour_date, people_count, special_requests } = req.body;
+            // 1. Destructure ALL fields (Standard + New Bespoke Fields)
+            const { 
+                tour_id, tour_date, people_count, special_requests,
+                departure_airport, room_configuration, child_ages,
+                vip_upgrades, trip_vibe, occasion, travel_insurance
+            } = req.body;
+            
             const userId = req.session.user.id;
 
-            // 1. Get tour details
+            // 2. Get tour details & Price check
             const tourQuery = await db.query(
                 'SELECT id, title, price, discount_price, capacity FROM tours WHERE id = $1',
                 [tour_id]
@@ -38,7 +43,7 @@ const bookingController = {
             const tour = tourQuery.rows[0];
             const tourPrice = tour.discount_price || tour.price;
 
-            // 2. Check capacity
+            // 3. Check capacity
             const bookedQuery = await db.query(
                 `SELECT SUM(people_count) as total_booked 
                  FROM bookings 
@@ -54,28 +59,39 @@ const bookingController = {
                 return res.redirect(`/tours/${req.body.tour_slug}`);
             }
 
-            // 3. Calculate total price
+            // 4. Calculate total price
             const totalPrice = tourPrice * people_count;
 
-            // 4. Generate ULTRA UNIQUE Booking Number
-            // Format: CT-YYMMDD-XXXXXX (e.g., CT-240126-AB9F21)
-            // Using random bytes eliminates the duplicate key error completely.
+            // 5. Generate ULTRA UNIQUE Booking Number (CT-YYMMDD-HEX)
             const datePart = moment().format('YYMMDD');
             const randomPart = crypto.randomBytes(3).toString('hex').toUpperCase(); 
             const bookingNumber = `CT-${datePart}-${randomPart}`;
 
-            // 5. Create booking
+            // 6. Handle VIP Upgrades (Ensure it's a JSON array)
+            // HTML forms send a string if 1 checkbox is checked, array if multiple
+            let upgradesList = [];
+            if (vip_upgrades) {
+                upgradesList = Array.isArray(vip_upgrades) ? vip_upgrades : [vip_upgrades];
+            }
+
+            // 7. Create booking with NEW FIELDS
             const bookingQuery = await db.query(
                 `INSERT INTO bookings (
                     booking_number, user_id, tour_id, people_count,
-                    total_price, special_requests, booked_at, status
-                ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), 'pending')
+                    total_price, special_requests, booked_at, status,
+                    departure_airport, room_configuration, child_ages,
+                    vip_upgrades, trip_vibe, occasion, travel_insurance
+                ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), 'pending', $7, $8, $9, $10, $11, $12, $13)
                 RETURNING id, booking_number`,
-                [bookingNumber, userId, tour_id, people_count, 
-                 totalPrice, special_requests]
+                [
+                    bookingNumber, userId, tour_id, people_count, 
+                    totalPrice, special_requests,
+                    departure_airport, room_configuration, child_ages,
+                    JSON.stringify(upgradesList), trip_vibe, occasion, travel_insurance
+                ]
             );
 
-            // 6. Update tour booked count
+            // 8. Update tour booked count
             await db.query(
                 'UPDATE tours SET booked_count = booked_count + $1 WHERE id = $2',
                 [people_count, tour_id]
@@ -87,7 +103,6 @@ const bookingController = {
         } catch (error) {
             console.error('Create booking error:', error);
             req.session.error = 'An error occurred while creating your booking';
-            // Fallback redirect
             const redirectUrl = req.body.tour_slug ? `/tours/${req.body.tour_slug}` : '/tours';
             res.redirect(redirectUrl);
         }

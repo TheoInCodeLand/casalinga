@@ -757,121 +757,102 @@ const adminController = {
 
     // GET /admin/analytics
     getAnalytics: async (req, res) => {
+        const moment = require('moment'); // Add this if not already present
         try {
-            const { period = 'month' } = req.query;
-            const moment = require('moment');
+            const { period = 'month' } = req.query; // 'month' (last 12m) or 'year' (this year)
+            const startInterval = period === 'year' 
+                ? `DATE_TRUNC('year', CURRENT_DATE)` 
+                : `DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '11 months'`;
 
-            // 1. SMART REVENUE TREND
+            // 1. SMART REVENUE TREND (With Zero-Filling)
+            // Uses PostgreSQL 'generate_series' to ensure every month appears on the graph, even if 0 revenue.
             const revenueTrend = await db.query(`
                 WITH months AS (
                     SELECT generate_series(
-                        DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '11 months',
+                        ${startInterval},
                         DATE_TRUNC('month', CURRENT_DATE),
                         '1 month'::interval
                     ) AS month
                 )
-                SELECT 
-                    TO_CHAR(m.month, 'YYYY-MM-DD') as month,
+                SELECT
+                    m.month,
                     COALESCE(SUM(b.total_price), 0) as revenue,
                     COUNT(b.id) as bookings
                 FROM months m
-                LEFT JOIN bookings b 
-                    ON DATE_TRUNC('month', b.booked_at) = m.month 
+                LEFT JOIN bookings b
+                    ON DATE_TRUNC('month', b.booked_at) = m.month
                     AND b.status = 'confirmed'
                 GROUP BY m.month
                 ORDER BY m.month ASC
             `);
 
-            // 2. REVENUE BY CATEGORY
+            // 2. REVENUE BY CATEGORY (Deep Dive)
             const revenueByCategory = await db.query(`
-                SELECT 
-                    c.id,
+                SELECT
                     c.name as category,
                     COALESCE(SUM(b.total_price), 0) as revenue,
                     COUNT(b.id) as bookings
                 FROM categories c
                 LEFT JOIN tour_categories tc ON c.id = tc.category_id
                 LEFT JOIN bookings b ON tc.tour_id = b.tour_id AND b.status = 'confirmed'
+                    AND DATE_TRUNC('month', b.booked_at) >= ${startInterval}
+                    AND DATE_TRUNC('month', b.booked_at) <= DATE_TRUNC('month', CURRENT_DATE)
                 GROUP BY c.id, c.name
-                HAVING COALESCE(SUM(b.total_price), 0) > 0
+                HAVING SUM(b.total_price) > 0
                 ORDER BY revenue DESC
             `);
 
-            // 3. CUSTOMER ACQUISITION
+            // 3. CUSTOMER ACQUISITION (Growth)
             const customerDemographics = await db.query(`
                 WITH months AS (
                     SELECT generate_series(
-                        DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '11 months',
+                        ${startInterval},
                         DATE_TRUNC('month', CURRENT_DATE),
                         '1 month'::interval
                     ) AS month
                 )
-                SELECT 
-                    TO_CHAR(m.month, 'YYYY-MM-DD') as month,
+                SELECT
+                    m.month,
                     COUNT(u.id) as new_customers
                 FROM months m
-                LEFT JOIN users u 
-                    ON DATE_TRUNC('month', u.created_at) = m.month 
+                LEFT JOIN users u
+                    ON DATE_TRUNC('month', u.created_at) = m.month
                     AND u.role = 'user'
                 GROUP BY m.month
                 ORDER BY m.month ASC
             `);
 
-            // 4. VIP CUSTOMERS
+            // 4. VIP CUSTOMERS (Lifetime Value)
             const topCustomers = await db.query(`
-                SELECT 
-                    u.id,
+                SELECT
                     u.name,
                     u.email,
                     COUNT(b.id) as total_bookings,
                     COALESCE(SUM(b.total_price), 0) as total_spent
                 FROM users u
-                LEFT JOIN bookings b ON u.id = b.user_id AND b.status = 'confirmed'
-                WHERE u.role = 'user'
+                JOIN bookings b ON u.id = b.user_id
+                WHERE b.status = 'confirmed'
+                    AND DATE_TRUNC('month', b.booked_at) >= ${startInterval}
+                    AND DATE_TRUNC('month', b.booked_at) <= DATE_TRUNC('month', CURRENT_DATE)
                 GROUP BY u.id, u.name, u.email
-                HAVING COUNT(b.id) > 0
                 ORDER BY total_spent DESC
                 LIMIT 7
             `);
 
-            // Calculate KPIs
-            const totalRevenue = revenueTrend.rows.reduce((sum, row) => sum + parseFloat(row.revenue), 0);
-            const totalBookings = revenueTrend.rows.reduce((sum, row) => sum + parseInt(row.bookings), 0);
-            const avgBookingValue = totalBookings > 0 ? totalRevenue / totalBookings : 0;
-            const totalCustomers = customerDemographics.rows.reduce((sum, row) => sum + parseInt(row.new_customers), 0);
-            
-            // Calculate revenue trend percentage
-            let revenueTrendPercentage = 0;
-            if (revenueTrend.rows.length >= 2) {
-                const currentMonthRevenue = parseFloat(revenueTrend.rows[revenueTrend.rows.length - 1].revenue);
-                const prevMonthRevenue = parseFloat(revenueTrend.rows[revenueTrend.rows.length - 2].revenue);
-                if (prevMonthRevenue > 0) {
-                    revenueTrendPercentage = ((currentMonthRevenue - prevMonthRevenue) / prevMonthRevenue * 100).toFixed(1);
-                }
-            }
-
+            // Render the view with the data
             res.render('admin/analytics/overview', {
                 title: 'Analytics Intelligence - Casalinga Tours',
+                // We pass the raw rows. The frontend JS handles the formatting.
                 revenueTrend: revenueTrend.rows,
                 revenueByCategory: revenueByCategory.rows,
                 customerDemographics: customerDemographics.rows,
                 topCustomers: topCustomers.rows,
                 period,
-                moment,
-                // Pass calculated KPIs
-                kpis: {
-                    totalRevenue,
-                    totalBookings,
-                    avgBookingValue,
-                    totalCustomers,
-                    revenueTrendPercentage,
-                    topCategory: revenueByCategory.rows.length > 0 ? revenueByCategory.rows[0] : null
-                }
+                moment
             });
-
         } catch (error) {
             console.error('Analytics Intelligence Error:', error);
-            const moment = require('moment');
+            // Fallback to empty data so the page doesn't crash
             res.render('admin/analytics/overview', {
                 title: 'Analytics Intelligence - Casalinga Tours',
                 revenueTrend: [],
@@ -879,15 +860,7 @@ const adminController = {
                 customerDemographics: [],
                 topCustomers: [],
                 period,
-                moment,
-                kpis: {
-                    totalRevenue: 0,
-                    totalBookings: 0,
-                    avgBookingValue: 0,
-                    totalCustomers: 0,
-                    revenueTrendPercentage: 0,
-                    topCategory: null
-                }
+                moment
             });
         }
     },

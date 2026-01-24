@@ -306,8 +306,7 @@
                 <!-- Logo -->
                 <a href="/" class="flex items-center gap-2 group" aria-label="Casalinga Tours Home">
                     <div class="relative">
-                        <i data-lucide="mountain" class="h-8 w-8 text-primary transition-transform duration-300 group-hover:scale-110"></i>
-                        <div class="absolute -inset-2 bg-primary/10 rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <img src="/images/favicon.png" alt="" style="max-height: 2.5rem;">
                     </div>
                     <span class="font-display text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Casalinga</span>
                 </a>
@@ -726,106 +725,127 @@
 
                         <!-- Booking Form -->
                         <form id="booking-form" action="/bookings/create" method="POST" class="space-y-6" novalidate>
-                            <input type="hidden" name="tour_id" value="<%= tour.id %>">
-                            <input type="hidden" name="tour_slug" value="<%= tour.slug %>">
-                            <input type="hidden" name="tour_date" value="<%= moment(tour.start_date).format('YYYY-MM-DD') %>">
+    <input type="hidden" name="tour_id" value="<%= tour.id %>">
+    <input type="hidden" name="tour_slug" value="<%= tour.slug %>">
+    <input type="hidden" name="tour_date" value="<%= moment(tour.start_date).format('YYYY-MM-DD') %>">
 
-                            <!-- Dates -->
-                            <div class="space-y-2">
-                                <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                    <i data-lucide="calendar" class="w-4 h-4"></i>
-                                    Dates
-                                </label>
-                                <div class="border border-gray-200 rounded-xl p-4 bg-gray-50">
-                                    <p class="font-medium text-gray-900"><%= moment(tour.start_date).format('ddd, MMM D') %> - <%= moment(tour.end_date).format('ddd, MMM D') %></p>
-                                    <p class="text-sm text-gray-500"><%= tour.duration_days %> days, <%= tour.duration_days - 1 %> nights</p>
-                                </div>
-                            </div>
+    <div class="space-y-4">
+        <h4 class="font-serif font-bold text-gray-900 border-b border-gray-100 pb-2">Logistics</h4>
+        
+        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Travel Dates</label>
+            <div class="font-medium text-gray-900 flex items-center gap-2">
+                <i data-lucide="calendar" class="w-4 h-4 text-primary"></i>
+                <%= moment(tour.start_date).format('MMM D') %> - <%= moment(tour.end_date).format('MMM D, YYYY') %>
+            </div>
+        </div>
 
-                            <!-- Guests Counter -->
-                            <div class="space-y-2">
-                                <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                    <i data-lucide="user" class="w-4 h-4"></i>
-                                    Guests
-                                </label>
-                                <div class="border border-gray-200 rounded-xl p-4 bg-white">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="font-medium text-gray-900">Travelers</p>
-                                            <p class="text-xs text-gray-500" id="spots-available"><%= tour.capacity %> spots available</p>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <button type="button" onclick="adjustGuests(-1)" class="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 touch-target focus-ring" aria-label="Decrease guest count">
-                                                <i data-lucide="minus" class="w-4 h-4"></i>
-                                            </button>
-                                            <input type="number" id="guest-count" name="people_count" min="1" max="<%= tour.capacity %>" value="1" class="w-16 text-center font-bold text-xl border-none focus:ring-0 p-0 focus:outline-none" aria-label="Number of guests">
-                                            <button type="button" onclick="adjustGuests(1)" class="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 touch-target focus-ring" aria-label="Increase guest count">
-                                                <i data-lucide="plus" class="w-4 h-4"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Departure Airport</label>
+            <input type="text" name="departure_airport" placeholder="e.g. OR Tambo, Cape Town Int" class="w-full rounded-lg border-gray-300 focus:ring-primary focus:border-primary text-sm" required>
+        </div>
 
-                            <!-- Special Requests -->
-                            <div class="space-y-2">
-                                <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                    <i data-lucide="message-circle" class="w-4 h-4"></i>
-                                    Special Requests
-                                </label>
-                                <textarea 
-                                    name="special_requests" 
-                                    rows="3" 
-                                    placeholder="Dietary requirements, allergies, accessibility needs..." 
-                                    class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm resize-none"
-                                    aria-label="Special requests"
-                                ></textarea>
-                            </div>
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Room Configuration</label>
+            <select name="room_configuration" class="w-full rounded-lg border-gray-300 focus:ring-primary focus:border-primary text-sm">
+                <option value="Double/Twin (2 per room)">Double/Twin (2 per room)</option>
+                <option value="Single (1 per room)">Single (1 per room)</option>
+                <option value="Triple (3 per room)">Triple (3 per room)</option>
+                <option value="Family (Multi-room)">Family Setup</option>
+            </select>
+        </div>
+    </div>
 
-                            <!-- Booking Button -->
-                            <div class="pt-2">
-                                <% if (tour.status == 'available') { %>
-                                    <% if (user) { %>
-                                        <button type="submit" class="w-full py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary-800 hover:shadow-glow transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 touch-target focus-ring">
-                                            <i data-lucide="credit-card" class="w-5 h-5"></i>
-                                            Book Now
-                                        </button>
-                                        <p class="text-center text-xs text-gray-500 mt-3">Free cancellation up to 30 days before</p>
-                                    <% } else { %>
-                                        <a href="/auth/login?redirect=/tours/<%= tour.slug %>" class="block w-full py-4 bg-gray-900 text-white font-bold text-center rounded-xl hover:bg-gray-800 transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 touch-target focus-ring">
-                                            <i data-lucide="log-in" class="w-5 h-5"></i>
-                                            Login to Book
-                                        </a>
-                                    <% } %>
-                                <% } else if (tour.status == 'fully_booked') { %>
-                                    <div class="text-center space-y-3">
-                                        <button type="button" disabled class="w-full py-4 bg-gray-200 text-gray-600 font-bold rounded-xl cursor-not-allowed">
-                                            <i data-lucide="x-circle" class="w-5 h-5 inline mr-2"></i>
-                                            Sold Out
-                                        </button>
-                                        <p class="text-sm text-gray-600">Join waitlist to be notified if spots open up</p>
-                                        <button type="button" onclick="joinWaitlist()" class="w-full py-3 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary-50 transition-colors touch-target focus-ring">
-                                            Join Waitlist
-                                        </button>
-                                    </div>
-                                <% } else if (tour.status == 'cancelled') { %>
-                                    <button type="button" disabled class="w-full py-4 bg-gray-200 text-gray-600 font-bold rounded-xl cursor-not-allowed">
-                                        <i data-lucide="ban" class="w-5 h-5 inline mr-2"></i>
-                                        Tour Cancelled
-                                    </button>
-                                <% } else if (tour.status == 'upcoming') { %>
-                                    <div class="space-y-3">
-                                        <button type="button" disabled class="w-full py-4 bg-amber-100 text-amber-800 font-bold rounded-xl cursor-not-allowed">
-                                            <i data-lucide="clock" class="w-5 h-5 inline mr-2"></i>
-                                            Available from <%= moment(tour.start_date).format('MMM D, YYYY') %>
-                                        </button>
-                                        <button type="button" onclick="notifyMe()" class="w-full py-3 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary-50 transition-colors touch-target focus-ring">
-                                            Notify Me When Available
-                                        </button>
-                                    </div>
-                                <% } %>
-                            </div>
-                        </form>
+    <div class="space-y-4">
+        <h4 class="font-serif font-bold text-gray-900 border-b border-gray-100 pb-2 pt-2">Travelers</h4>
+        
+        <div class="flex items-center justify-between border border-gray-200 rounded-xl p-3 bg-white">
+            <div>
+                <p class="font-medium text-gray-900">Total Guests</p>
+                <p class="text-xs text-gray-500" id="spots-available"><%= tour.capacity %> spots left</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="adjustGuests(-1)" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                <input type="number" id="guest-count" name="people_count" min="1" max="<%= tour.capacity %>" value="1" class="w-12 text-center font-bold text-lg border-none p-0 focus:ring-0">
+                <button type="button" onclick="adjustGuests(1)" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"><i data-lucide="plus" class="w-3 h-3"></i></button>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Traveling with children?</label>
+            <input type="text" name="child_ages" placeholder="If yes, please list their ages (e.g. 5, 12)" class="w-full rounded-lg border-gray-300 focus:ring-primary focus:border-primary text-sm">
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <h4 class="font-serif font-bold text-gray-900 border-b border-gray-100 pb-2 pt-2">Customize Experience</h4>
+
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Occasion</label>
+                <select name="occasion" class="w-full rounded-lg border-gray-300 text-sm">
+                    <option value="Leisure">Just Leisure</option>
+                    <option value="Honeymoon">Honeymoon</option>
+                    <option value="Birthday">Birthday</option>
+                    <option value="Anniversary">Anniversary</option>
+                    <option value="Baecation">Baecation</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">The Vibe</label>
+                <select name="trip_vibe" class="w-full rounded-lg border-gray-300 text-sm">
+                    <option value="Relaxed">Relaxed & Chill</option>
+                    <option value="Adventure">High Adventure</option>
+                    <option value="Party">Party / Nightlife</option>
+                    <option value="Cultural">Cultural Deep Dive</option>
+                    <option value="Luxury">Ultra Luxury</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">VIP Upgrades</label>
+            <div class="space-y-2">
+                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <input type="checkbox" name="vip_upgrades[]" value="Airport Transfers" class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">Add Airport Transfers</span>
+                </label>
+                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <input type="checkbox" name="vip_upgrades[]" value="Car Rental" class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">Add Car Rental</span>
+                </label>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Travel Insurance</label>
+            <p class="text-xs text-gray-500 mb-2">Highly recommended for cancellations/medical.</p>
+            <select name="travel_insurance" class="w-full rounded-lg border-gray-300 text-sm">
+                <option value="Yes">Yes, please include a quote</option>
+                <option value="No">No, I will decline</option>
+                <option value="Own">I have my own insurance</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Special Requests</label>
+            <textarea name="special_requests" rows="2" placeholder="Dietary requirements, accessibility, etc." class="w-full rounded-lg border-gray-300 focus:ring-primary text-sm"></textarea>
+        </div>
+    </div>
+
+    <div class="pt-4">
+        <% if (tour.status == 'available') { %>
+            <button type="submit" class="w-full py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary-800 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                <i data-lucide="sparkles" class="w-5 h-5"></i> Request Booking
+            </button>
+            <p class="text-center text-xs text-gray-500 mt-3">
+                <i data-lucide="lock" class="w-3 h-3 inline"></i> Secure checkout. 45-60 day payment terms apply.
+            </p>
+        <% } else { %>
+            <button disabled class="w-full py-4 bg-gray-200 text-gray-500 font-bold rounded-xl cursor-not-allowed">Not Available</button>
+        <% } %>
+    </div>
+</form>
 
                         <!-- Favorite Button -->
                         <% if (user) { %>

@@ -1,623 +1,1257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analytics Intelligence - Casalinga Tours</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="/css/admin/sidebar-styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
     
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: {
-            primary: "#1a5d2c",
-            "primary-light": "#e8f5e9",
-            secondary: "#f8f5ee",
-            accent: "#d4a574",
-            border: "hsl(214.3 31.8% 91.4%)",
-            background: "#f8f9fc" // Slightly grey background for dashboard contrast
-          },
-          boxShadow: {
-            'dashboard': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)'
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    /* Dashboard specific overrides */
-    body { background-color: #f3f4f6; }
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    /* Power BI Style Grid */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      grid-auto-rows: minmax(140px, auto);
-      gap: 1.5rem;
-    }
-
-    /* Card Styling */
-    .bi-card {
-      background: white;
-      border-radius: 0.75rem;
-      border: 1px solid rgba(229, 231, 235, 0.5);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: all 0.2s ease;
-    }
-    
-    .bi-card:hover {
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-      transform: translateY(-2px);
-    }
-
-    .bi-header {
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #f3f4f6;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .bi-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #374151;
-      text-transform: uppercase;
-      letter-spacing: 0.025em;
-    }
-
-    .bi-content {
-      padding: 1.5rem;
-      flex: 1;
-      position: relative;
-    }
-
-    /* KPI Value styling */
-    .kpi-value { font-size: 2rem; font-weight: 700; color: #111827; line-height: 1; }
-    .kpi-label { font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; }
-    .kpi-trend { font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem; margin-top: 0.75rem; }
-    
-    /* Grid Spans */
-    .col-span-12 { grid-column: span 12; }
-    .col-span-8 { grid-column: span 8; }
-    .col-span-6 { grid-column: span 6; }
-    .col-span-4 { grid-column: span 4; }
-    .col-span-3 { grid-column: span 3; }
-    
-    .row-span-2 { grid-row: span 2; }
-
-    /* Ensure charts have proper dimensions */
-    canvas {
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    /* Fix table responsiveness */
-    .overflow-x-auto {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    /* Ensure proper spacing in KPI cards */
-    .kpi-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #111827;
-        line-height: 1.2;
-        margin-top: 0.25rem;
-    }
-
-    /* Improve chart container sizing */
-    .chart-container {
-        position: relative;
-        height: 300px;
-        width: 100%;
-    }
-
-    /* Fix for mobile view */
-    @media (max-width: 768px) {
-        .bi-card {
-            margin-bottom: 1rem;
+    <!-- Charts & UI -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/admin/sidebar-styles.css">
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --primary: #1a5d2c;
+            --primary-light: #e8f5e9;
+            --secondary: #f8f5ee;
+            --accent: #d4a574;
+            --dark: #111827;
+            --light: #f9fafb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
         }
         
-        .kpi-value {
-            font-size: 1.5rem;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: var(--dark);
         }
         
         .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .kpi-card {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            justify-content: space-between;
+            height: 100%;
         }
-    }
-
-    @media (max-width: 1280px) {
-      .xl\:col-span-6 { grid-column: span 6; }
-      .xl\:col-span-12 { grid-column: span 12; }
-    }
-    @media (max-width: 1024px) {
-      .lg\:col-span-12 { grid-column: span 12; }
-      .dashboard-grid { gap: 1rem; }
-    }
-    @media (max-width: 768px) {
-      .dashboard-grid { display: flex; flex-direction: column; }
-    }
-  </style>
+        
+        .kpi-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            line-height: 1;
+            margin: 0.5rem 0;
+        }
+        
+        .kpi-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+        
+        .kpi-trend {
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-top: 0.75rem;
+        }
+        
+        .trend-up {
+            color: var(--success);
+        }
+        
+        .trend-down {
+            color: var(--danger);
+        }
+        
+        .trend-neutral {
+            color: #6b7280;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #2e7d32 100%);
+            color: white;
+        }
+        
+        .stat-card .card-title,
+        .stat-card .card-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .stat-card .kpi-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .chart-container-sm {
+            height: 200px;
+        }
+        
+        /* Table styles */
+        .data-table {
+            width: 100%;
+            font-size: 0.875rem;
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+        }
+        
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .badge-info {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        /* Period selector */
+        .period-selector {
+            display: flex;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+        }
+        
+        .period-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        
+        .period-btn:hover {
+            color: var(--primary);
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .period-btn.active {
+            background-color: white;
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Comparison toggle */
+        .compare-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background-color: #d1d5db;
+            border-radius: 12px;
+            transition: background-color 0.3s;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        
+        .compare-toggle.active .toggle-switch {
+            background-color: var(--primary);
+        }
+        
+        .compare-toggle.active .toggle-switch::after {
+            transform: translateX(20px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .kpi-value {
+                font-size: 1.75rem;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
 </head>
 <body>
-  
-  <div class="app-wrapper flex h-screen overflow-hidden">
-    <aside class="sidebar bg-white border-r border-gray-200 w-64 fixed inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300" id="sidebar">
-        <%- include('admin-sidebar') %>
-    </aside>
+    <div class="app-wrapper flex h-screen overflow-hidden">
+        <aside class="sidebar bg-white border-r border-gray-200 w-64 fixed inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300" id="sidebar">
+            <%- include('admin-sidebar') %>
+        </aside>
 
-    <main class="main-content flex-1 ml-0 md:ml-64 flex flex-col h-full overflow-hidden">
-      
-      <header class="bg-white border-b border-gray-200 sticky top-0 z-30 px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <button id="mobileToggle" class="md:hidden text-gray-500 hover:text-gray-700">
-            <i class="fas fa-bars text-xl"></i>
-          </button>
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Analytics Intelligence</h1>
-            <p class="text-sm text-gray-500">Real-time insights and performance metrics</p>
-          </div>
-        </div>
+        <main class="main-content flex-1 ml-0 md:ml-64 flex flex-col h-full overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 sticky top-0 z-30 px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button id="mobileToggle" class="md:hidden text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Analytics Intelligence</h1>
+                        <p class="text-sm text-gray-500">Real-time insights and performance metrics</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <!-- Period Selector -->
+                    <div class="period-selector">
+                        <a href="/admin/analytics?period=daily"><button class="period-btn <%= period === 'day' ? 'active' : '' %>" data-period="day">Daily</button></a>
+                        <a href="/admin/analytics?period=week"><button class="period-btn <%= period === 'week' ? 'active' : '' %>" data-period="week">Weekly</button></a>
+                        <a href="/admin/analytics?period=month"><button class="period-btn <%= period === 'month' ? 'active' : '' %>" data-period="month">Monthly</button></a>
+                        <a href="/admin/analytics?period=quarter"><button class="period-btn <%= period === 'quarter' ? 'active' : '' %>" data-period="quarter">Quarterly</button></a>
+                        <a href="/admin/analytics?period=year"><button class="period-btn <%= period === 'year' ? 'active' : '' %>" data-period="year">Yearly</button></a>
+                        
+                    </div>
+                    
+                    <!-- Comparison Toggle -->
+                    <div class="compare-toggle <%= compare ? 'active' : '' %>" id="compareToggle" style="display: none;">
+                        <div class="toggle-switch"></div>
+                        <span class="text-sm font-medium text-gray-700">Compare</span>
+                    </div>
+                    
+                    <!-- Export Button -->
+                    <button onclick="exportAnalytics()" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-green-800 transition-colors shadow-sm" style="display: none;">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <!-- KPI Summary -->
+                <div class="dashboard-grid">
+                    <!-- Revenue Card -->
+                    <div class="card col-span-12 md:col-span-6 lg:col-span-3">
+                        <div class="card-content kpi-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="kpi-label">Total Revenue</div>
+                                    <div class="kpi-value text-primary" id="kpi-revenue">
+                                        R<%= (kpis && kpis.totalRevenue) ? kpis.totalRevenue.toLocaleString() : '0' %>
+                                    </div>
+                                    <div class="kpi-trend <%= kpis && kpis.revenueGrowth >= 0 ? 'trend-up' : 'trend-down' %>">
+                                        <i class="fas <%= kpis && kpis.revenueGrowth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' %> mr-1"></i>
+                                        <span><%= kpis ? Math.abs(kpis.revenueGrowth || 0).toFixed(1) : '0.0' %>%</span>
+                                        <span class="text-gray-500 text-xs ml-2">vs last period</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-primary/10 text-primary rounded-xl">
+                                    <i class="fas fa-money-bill-wave text-2xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-sm text-gray-500">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                <% if (dateRange && dateRange.current && dateRange.current.startDate && dateRange.current.endDate) { %>
+                                    <%= moment(dateRange.current.startDate).format('MMM D') %> - <%= moment(dateRange.current.endDate).format('MMM D, YYYY') %>
+                                <% } else { %>
+                                    <%= moment().subtract(30, 'days').format('MMM D') %> - <%= moment().format('MMM D, YYYY') %>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bookings Card -->
+                    <div class="card col-span-12 md:col-span-6 lg:col-span-3">
+                        <div class="card-content kpi-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="kpi-label">Total Bookings</div>
+                                    <div class="kpi-value text-blue-600" id="kpi-bookings">
+                                        <%= (kpis && kpis.totalBookings) ? kpis.totalBookings.toLocaleString() : '0' %>
+                                    </div>
+                                    <div class="kpi-trend <%= kpis && kpis.bookingGrowth >= 0 ? 'trend-up' : 'trend-down' %>">
+                                        <i class="fas <%= kpis && kpis.bookingGrowth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' %> mr-1"></i>
+                                        <span><%= kpis ? Math.abs(kpis.bookingGrowth || 0).toFixed(1) : '0.0' %>%</span>
+                                        <span class="text-gray-500 text-xs ml-2">vs last period</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                                    <i class="fas fa-calendar-check text-2xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Avg Value</span>
+                                    <span class="font-semibold">R<%= kpis ? (kpis.avgBookingValue || 0).toFixed(0).toLocaleString() : '0' %></span>
+                                </div>
+                                <div class="flex justify-between text-sm mt-1">
+                                    <span class="text-gray-500">Occupancy Rate</span>
+                                    <span class="font-semibold <%= kpis && kpis.occupancyRate > 70 ? 'text-green-600' : kpis && kpis.occupancyRate > 40 ? 'text-yellow-600' : 'text-red-600' %>">
+                                        <%= kpis ? (kpis.occupancyRate || 0).toFixed(1) : '0.0' %>%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Customers Card -->
+                    <div class="card col-span-12 md:col-span-6 lg:col-span-3">
+                        <div class="card-content kpi-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="kpi-label">Total Customers</div>
+                                    <div class="kpi-value text-purple-600" id="kpi-customers">
+                                        <%= (kpis && kpis.totalCustomers) ? kpis.totalCustomers.toLocaleString() : '0' %>
+                                    </div>
+                                    <div class="kpi-trend <%= kpis && kpis.customerGrowth >= 0 ? 'trend-up' : 'trend-down' %>">
+                                        <i class="fas <%= kpis && kpis.customerGrowth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' %> mr-1"></i>
+                                        <span><%= kpis ? Math.abs(kpis.customerGrowth || 0).toFixed(1) : '0.0' %>%</span>
+                                        <span class="text-gray-500 text-xs ml-2">vs last period</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-purple-100 text-purple-600 rounded-xl">
+                                    <i class="fas fa-users text-2xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">New Customers</span>
+                                    <span class="font-semibold"><%= kpis ? (kpis.totalCustomers - (kpis.returningCustomers || 0)) : '0' %></span>
+                                </div>
+                                <div class="flex justify-between text-sm mt-1">
+                                    <span class="text-gray-500">Retention Rate</span>
+                                    <span class="font-semibold text-green-600"><%= kpis ? (kpis.customerRetention || 0).toFixed(1) : '0.0' %>%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Conversion Card -->
+                    <div class="card col-span-12 md:col-span-6 lg:col-span-3">
+                        <div class="card-content kpi-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="kpi-label">Conversion Rate</div>
+                                    <div class="kpi-value text-green-600" id="kpi-conversion">
+                                        <%= kpis ? (kpis.conversionRate || 0).toFixed(1) : '0.0' %>%
+                                    </div>
+                                    <div class="mt-2">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-600 h-2 rounded-full" style="width: <%= kpis ? (kpis.conversionRate || 0) : 0 %>%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-green-100 text-green-600 rounded-xl">
+                                    <i class="fas fa-chart-line text-2xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Active Tours</span>
+                                    <span class="font-semibold"><%= kpis ? (kpis.activeTours || 0) : '0' %></span>
+                                </div>
+                                <div class="flex justify-between text-sm mt-1">
+                                    <span class="text-gray-500">Capacity Used</span>
+                                    <span class="font-semibold">
+                                        <%= kpis ? (kpis.totalBookedCapacity || 0) : '0' %>/<%= kpis ? (kpis.totalCapacity || 0) : '0' %>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 1 -->
+                <div class="dashboard-grid">
+                    <!-- Revenue Trend Chart -->
+                    <div class="card col-span-12 lg:col-span-8">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Revenue Performance Trend</h3>
+                                <p class="card-subtitle">Revenue and bookings over time</p>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-primary"></div>
+                                    <span class="text-xs">Revenue</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-accent"></div>
+                                    <span class="text-xs">Bookings</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Revenue -->
+                    <div class="card col-span-12 lg:col-span-4">
+                        <div class="card-header">
+                            <h3 class="card-title">Revenue by Category</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                            <div class="mt-4 space-y-3 max-h-60 overflow-y-auto pr-2" id="categoryLegend">
+                                <!-- Legend will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2 -->
+                <div class="dashboard-grid">
+                    <!-- Customer Acquisition -->
+                    <div class="card col-span-12 lg:col-span-6">
+                        <div class="card-header">
+                            <h3 class="card-title">Customer Acquisition</h3>
+                            <p class="card-subtitle">New customers vs first bookings</p>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="customerChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Top Tours -->
+                    <div class="card col-span-12 lg:col-span-6">
+                        <div class="card-header">
+                            <h3 class="card-title">Top Performing Tours</h3>
+                            <a href="/admin/analytics/tours" class="text-sm text-primary hover:underline">View All</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="overflow-x-auto">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tour</th>
+                                            <th>Bookings</th>
+                                            <th>Revenue</th>
+                                            <th>Avg Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topToursBody">
+                                        <% if (tourAnalytics && tourAnalytics.length > 0) { %>
+                                            <% tourAnalytics.slice(0, 5).forEach(tour => { %>
+                                                <tr>
+                                                    <td class="font-medium">
+                                                        <div class="font-semibold text-gray-900"><%= tour.title %></div>
+                                                        <div class="text-xs text-gray-500"><%= tour.location %></div>
+                                                    </td>
+                                                    <td><span class="font-semibold"><%= tour.bookings %></span></td>
+                                                    <td><span class="font-semibold text-primary">R<%= parseFloat(tour.revenue).toLocaleString() %></span></td>
+                                                    <td>R<%= parseFloat(tour.avg_booking_value).toFixed(0) %></td>
+                                                </tr>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="4" class="text-center py-8 text-gray-500">
+                                                    No tour data available
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 3 -->
+                <div class="dashboard-grid">
+                    <!-- Top Customers -->
+                    <div class="card col-span-12 lg:col-span-6">
+                        <div class="card-header">
+                            <h3 class="card-title">VIP Customers</h3>
+                            <a href="/admin/analytics/customers" class="text-sm text-primary hover:underline">View All</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="overflow-x-auto">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer</th>
+                                            <th>Bookings</th>
+                                            <th>Lifetime Value</th>
+                                            <th>Avg Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topCustomersBody">
+                                        <% if (topCustomers && topCustomers.length > 0) { %>
+                                            <% topCustomers.slice(0, 5).forEach(customer => { %>
+                                                <tr>
+                                                    <td>
+                                                        <div class="flex items-center gap-3">
+                                                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                                                <span class="font-bold text-primary"><%= customer.name.charAt(0).toUpperCase() %></span>
+                                                            </div>
+                                                            <div>
+                                                                <div class="font-semibold text-gray-900"><%= customer.name %></div>
+                                                                <div class="text-xs text-gray-500"><%= customer.email %></div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                            <%= customer.total_bookings %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="font-bold text-primary">R<%= parseFloat(customer.total_spent).toLocaleString() %></td>
+                                                    <td>R<%= parseFloat(customer.avg_booking_value || 0).toFixed(0) %></td>
+                                                </tr>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="4" class="text-center py-8 text-gray-500">
+                                                    No customer data available
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Booking Funnel -->
+                    <div class="card col-span-12 lg:col-span-6">
+                        <div class="card-header">
+                            <h3 class="card-title">Booking Conversion Funnel</h3>
+                        </div>
+                        <div class="card-content">
+                            <% if (bookingFunnel && bookingFunnel.visitors !== undefined) { %>
+                                <div class="space-y-6">
+                                    <!-- Funnel Steps -->
+                                    <div class="space-y-4">
+                                        <!-- Visitors -->
+                                        <div class="funnel-step">
+                                            <div class="flex justify-between mb-1">
+                                                <span class="text-sm font-medium">Visitors</span>
+                                                <span class="text-sm font-bold"><%= bookingFunnel.visitors || 0 %></span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-blue-600 h-2 rounded-full" style="width: 100%"></div>
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-1">All website visitors</div>
+                                        </div>
+                                        
+                                        <!-- Interested Users -->
+                                        <div class="funnel-step">
+                                            <div class="flex justify-between mb-1">
+                                                <span class="text-sm font-medium">Interested Users</span>
+                                                <span class="text-sm font-bold"><%= bookingFunnel.interested_users || 0 %></span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-green-600 h-2 rounded-full" 
+                                                     style="width: <%= bookingFunnel.interested_users && bookingFunnel.visitors ? (bookingFunnel.interested_users / bookingFunnel.visitors * 100) : 0 %>%">
+                                                </div>
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                <%= bookingFunnel.interested_users && bookingFunnel.visitors ? 
+                                                    ((bookingFunnel.interested_users / bookingFunnel.visitors * 100).toFixed(1) + '%') : '0%' %> of visitors
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Booked Users -->
+                                        <div class="funnel-step">
+                                            <div class="flex justify-between mb-1">
+                                                <span class="text-sm font-medium">Booked Users</span>
+                                                <span class="text-sm font-bold"><%= bookingFunnel.booked_users || 0 %></span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-yellow-600 h-2 rounded-full" 
+                                                     style="width: <%= bookingFunnel.booked_users && bookingFunnel.visitors ? (bookingFunnel.booked_users / bookingFunnel.visitors * 100) : 0 %>%">
+                                                </div>
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                <%= bookingFunnel.booked_users && bookingFunnel.visitors ? 
+                                                    ((bookingFunnel.booked_users / bookingFunnel.visitors * 100).toFixed(1) + '%') : '0%' %> of visitors
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Confirmed Bookings -->
+                                        <div class="funnel-step">
+                                            <div class="flex justify-between mb-1">
+                                                <span class="text-sm font-medium">Confirmed Bookings</span>
+                                                <span class="text-sm font-bold"><%= bookingFunnel.confirmed_count || 0 %></span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-red-600 h-2 rounded-full" 
+                                                     style="width: <%= bookingFunnel.confirmed_count && bookingFunnel.visitors ? (bookingFunnel.confirmed_count / bookingFunnel.visitors * 100) : 0 %>%">
+                                                </div>
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center py-8 text-gray-500">
+                                    No funnel data available
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Section -->
+                <% if (compare && revenueComparison && dateRange && dateRange.current && dateRange.previous) { %>
+                <div class="dashboard-grid">
+                    <div class="card col-span-12">
+                        <div class="card-header">
+                            <h3 class="card-title">Period Comparison</h3>
+                            <p class="card-subtitle">
+                                Current: <%= moment(dateRange.current.startDate).format('MMM D, YYYY') %> - <%= moment(dateRange.current.endDate).format('MMM D, YYYY') %> 
+                                vs Previous: <%= moment(dateRange.previous.startDate).format('MMM D, YYYY') %> - <%= moment(dateRange.previous.endDate).format('MMM D, YYYY') %>
+                            </p>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="comparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Footer -->
+                <div class="mt-8 text-center text-sm text-gray-400">
+                    <p>Generated on <%= moment().format('MMMM Do YYYY, h:mm:ss a') %> • Casalinga Tours Analytics</p>
+                    <p class="text-xs mt-1">Data updates every 15 minutes • Last updated: <%= moment().format('h:mm A') %></p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const revenueData = <%- JSON.stringify(revenueTrend || []) %>;
+        const categoryData = <%- JSON.stringify(categoryAnalytics || []) %>;
+        const customerData = <%- JSON.stringify(customerAnalytics || []) %>;
+        const comparisonData = <%- JSON.stringify(revenueComparison || []) %>;
         
-        <div class="flex items-center gap-3">
-          <div class="hidden md:flex bg-gray-100 rounded-lg p-1">
-            <a href="?period=month" class="px-3 py-1.5 text-sm font-medium rounded-md <%= period === 'month' ? 'bg-white text-primary shadow-sm' : 'text-gray-500 hover:text-gray-700' %> transition-all">Monthly</a>
-            <a href="?period=year" class="px-3 py-1.5 text-sm font-medium rounded-md <%= period === 'year' ? 'bg-white text-primary shadow-sm' : 'text-gray-500 hover:text-gray-700' %> transition-all">Yearly</a>
-          </div>
-          <button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-green-800 transition-colors shadow-sm">
-            <i class="fas fa-file-export"></i> Export Report
-          </button>
-        </div>
-      </header>
-
-      <div class="flex-1 overflow-y-auto p-6">
+        console.log('Revenue Data for Charts:', revenueData);
+        console.log('Category Data for Charts:', categoryData);
+        console.log('Customer Data for Charts:', customerData);
         
-        <div class="dashboard-grid">
-
-          <div class="bi-card col-span-3">
-            <div class="bi-content">
-              <div class="flex justify-between items-start">
-                <div>
-                  <div class="text-xs font-semibold text-accent uppercase tracking-wider">Total Revenue</div>
-                  <div class="kpi-value mt-2" id="kpi-revenue">R0</div>
-                </div>
-                <div class="p-2 bg-green-50 rounded-lg text-primary">
-                  <i class="fas fa-sack-dollar text-xl"></i>
-                </div>
-              </div>
-              <div class="kpi-trend text-green-600">
-                <i class="fas fa-arrow-trend-up"></i>
-                <span id="kpi-revenue-trend">0%</span>
-                <span class="text-gray-400 font-normal ml-1">vs last period</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="bi-card col-span-3">
-            <div class="bi-content">
-              <div class="flex justify-between items-start">
-                <div>
-                  <div class="text-xs font-semibold text-accent uppercase tracking-wider">Total Bookings</div>
-                  <div class="kpi-value mt-2" id="kpi-bookings">0</div>
-                </div>
-                <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
-                  <i class="fas fa-ticket text-xl"></i>
-                </div>
-              </div>
-              <div class="kpi-trend text-blue-600">
-                <i class="fas fa-chart-bar"></i>
-                <span class="text-gray-600 font-normal ml-1">Avg Price: <span id="kpi-avg-price" class="font-bold">R0</span></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="bi-card col-span-3">
-            <div class="bi-content">
-              <div class="flex justify-between items-start">
-                <div>
-                  <div class="text-xs font-semibold text-accent uppercase tracking-wider">New Customers</div>
-                  <div class="kpi-value mt-2" id="kpi-customers">0</div>
-                </div>
-                <div class="p-2 bg-purple-50 rounded-lg text-purple-600">
-                  <i class="fas fa-users text-xl"></i>
-                </div>
-              </div>
-              <div class="mt-4 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-full bg-purple-500 rounded-full" style="width: 65%"></div>
-              </div>
-              <div class="kpi-label mt-2">Conversion Rate: <span class="font-bold text-gray-800">4.2%</span></div>
-            </div>
-          </div>
-
-          <div class="bi-card col-span-3">
-            <div class="bi-content">
-              <div class="flex justify-between items-start">
-                <div>
-                  <div class="text-xs font-semibold text-accent uppercase tracking-wider">Top Category</div>
-                  <div class="text-xl font-bold text-gray-900 mt-2 truncate" id="kpi-top-category">Loading...</div>
-                </div>
-                <div class="p-2 bg-orange-50 rounded-lg text-orange-600">
-                  <i class="fas fa-crown text-xl"></i>
-                </div>
-              </div>
-              <div class="kpi-trend text-orange-600">
-                <span id="kpi-top-cat-value">R0</span>
-                <span class="text-gray-400 font-normal ml-1">revenue generated</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="bi-card col-span-8 row-span-2">
-            <div class="bi-header">
-              <span class="bi-title">Revenue Performance Trend</span>
-              <div class="flex gap-2">
-                <span class="w-3 h-3 rounded-full bg-primary inline-block"></span>
-                <span class="text-xs text-gray-500">Revenue</span>
-                <span class="w-3 h-3 rounded-full bg-accent inline-block ml-2"></span>
-                <span class="text-xs text-gray-500">Bookings</span>
-              </div>
-            </div>
-            <div class="bi-content">
-              <canvas id="revenueChart" style="max-height: 350px;"></canvas>
-            </div>
-          </div>
-
-          <div class="bi-card col-span-4 row-span-2">
-            <div class="bi-header">
-              <span class="bi-title">Revenue by Category</span>
-            </div>
-            <div class="bi-content flex flex-col justify-center items-center">
-              <div class="relative w-full h-64">
-                <canvas id="categoryChart"></canvas>
-              </div>
-              <div class="mt-4 w-full" id="category-legend">
-                </div>
-            </div>
-          </div>
-
-          <div class="bi-card col-span-6">
-            <div class="bi-header">
-              <span class="bi-title">VIP Customers</span>
-              <a href="/admin/users" class="text-xs text-primary hover:underline">View All</a>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm text-left">
-                <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
-                  <tr>
-                    <th class="px-6 py-3">Customer</th>
-                    <th class="px-6 py-3 text-center">Trips</th>
-                    <th class="px-6 py-3 text-right">LTV (Spend)</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100" id="top-customers-body">
-                  <% if (topCustomers && topCustomers.length > 0) { %>
-                    <% topCustomers.forEach(customer => { %>
-                      <tr class="hover:bg-gray-50/80 transition-colors">
-                        <td class="px-6 py-3 font-medium text-gray-900 flex items-center gap-3">
-                          <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
-                            <%= customer.name.charAt(0).toUpperCase() %>
-                          </div>
-                          <div>
-                            <div class="font-semibold"><%= customer.name %></div>
-                            <div class="text-xs text-gray-500"><%= customer.email %></div>
-                          </div>
-                        </td>
-                        <td class="px-6 py-3 text-center">
-                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                            <%= customer.total_bookings %>
-                          </span>
-                        </td>
-                        <td class="px-6 py-3 text-right font-bold text-gray-900">
-                          R<%= parseFloat(customer.total_spent).toLocaleString() %>
-                        </td>
-                      </tr>
-                    <% }) %>
-                  <% } else { %>
-                    <tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">No data available</td></tr>
-                  <% } %>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="bi-card col-span-6">
-            <div class="bi-header">
-              <span class="bi-title">Customer Acquisition</span>
-            </div>
-            <div class="bi-content">
-              <canvas id="customerChart" style="max-height: 250px;"></canvas>
-            </div>
-          </div>
-
-        </div> <div class="mt-8 text-center text-xs text-gray-400">
-          Generated on <%= moment().format('MMMM Do YYYY, h:mm:ss a') %> • Casalinga Tours Admin System
-        </div>
-
-      </div>
-    </main>
-  </div>
-
-<script>
-    // --- 1. DATA INGESTION ---
-    const revenueData = <%- JSON.stringify(revenueTrend || []) %>;
-    const categoryData = <%- JSON.stringify(revenueByCategory || []) %>;
-    const customerData = <%- JSON.stringify(customerDemographics || []) %>;
-
-    // Format numbers with R prefix
-    function formatCurrency(amount) {
-        return 'R' + parseFloat(amount || 0).toLocaleString('en-ZA', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
-    }
-
-    // --- 2. SMART CALCULATIONS ---
-    const calculateStats = () => {
-        // Total Revenue from server-side calculation
-        document.getElementById('kpi-revenue').innerText = formatCurrency(<%= kpis.totalRevenue %>);
-        
-        // Total Bookings
-        document.getElementById('kpi-bookings').innerText = <%= kpis.totalBookings %>.toLocaleString();
-        
-        // Average Booking Value
-        document.getElementById('kpi-avg-price').innerText = formatCurrency(<%= kpis.avgBookingValue %>);
-        
-        // Total New Customers
-        document.getElementById('kpi-customers').innerText = <%= kpis.totalCustomers %>.toLocaleString();
-        
-        // Revenue Trend Percentage
-        const trendElement = document.getElementById('kpi-revenue-trend');
-        const trendPercentage = <%= kpis.revenueTrendPercentage %>;
-        trendElement.innerText = Math.abs(trendPercentage) + '%';
-        
-        // Set trend color and icon
-        const trendIcon = trendElement.previousElementSibling;
-        if (trendPercentage > 0) {
-            trendElement.className = 'text-green-600';
-            trendIcon.className = 'fas fa-arrow-trend-up';
-        } else if (trendPercentage < 0) {
-            trendElement.className = 'text-red-600';
-            trendIcon.className = 'fas fa-arrow-trend-down';
-        } else {
-            trendElement.className = 'text-gray-600';
-            trendIcon.className = 'fas fa-minus';
+        // Format currency
+        function formatCurrency(amount) {
+            if (!amount && amount !== 0) return 'R0';
+            const num = parseFloat(amount || 0);
+            return 'R' + num.toLocaleString('en-ZA', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
         }
         
-        // Top Category
-        <% if (kpis.topCategory) { %>
-            document.getElementById('kpi-top-category').innerText = '<%= kpis.topCategory.category %>';
-            document.getElementById('kpi-top-cat-value').innerText = formatCurrency(<%= kpis.topCategory.revenue %>);
-        <% } else { %>
-            document.getElementById('kpi-top-category').innerText = 'No data';
-            document.getElementById('kpi-top-cat-value').innerText = 'R0';
-        <% } %>
-    };
-
-    // Call on page load
-    document.addEventListener('DOMContentLoaded', calculateStats);
-
-    // --- 3. CHART.JS CONFIGURATION ---
-    Chart.defaults.font.family = "'Inter', sans-serif";
-    Chart.defaults.color = '#6b7280';
-    
-    const commonOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                backgroundColor: '#1f2937',
-                titleFont: { size: 13 },
-                bodyFont: { size: 13 },
-                padding: 10,
-                cornerRadius: 8,
-                callbacks: {
-                    label: function(context) {
-                        let label = context.dataset.label || '';
-                        if (label) label += ': ';
-                        if (context.parsed.y !== null) {
-                            if (label.includes('Revenue') || context.dataset.label === 'Revenue') {
-                                return label + formatCurrency(context.parsed.y);
-                            } else {
-                                return label + context.parsed.y;
+        // Format date based on period
+        function formatDate(dateString, period) {
+            try {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    return '';
+                }
+                
+                // Adjust for timezone offset
+                const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+                
+                switch(period) {
+                    case 'day':
+                        return adjustedDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+                    case 'week':
+                        const weekNum = Math.ceil(adjustedDate.getDate() / 7);
+                        return `Week ${weekNum}`;
+                    case 'quarter':
+                        const quarter = Math.floor(adjustedDate.getMonth() / 3) + 1;
+                        return `Q${quarter} ${adjustedDate.getFullYear().toString().slice(-2)}`;
+                    case 'year':
+                        return adjustedDate.getFullYear().toString();
+                    default: // month
+                        return adjustedDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+                }
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return '';
+            }
+        }
+        
+        // Get month name from date
+        function getMonthName(dateString) {
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+            } catch (error) {
+                return '';
+            }
+        }
+        
+        // Filter out zero revenue categories for the chart
+        function getNonZeroCategories(data) {
+            if (!data || !Array.isArray(data)) return [];
+            return data.filter(cat => {
+                const revenue = parseFloat(cat.revenue || 0);
+                return revenue > 0;
+            });
+        }
+        
+        // Filter out months with no data for customer chart
+        function getMonthsWithData(data) {
+            if (!data || !Array.isArray(data)) return data || [];
+            return data.filter(item => {
+                const customers = parseInt(item.new_customers || 0);
+                return customers > 0;
+            });
+        }
+        
+        // Chart.js Configuration
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#6b7280';
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(17, 24, 39, 0.9)';
+        Chart.defaults.plugins.tooltip.titleFont = { size: 12 };
+        Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
+        Chart.defaults.plugins.tooltip.padding = 12;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.displayColors = false;
+        
+        // Initialize all charts when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 1. Revenue Trend Chart
+            if (revenueData && revenueData.length > 0 && document.getElementById('revenueChart')) {
+                try {
+                    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+                    
+                    // Prepare labels and data
+                    const labels = revenueData.map(d => getMonthName(d.period));
+                    const revenueValues = revenueData.map(d => parseFloat(d.revenue || 0));
+                    const bookingValues = revenueData.map(d => parseInt(d.bookings || 0));
+                    
+                    console.log('Revenue Chart Labels:', labels);
+                    console.log('Revenue Values:', revenueValues);
+                    console.log('Booking Values:', bookingValues);
+                    
+                    // Check if we have any non-zero data
+                    const hasRevenueData = revenueValues.some(value => value > 0);
+                    const hasBookingData = bookingValues.some(value => value > 0);
+                    
+                    if (!hasRevenueData && !hasBookingData) {
+                        // Show message instead of empty chart
+                        document.getElementById('revenueChart').parentElement.innerHTML = 
+                            '<div class="text-center py-12 text-gray-500">' +
+                            '<i class="fas fa-chart-line text-4xl mb-4 text-gray-300"></i>' +
+                            '<p class="font-medium">No revenue data available for the selected period</p>' +
+                            '<p class="text-sm mt-2">Start booking tours to see revenue trends</p>' +
+                            '</div>';
+                    } else {
+                        new Chart(revenueCtx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [
+                                    {
+                                        label: 'Revenue',
+                                        data: revenueValues,
+                                        borderColor: '#1a5d2c',
+                                        backgroundColor: 'rgba(26, 93, 44, 0.05)',
+                                        borderWidth: 3,
+                                        tension: 0.4,
+                                        fill: true,
+                                        yAxisID: 'y'
+                                    },
+                                    {
+                                        label: 'Bookings',
+                                        data: bookingValues,
+                                        type: 'bar',
+                                        backgroundColor: 'rgba(212, 165, 116, 0.7)',
+                                        borderRadius: 4,
+                                        barThickness: 12,
+                                        yAxisID: 'y1'
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false
+                                },
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            maxRotation: 45
+                                        }
+                                    },
+                                    y: {
+                                        type: 'linear',
+                                        position: 'left',
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.05)'
+                                        },
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return formatCurrency(value);
+                                            }
+                                        }
+                                    },
+                                    y1: {
+                                        type: 'linear',
+                                        position: 'right',
+                                        grid: {
+                                            drawOnChartArea: false
+                                        },
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return value.toLocaleString();
+                                            }
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            title: function(context) {
+                                                const label = context[0].label || '';
+                                                return label;
+                                            },
+                                            label: function(context) {
+                                                let label = context.dataset.label || '';
+                                                if (label) label += ': ';
+                                                if (context.parsed.y !== null) {
+                                                    if (context.dataset.label === 'Revenue') {
+                                                        return label + formatCurrency(context.parsed.y);
+                                                    } else {
+                                                        return label + context.parsed.y;
+                                                    }
+                                                }
+                                                return label;
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                        }
-                        return label;
+                        });
                     }
+                } catch (error) {
+                    console.error('Error creating revenue chart:', error);
+                    document.getElementById('revenueChart').parentElement.innerHTML = 
+                        '<div class="text-center py-8 text-gray-500">' +
+                        '<i class="fas fa-exclamation-triangle text-2xl mb-2 text-yellow-500"></i>' +
+                        '<p>Error loading revenue chart</p>' +
+                        '</div>';
                 }
             }
-        },
-        scales: {
-            x: { 
-                grid: { display: false },
-                ticks: { maxRotation: 45 }
-            },
-            y: { 
-                grid: { color: '#f3f4f6' },
-                beginAtZero: true
-            }
-        }
-    };
-
-    // Wait for DOM to be fully loaded before creating charts
-    document.addEventListener('DOMContentLoaded', function() {
-        // Revenue Chart
-        if (revenueData.length > 0) {
-            const ctxRev = document.getElementById('revenueChart');
-            if (ctxRev) {
-                new Chart(ctxRev.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: revenueData.map(d => new Date(d.month).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })),
-                        datasets: [
-                            {
-                                label: 'Revenue',
-                                data: revenueData.map(d => d.revenue),
-                                borderColor: '#1a5d2c',
-                                backgroundColor: 'rgba(26, 93, 44, 0.05)',
-                                borderWidth: 2,
-                                tension: 0.4,
-                                fill: true,
-                                yAxisID: 'y'
+            
+            // 2. Category Chart
+            if (categoryData && categoryData.length > 0 && document.getElementById('categoryChart')) {
+                try {
+                    // Filter out categories with no revenue
+                    const nonZeroCategories = getNonZeroCategories(categoryData);
+                    
+                    if (nonZeroCategories.length > 0) {
+                        // Generate colors for categories
+                        const colors = [
+                            '#1a5d2c', '#2e7d32', '#4caf50', '#81c784',
+                            '#d4a574', '#bc8a5f', '#a47148',
+                            '#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6'
+                        ];
+                        
+                        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+                        new Chart(categoryCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: nonZeroCategories.map(d => d.category || d.name || 'Unknown'),
+                                datasets: [{
+                                    data: nonZeroCategories.map(d => parseFloat(d.revenue || 0)),
+                                    backgroundColor: colors.slice(0, nonZeroCategories.length),
+                                    borderWidth: 0,
+                                    hoverOffset: 15
+                                }]
                             },
-                            {
-                                label: 'Bookings',
-                                data: revenueData.map(d => d.bookings),
-                                type: 'bar',
-                                backgroundColor: 'rgba(212, 165, 116, 0.7)',
-                                borderRadius: 4,
-                                barThickness: 12,
-                                yAxisID: 'y1'
-                            }
-                        ]
-                    },
-                    options: {
-                        ...commonOptions,
-                        interaction: { mode: 'index', intersect: false },
-                        scales: {
-                            x: { grid: { display: false } },
-                            y: { 
-                                position: 'left',
-                                type: 'linear',
-                                ticks: { 
-                                    callback: (value) => 'R' + (value / 1000).toFixed(0) + 'k'
-                                }
-                            },
-                            y1: {
-                                position: 'right',
-                                type: 'linear',
-                                grid: { drawOnChartArea: false },
-                                ticks: { 
-                                    callback: (value) => value.toFixed(0)
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                cutout: '65%',
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const label = context.label || '';
+                                                const value = context.raw || 0;
+                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                                return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
                                 }
                             }
+                        });
+                        
+                        // Create custom legend
+                        const legendContainer = document.getElementById('categoryLegend');
+                        if (legendContainer) {
+                            const totalRevenue = nonZeroCategories.reduce((sum, cat) => sum + parseFloat(cat.revenue || 0), 0);
+                            
+                            nonZeroCategories.forEach((category, index) => {
+                                const color = colors[index % colors.length];
+                                const categoryName = category.category || category.name || 'Unknown';
+                                const revenue = parseFloat(category.revenue || 0);
+                                const percentage = totalRevenue > 0 ? 
+                                    ((revenue / totalRevenue) * 100).toFixed(1) : '0.0';
+                                
+                                const legendItem = document.createElement('div');
+                                legendItem.className = 'flex items-center justify-between mb-2';
+                                legendItem.innerHTML = `
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${color}"></div>
+                                        <span class="text-sm font-medium text-gray-700 truncate" title="${categoryName}">${categoryName}</span>
+                                    </div>
+                                    <div class="text-right flex-shrink-0">
+                                        <div class="text-sm font-bold text-gray-900">${formatCurrency(revenue)}</div>
+                                        <div class="text-xs text-gray-500">${percentage}%</div>
+                                    </div>
+                                `;
+                                legendContainer.appendChild(legendItem);
+                            });
                         }
+                    } else {
+                        document.getElementById('categoryChart').parentElement.innerHTML = 
+                            '<div class="text-center py-12 text-gray-500">' +
+                            '<i class="fas fa-pie-chart text-4xl mb-4 text-gray-300"></i>' +
+                            '<p class="font-medium">No category revenue data</p>' +
+                            '<p class="text-sm mt-2">Revenue will appear here when tours are booked</p>' +
+                            '</div>';
                     }
-                });
+                } catch (error) {
+                    console.error('Error creating category chart:', error);
+                    document.getElementById('categoryChart').parentElement.innerHTML = 
+                        '<div class="text-center py-8 text-gray-500">' +
+                        '<i class="fas fa-exclamation-triangle text-2xl mb-2 text-yellow-500"></i>' +
+                        '<p>Error loading category chart</p>' +
+                        '</div>';
+                }
             }
-        }
-
-        // Category Chart
-        if (categoryData.length > 0) {
-            const ctxCat = document.getElementById('categoryChart');
-            if (ctxCat) {
-                // Define a color palette
-                const colors = [
-                    '#1a5d2c', '#2e7d32', '#4caf50', '#81c784', '#a5d6a7',
-                    '#d4a574', '#bc8a5f', '#a47148', '#8b5a2b', '#654321'
-                ];
-                
-                const catChart = new Chart(ctxCat.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: categoryData.map(d => d.category),
-                        datasets: [{
-                            data: categoryData.map(d => d.revenue),
-                            backgroundColor: colors.slice(0, categoryData.length),
-                            borderWidth: 0,
-                            hoverOffset: 15
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '70%',
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: (context) => {
-                                        return `${context.label}: ${formatCurrency(context.raw)}`;
+            
+            // 3. Customer Chart
+            if (customerData && customerData.length > 0 && document.getElementById('customerChart')) {
+                try {
+                    const customerCtx = document.getElementById('customerChart').getContext('2d');
+                    
+                    // Filter months with data
+                    const monthsWithData = getMonthsWithData(customerData);
+                    
+                    if (monthsWithData.length > 0) {
+                        // Prepare data
+                        const labels = monthsWithData.map(d => getMonthName(d.month));
+                        const newCustomersData = monthsWithData.map(d => parseInt(d.new_customers || 0));
+                        
+                        console.log('Customer Chart Labels:', labels);
+                        console.log('Customer Chart Data:', newCustomersData);
+                        
+                        new Chart(customerCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [
+                                    {
+                                        label: 'New Customers',
+                                        data: newCustomersData,
+                                        backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                                        borderRadius: 4,
+                                        barThickness: 20
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.05)'
+                                        },
+                                        ticks: {
+                                            precision: 0,
+                                            stepSize: 1
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return `${context.dataset.label}: ${context.parsed.y}`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        document.getElementById('customerChart').parentElement.innerHTML = 
+                            '<div class="text-center py-12 text-gray-500">' +
+                            '<i class="fas fa-users text-4xl mb-4 text-gray-300"></i>' +
+                            '<p class="font-medium">No customer data for this period</p>' +
+                            '<p class="text-sm mt-2">New customers will appear here when they sign up</p>' +
+                            '</div>';
+                    }
+                } catch (error) {
+                    console.error('Error creating customer chart:', error);
+                    document.getElementById('customerChart').parentElement.innerHTML = 
+                        '<div class="text-center py-8 text-gray-500">' +
+                        '<i class="fas fa-exclamation-triangle text-2xl mb-2 text-yellow-500"></i>' +
+                        '<p>Error loading customer chart</p>' +
+                        '</div>';
+                }
+            }
+            
+            // 4. Comparison Chart (only if compare is enabled)
+            <% if (compare && revenueComparison && comparisonData && comparisonData.length > 0) { %>
+            if (document.getElementById('comparisonChart')) {
+                try {
+                    // Separate current and previous period data
+                    const currentData = comparisonData.filter(d => d.period === 'current');
+                    const previousData = comparisonData.filter(d => d.period === 'previous');
+                    
+                    const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
+                    new Chart(comparisonCtx, {
+                        type: 'line',
+                        data: {
+                            labels: currentData.map(d => getMonthName(d.month)),
+                            datasets: [
+                                {
+                                    label: 'Current Period',
+                                    data: currentData.map(d => parseFloat(d.revenue || 0)),
+                                    borderColor: '#1a5d2c',
+                                    backgroundColor: 'rgba(26, 93, 44, 0.1)',
+                                    borderWidth: 3,
+                                    tension: 0.3,
+                                    fill: true
+                                },
+                                {
+                                    label: 'Previous Period',
+                                    data: previousData.map(d => parseFloat(d.revenue || 0)),
+                                    borderColor: '#6b7280',
+                                    backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                                    borderWidth: 2,
+                                    borderDash: [5, 5],
+                                    tension: 0.3,
+                                    fill: true
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.05)'
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return formatCurrency(value);
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`;
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                });
-
-                // Update custom legend
-                const legendContainer = document.getElementById('category-legend');
-                if (legendContainer) {
-                    legendContainer.innerHTML = '';
-                    categoryData.forEach((item, index) => {
-                        const color = colors[index % colors.length];
-                        legendContainer.innerHTML += `
-                            <div class="flex items-center justify-between text-xs mb-2">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-3 h-3 rounded-full" style="background-color: ${color}"></span>
-                                    <span class="text-gray-600 truncate">${item.category}</span>
-                                </div>
-                                <span class="font-bold text-gray-900">${formatCurrency(item.revenue)}</span>
-                            </div>
-                        `;
                     });
+                } catch (error) {
+                    console.error('Error creating comparison chart:', error);
+                    document.getElementById('comparisonChart').parentElement.innerHTML = 
+                        '<div class="text-center py-8 text-gray-500">Error loading comparison chart</div>';
                 }
             }
-        }
-
-        // Customer Chart
-        if (customerData.length > 0) {
-            const ctxCust = document.getElementById('customerChart');
-            if (ctxCust) {
-                new Chart(ctxCust.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: customerData.map(d => new Date(d.month).toLocaleDateString('en-US', { month: 'short' })),
-                        datasets: [{
-                            label: 'New Customers',
-                            data: customerData.map(d => d.new_customers),
-                            backgroundColor: '#1a5d2c',
-                            borderRadius: 4,
-                            barThickness: 20
-                        }]
-                    },
-                    options: commonOptions
+            <% } %>
+            
+            // Period selector functionality
+            document.querySelectorAll('.period-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const period = this.dataset.period;
+                    const compare = document.getElementById('compareToggle').classList.contains('active');
+                    window.location.href = `/admin/analytics?period=${period}${compare ? '&compare=true' : ''}`;
                 });
-            }
-        }
-    });
-
-    // Mobile Sidebar Toggle
-    document.addEventListener('DOMContentLoaded', function() {
-        const mobileToggle = document.getElementById('mobileToggle');
-        const sidebar = document.getElementById('sidebar');
-        
-        if (mobileToggle && sidebar) {
-            mobileToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('-translate-x-full');
             });
             
-            // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', (e) => {
-                if (window.innerWidth < 768 && 
-                    !sidebar.contains(e.target) && 
-                    e.target !== mobileToggle && 
-                    !mobileToggle.contains(e.target)) {
-                    sidebar.classList.add('-translate-x-full');
-                }
-            });
+            // Comparison toggle functionality
+            const compareToggle = document.getElementById('compareToggle');
+            if (compareToggle) {
+                compareToggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const activeBtn = document.querySelector('.period-btn.active');
+                    const period = activeBtn ? activeBtn.dataset.period : 'month';
+                    const compare = this.classList.contains('active');
+                    window.location.href = `/admin/analytics?period=${period}${compare ? '&compare=true' : ''}`;
+                });
+            }
+            
+            // Mobile sidebar toggle
+            const mobileToggle = document.getElementById('mobileToggle');
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', function() {
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar) {
+                        sidebar.classList.toggle('-translate-x-full');
+                    }
+                });
+            }
+        });
+        
+        // Export analytics function
+        function exportAnalytics() {
+            const activeBtn = document.querySelector('.period-btn.active');
+            const period = activeBtn ? activeBtn.dataset.period : 'month';
+            const compareToggle = document.getElementById('compareToggle');
+            const compare = compareToggle ? compareToggle.classList.contains('active') : false;
+            
+            window.open(`/admin/analytics/export?format=csv&type=revenue&period=${period}${compare ? '&compare=true' : ''}`, '_blank');
         }
-    });
-</script>
+    </script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
+const analyticsController = require('../controllers/analyticsController');
 const { isAdmin, isManager } = require('../middleware/auth');
 const { uploadTourImages } = require('../middleware/upload');
 const validationRules = require('../middleware/validation');
@@ -29,10 +30,36 @@ router.get('/users', isAdmin, adminController.getUsers);
 router.post('/users/:id/role', isAdmin, adminController.updateUserRole);
 router.post('/users/:id/status', isAdmin, adminController.updateUserStatus);
 
-// Analytics
-router.get('/analytics', isAdmin, adminController.getAnalytics);
-router.get('/analytics/revenue', isAdmin, adminController.getRevenueAnalytics);
-router.get('/analytics/popular-tours', isAdmin, adminController.getPopularTours);
+// // Analytics
+// router.get('/analytics', isAdmin, adminController.getAnalytics);
+// router.get('/analytics/revenue', isAdmin, adminController.getRevenueAnalytics);
+// router.get('/analytics/popular-tours', isAdmin, adminController.getPopularTours);
+
+// Analytics Dashboard
+router.get('/analytics', isAdmin, analyticsController.getAnalytics);
+router.get('/analytics/revenue', isAdmin, analyticsController.getRevenueAnalytics);
+router.get('/analytics/customers', isAdmin, analyticsController.getCustomerAnalytics);
+router.get('/analytics/tours', isAdmin, analyticsController.getTourAnalytics);
+router.get('/analytics/realtime', isAdmin, analyticsController.getRealtimeAnalytics);
+router.get('/analytics/export', isAdmin, analyticsController.exportAnalytics);
+
+// Additional analytics endpoints (optional APIs)
+router.get('/api/analytics/kpis', isAdmin, async (req, res) => {
+    try {
+        const moment = require('moment');
+        const startDate = moment().startOf('month').toDate();
+        const endDate = moment().endOf('month').toDate();
+        
+        const kpis = await getKPIStats(startDate, endDate, 
+            moment().subtract(1, 'month').startOf('month').toDate(),
+            moment().subtract(1, 'month').endOf('month').toDate()
+        );
+        
+        res.json({ success: true, data: kpis });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 // Settings
 router.get('/settings/amenities', isManager, adminController.manageAmenities);
