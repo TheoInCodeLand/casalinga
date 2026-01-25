@@ -1,15 +1,13 @@
 const nodemailer = require('nodemailer');
+const brevoTransport = require('nodemailer-brevo-transport');
 require('dotenv').config();
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'thobejanetheo@gmail.com',
-        pass: 'ypue gyqz szbu vjen',
-    },
-    connectionTimeout: 10000, 
-    greetingTimeout: 10000,
-});
+
+const transporter = nodemailer.createTransport(
+    new brevoTransport({
+        apiKey: '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'
+    })
+);
 
 const sendVerificationEmail = async (userEmail, token) => {
     // Change this URL to your actual domain in production
