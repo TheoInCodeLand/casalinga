@@ -50,6 +50,12 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/jtsgdoon', (req, res) => {
+    res.render('picture', {
+        title: 'JTSGDOON - Casalinga Tours'
+    });
+});
+
 router.get('/vlog', (req, res) => {
     res.render('vlog', { 
         title: 'My Vlog Page',
