@@ -1,6 +1,7 @@
 const db = require('../config/database');
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
+const { sendVerificationEmail } = require('../config/email');
 const crypto = require('crypto');
 
 const authController = {
@@ -38,6 +39,11 @@ const authController = {
             }
 
             const user = userQuery.rows[0];
+
+            if (!user.email_verified) {
+                req.session.error = 'Please verify your email address before logging in.';
+                return res.redirect('/auth/login');
+            }
 
             // Verify password
             const isValidPassword = await bcrypt.compare(password, user.password_hash);
@@ -100,11 +106,7 @@ const authController = {
             const { name, email, password, phone } = req.body;
 
             // Check if user exists
-            const existingUser = await db.query(
-                'SELECT id FROM users WHERE email = $1',
-                [email]
-            );
-
+            const existingUser = await db.query('SELECT id FROM users WHERE email = $1', [email]);
             if (existingUser.rows.length > 0) {
                 req.session.error = 'Email already registered';
                 return res.redirect('/auth/register');
@@ -114,29 +116,62 @@ const authController = {
             const salt = await bcrypt.genSalt(10);
             const passwordHash = await bcrypt.hash(password, salt);
 
-            // Create user
-            const newUser = await db.query(
-                `INSERT INTO users (name, email, password_hash, phone, role) 
-                 VALUES ($1, $2, $3, $4, 'user') 
-                 RETURNING id, name, email, role`,
-                [name, email, passwordHash, phone]
+            // Generate Verification Token
+            const verificationToken = crypto.randomBytes(32).toString('hex');
+
+            // Create user (email_verified defaults to FALSE in your setup.sql)
+            // Storing the RAW token for simplicity, or you can hash it like the password reset flow
+            await db.query(
+                `INSERT INTO users (name, email, password_hash, phone, role, verification_token) 
+                 VALUES ($1, $2, $3, $4, 'user', $5)`,
+                [name, email, passwordHash, phone, verificationToken]
             );
 
-            // Auto login after registration
-            req.session.user = {
-                id: newUser.rows[0].id,
-                name: newUser.rows[0].name,
-                email: newUser.rows[0].email,
-                role: newUser.rows[0].role
-            };
+            // Send Email
+            await sendVerificationEmail(email, verificationToken);
 
-            req.session.success = 'Registration successful! Welcome to Casalinga Tours';
-            res.redirect('/user/dashboard');
+            // DO NOT set req.session.user (No Auto-Login)
+            req.session.success = 'Registration successful! Please check your email to verify your account.';
+            res.redirect('/auth/login');
 
         } catch (error) {
             console.error('Registration error:', error);
             req.session.error = 'An error occurred during registration';
             res.redirect('/auth/register');
+        }
+    },
+
+    // Verify Email Method
+    verifyEmail: async (req, res) => {
+        try {
+            const { token } = req.params;
+
+            // Find user with this token
+            const userQuery = await db.query(
+                'SELECT id FROM users WHERE verification_token = $1',
+                [token]
+            );
+
+            if (userQuery.rows.length === 0) {
+                req.session.error = 'Invalid or expired verification link.';
+                return res.redirect('/auth/login');
+            }
+
+            // Activate user and clear token
+            await db.query(
+                `UPDATE users 
+                 SET email_verified = true, verification_token = NULL 
+                 WHERE id = $1`,
+                [userQuery.rows[0].id]
+            );
+
+            req.session.success = 'Email verified! You can now log in.';
+            res.redirect('/auth/login');
+
+        } catch (error) {
+            console.error('Verification error:', error);
+            req.session.error = 'Verification failed.';
+            res.redirect('/auth/login');
         }
     },
 

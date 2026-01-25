@@ -12,6 +12,9 @@ router.post('/login', validationRules.login, authController.login);
 router.get('/register', authController.showRegisterForm);
 router.post('/register', validationRules.register, authController.register);
 
+// Email verification route
+router.get('/verify-email/:token', authController.verifyEmail);
+
 // Logout route
 router.get('/logout', authController.logout);
 
