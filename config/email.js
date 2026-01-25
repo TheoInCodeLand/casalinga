@@ -2,10 +2,16 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-    service: 'Gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth: {
         user: 'thobejanetheo@gmail.com',
         pass: 'qpgi bxth clqe ektl'
+    },
+    tls: {
+        ciphers: 'SSLv3',
+        rejectUnauthorized: false // Helps prevent handshake errors in production
     }
 })
 
