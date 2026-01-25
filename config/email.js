@@ -4,13 +4,13 @@ require('dotenv').config();
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-        user: process.env.EMAIL_USER || 'thobejanetheo@gmail.com',
-        pass: process.env.EMAIL_PASS || 'qpgi bxth clqe ektl'
+        user: 'thobejanetheo@gmail.com',
+        pass: 'qpgi bxth clqe ektl'
     }
 })
 
 const sendVerificationEmail = async (userEmail, token) => {
-    // Change this URL to your actual domain in production 
+    // Change this URL to your actual domain in production
     const baseUrl = process.env.BASE_URL || 'http://localhost:5050';
     const verificationLink = `${baseUrl}/auth/verify-email/${token}`;
 
