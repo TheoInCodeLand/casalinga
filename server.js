@@ -78,7 +78,7 @@ app.use(session({
   }
 }));
 
-// ... ADD THESE LINES BEFORE VIEW ENGINE SETUP ....
+// ... ADD THESE LINES BEFORE VIEW ENGINE SETUP ...
 // app.use(expressLayouts);
 // app.set('layout', 'layout');
 // app.set('layout extractScripts', true);
