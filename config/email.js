@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 })
 
 const sendVerificationEmail = async (userEmail, token) => {
-    // Change this URL to your actual domain in production
+    // Change this URL to your actual domain in production 
     const baseUrl = process.env.BASE_URL || 'http://localhost:5050';
     const verificationLink = `${baseUrl}/auth/verify-email/${token}`;
 
