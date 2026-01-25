@@ -2,10 +2,10 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE,
+    service: 'Gmail',
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: 'thobejanetheo@gmail.com',
+        pass: 'qpgi bxth clqe ektl'
     }
 })
 
@@ -29,6 +29,28 @@ const sendVerificationEmail = async (userEmail, token) => {
     return transporter.sendMail(mailOptions);
 };
 
+const sendResetPasswordEmail = async (userEmail, token) => {
+    const baseUrl = process.env.BASE_URL || 'http://localhost:8200';
+    // The link contains the RAW token (which the user sees)
+    const resetLink = `${baseUrl}/auth/reset-password/${token}`;
+
+    const mailOptions = {
+        from: `"Casalinga Security" <${process.env.EMAIL_USER}>`,
+        to: userEmail,
+        subject: 'Password Reset Request',
+        html: `
+            <h3>Password Reset Request</h3>
+            <p>You requested to reset your password. Click the link below to set a new one:</p>
+            <a href="${resetLink}" style="padding: 10px 20px; background-color: #d9534f; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a>
+            <p>This link expires in 1 hour.</p>
+            <p>If you didn't ask for this, please ignore this email.</p>
+        `
+    };
+
+    return transporter.sendMail(mailOptions);
+};
+
 module.exports = {
-    sendVerificationEmail
+    sendVerificationEmail,
+    sendResetPasswordEmail
 };

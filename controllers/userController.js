@@ -325,6 +325,48 @@ const userController = {
             console.error('Mark notification as read error:', error);
             res.status(500).json({ success: false, message: 'An error occurred' });
         }
+    },
+
+    // POST /user/profile/change-password
+    changePassword: async (req, res) => {
+        try {
+            const { current_password, new_password, confirm_password } = req.body;
+            const userId = req.session.user.id;
+
+            // 1. Get current user password hash
+            const userResult = await db.query('SELECT password_hash FROM users WHERE id = $1', [userId]);
+            const user = userResult.rows[0];
+
+            // 2. Verify Old Password
+            const isMatch = await bcrypt.compare(current_password, user.password_hash);
+            if (!isMatch) {
+                req.session.error = 'Current password is incorrect.';
+                return res.redirect('/user/profile');
+            }
+
+            // 3. Check New Passwords Match (Backup check, validation middleware should catch this too)
+            if (new_password !== confirm_password) {
+                req.session.error = 'New passwords do not match.';
+                return res.redirect('/user/profile');
+            }
+
+            // 4. Hash New Password & Update
+            const salt = await bcrypt.genSalt(10);
+            const newHash = await bcrypt.hash(new_password, salt);
+
+            await db.query(
+                'UPDATE users SET password_hash = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+                [newHash, userId]
+            );
+
+            req.session.success = 'Password updated successfully!';
+            res.redirect('/user/profile');
+
+        } catch (error) {
+            console.error('Change password error:', error);
+            req.session.error = 'Failed to update password.';
+            res.redirect('/user/profile');
+        }
     }
 };
 

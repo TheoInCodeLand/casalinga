@@ -1,7 +1,7 @@
 const db = require('../config/database');
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
-const { sendVerificationEmail } = require('../config/email');
+const { sendVerificationEmail, sendResetPasswordEmail } = require('../config/email');
 const crypto = require('crypto');
 
 const authController = {
@@ -198,46 +198,40 @@ const authController = {
         try {
             const { email } = req.body;
 
-            const userQuery = await db.query(
-                'SELECT id, name FROM users WHERE email = $1 AND is_active = true',
-                [email]
-            );
-
-            if (userQuery.rows.length === 0) {
-                // Don't reveal that user doesn't exist
-                req.session.success = 'If your email exists, you will receive a reset link';
-                return res.redirect('/auth/login');
+            const user = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+            
+            // Security: Always say "If that email exists..." to prevent email scraping
+            if (user.rows.length === 0) {
+                req.session.success = 'If an account with that email exists, we sent a link.';
+                return res.redirect('/auth/forgot-password');
             }
 
-            const user = userQuery.rows[0];
-            
-            // Generate reset token
+            // Generate Token
             const resetToken = crypto.randomBytes(32).toString('hex');
-            const resetTokenHash = crypto
+            
+            // Hash token for database storage (Security Best Practice)
+            const tokenHash = crypto
                 .createHash('sha256')
                 .update(resetToken)
                 .digest('hex');
 
-            // Set token expiry (1 hour)
-            const tokenExpiry = new Date(Date.now() + 3600000);
-
+            // Save Hash + Expiry (1 hour from now)
             await db.query(
                 `UPDATE users 
-                 SET reset_token_hash = $1, reset_token_expiry = $2 
-                 WHERE id = $3`,
-                [resetTokenHash, tokenExpiry, user.id]
+                 SET reset_token_hash = $1, reset_token_expiry = NOW() + INTERVAL '1 hour'
+                 WHERE email = $2`,
+                [tokenHash, email]
             );
 
-            // In production, send email here
-            console.log('Reset token:', resetToken);
-            console.log(`Password reset link: /auth/reset-password/${resetToken}`);
+            // Send Email with RAW token
+            await sendResetPasswordEmail(email, resetToken);
 
-            req.session.success = 'Password reset link has been sent to your email';
-            res.redirect('/auth/login');
+            req.session.success = 'If an account with that email exists, we sent a link.';
+            res.redirect('/auth/forgot-password');
 
         } catch (error) {
             console.error('Forgot password error:', error);
-            req.session.error = 'An error occurred';
+            req.session.error = 'Something went wrong. Please try again.';
             res.redirect('/auth/forgot-password');
         }
     },
@@ -280,51 +274,47 @@ const authController = {
     // POST /auth/reset-password/:token
     resetPassword: async (req, res) => {
         try {
-            const { token } = req.params;
-            const { password } = req.body;
+            const { token } = req.params; // From URL
+            const { password } = req.body; // From Form
 
+            // Hash the token from the URL to compare with DB
             const tokenHash = crypto
                 .createHash('sha256')
                 .update(token)
                 .digest('hex');
 
-            // Find user with valid token
-            const userQuery = await db.query(
-                `SELECT id FROM users 
+            // Find user with this token AND make sure it hasn't expired
+            const user = await db.query(
+                `SELECT * FROM users 
                  WHERE reset_token_hash = $1 
                  AND reset_token_expiry > NOW()`,
                 [tokenHash]
             );
 
-            if (userQuery.rows.length === 0) {
-                req.session.error = 'Invalid or expired reset token';
+            if (user.rows.length === 0) {
+                req.session.error = 'Password reset token is invalid or has expired.';
                 return res.redirect('/auth/forgot-password');
             }
-
-            const userId = userQuery.rows[0].id;
 
             // Hash new password
             const salt = await bcrypt.genSalt(10);
             const passwordHash = await bcrypt.hash(password, salt);
 
-            // Update password and clear reset token
+            // Update Password & Clear Token
             await db.query(
                 `UPDATE users 
-                 SET password_hash = $1, 
-                     reset_token_hash = NULL, 
-                     reset_token_expiry = NULL,
-                     updated_at = CURRENT_TIMESTAMP 
+                 SET password_hash = $1, reset_token_hash = NULL, reset_token_expiry = NULL 
                  WHERE id = $2`,
-                [passwordHash, userId]
+                [passwordHash, user.rows[0].id]
             );
 
-            req.session.success = 'Password reset successful. Please login with your new password';
+            req.session.success = 'Password reset successful! Please login.';
             res.redirect('/auth/login');
 
         } catch (error) {
             console.error('Reset password error:', error);
-            req.session.error = 'An error occurred';
-            res.redirect('/auth/forgot-password');
+            req.session.error = 'Failed to reset password.';
+            res.redirect(`/auth/reset-password/${req.params.token}`);
         }
     }
 };
