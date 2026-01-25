@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const transporter = nodemailer.createTransport(
     new brevoTransport({
-        apiKey: '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'
+        apiKey: process.env.BREVO
     })
 );
 
