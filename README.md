@@ -12,11 +12,11 @@
 
 <br>
 
-<a href="https://your-live-demo-link.com" target="_blank">
+<a href="https://www.casalingatours.online/" target="_blank">
   <img src="https://img.shields.io/badge/🚀_VIEW_LIVE_DEMO-1e6b38?style=for-the-badge" alt="View Live Demo" />
 </a>
 &nbsp;&nbsp;
-<a href="https://github.com/yourusername/casalinga-tours" target="_blank">
+<a href="https://github.com/theoincodeland/casalinga-tours" target="_blank">
   <img src="https://img.shields.io/badge/💻_VIEW_SOURCE_CODE-000000?style=for-the-badge&logo=github&logoColor=white" alt="View Source Code" />
 </a>
 
