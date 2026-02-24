@@ -22,7 +22,7 @@
 
 The application is deployed and ready for evaluation. Experience the ecosystem from both the client and administrative perspectives.
 
-**[Launch Live Application](https://your-deployment-link-here.com)**
+**https://www.casalingatours.online/**
 
 | Access Level | Email | Password | What to Test |
 | :--- | :--- | :--- | :--- |
