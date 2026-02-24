@@ -22,7 +22,7 @@
 
 ### The Problem
 
-Traditional tour operators frequently rely on fragmented operating models—utilizing printed posters, WhatsApp threads, and manual spreadsheet administration. This architecture inherently leads to booking collisions, disorganized payment tracking, high risks of miscommunication, and a complete lack of actionable data analytics.
+The traditional Casalinga-Tours system relied on fragmented operating models utilizing printed posters, social media threads, and manual spreadsheet administration. This architecture inherently leads to booking collisions, disorganized payment tracking, high risks of miscommunication, heavy manual tasking, and a complete lack of actionable data analytics.
 
 ### The Solution
 
