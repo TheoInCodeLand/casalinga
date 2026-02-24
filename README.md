@@ -1,86 +1,79 @@
 <div align="center">
 
-<img src="https://via.placeholder.com/1200x350/1e6b38/ffffff?text=Casalinga+Tours:+AI-Powered+Ecosystem" alt="Casalinga Tours Hero" width="100%" style="border-radius: 15px;" />
+<img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&h=350&q=80" alt="Aviation and Travel Concept" width="100%" style="border-radius: 15px; object-fit: cover;" />
 
 <br/>
 
-<h1>🌍 Casalinga Tours</h1>
+<h1>🌍 Casalinga Tours: AI-Powered Travel Ecosystem</h1>
 <h3>An Enterprise-Grade Booking Ecosystem & AI Concierge</h3>
 
 <p align="center">
-  <a href="#-the-problem"><img src="https://img.shields.io/badge/Architecture-MVC-1e6b38?style=for-the-badge" alt="Architecture"/></a>
-  <a href="#-tech-stack"><img src="https://img.shields.io/badge/Database-PostgreSQL_Neon-316192?style=for-the-badge&logo=postgresql" alt="PostgreSQL"/></a>
-  <a href="#-ai-integration"><img src="https://img.shields.io/badge/AI-Gemini_2.5-8E75B2?style=for-the-badge&logo=googlebard" alt="Gemini AI"/></a>
-  <a href="#-status"><img src="https://img.shields.io/badge/Status-Production_Ready-success?style=for-the-badge" alt="Status"/></a>
+  <img src="https://img.shields.io/badge/Architecture-MVC-1e6b38?style=for-the-badge" alt="Architecture"/>
+  <img src="https://img.shields.io/badge/Database-PostgreSQL-316192?style=for-the-badge&logo=postgresql" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/AI-Gemini_2.5-8E75B2?style=for-the-badge&logo=googlebard" alt="Gemini AI"/>
+  <img src="https://img.shields.io/badge/Status-Production_Ready-success?style=for-the-badge" alt="Status"/>
 </p>
 
-*Architected to synchronize administrative dashboards, manage real-time inventory, and automate customer engagement.*
+*An enterprise-grade, AI-integrated booking ecosystem engineered to synchronize administrative dashboards, manage real-time inventory, and automate customer engagement.*
+
+---
+
+### 🚀 LIVE DEMO & TESTING
+
+The application is deployed and ready for evaluation. Experience the ecosystem from both the client and administrative perspectives.
+
+**[Launch Live Application](https://your-deployment-link-here.com)**
+
+| Access Level | Email | Password | What to Test |
+| :--- | :--- | :--- | :--- |
+| **Administrator** | `admin@casalingatours.com` | `AdminTest2026!` | Revenue analytics, tour creation, and AI knowledge training. |
+| **Traveler (User)** | `traveler@demo.com` | `TravelDemo2026!` | Tour booking, PDF e-ticket generation, and AI concierge chat. |
 
 </div>
 
 <br/>
 
-## 🛸 System Preview
+## 🛸 Conceptual Architecture
 
 <table align="center" width="100%">
   <tr>
     <td width="50%" align="center">
-      <b>Client Booking Flow</b><br/>
-      <img src="https://via.placeholder.com/600x400/faf8f5/1e6b38?text=Animated+GIF:+Booking+Flow" width="100%" alt="Booking Flow GIF"/>
+      <b>Data-Driven Intelligence</b><br/>
+      <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&h=400&q=80" width="100%" alt="Data Analytics Concept" style="border-radius: 10px;"/>
+      <br/><i>Representing the raw SQL analytics pipeline tracking the complete booking funnel.</i>
     </td>
     <td width="50%" align="center">
-      <b>Admin Analytics Dashboard</b><br/>
-      <img src="https://via.placeholder.com/600x400/faf8f5/1e6b38?text=Animated+GIF:+Admin+Dashboard" width="100%" alt="Admin Dashboard GIF"/>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <b>"Casi" AI Concierge Live Chat</b><br/>
-      <img src="https://via.placeholder.com/600x400/faf8f5/1e6b38?text=Screenshot:+Gemini+AI+Chat" width="100%" alt="AI Chatbot"/>
-    </td>
-    <td width="50%" align="center">
-      <b>Automated E-Ticket Generation</b><br/>
-      <img src="https://via.placeholder.com/600x400/faf8f5/1e6b38?text=Screenshot:+PDF+Ticket" width="100%" alt="PDF Generation"/>
+      <b>Automated Concierge Services</b><br/>
+      <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=600&h=400&q=80" width="100%" alt="AI Concept" style="border-radius: 10px;"/>
+      <br/><i>Representing the Gemini AI integration injecting real-time context into traveler inquiries.</i>
     </td>
   </tr>
 </table>
 
-## 🧠 The Architecture
+## 🧠 Project Context
 
-<table width="100%">
-  <tr>
-    <td width="60%" valign="top">
-      <h3>The Problem</h3>
-      <p>Traditional travel booking systems suffer from fragmented data, requiring excessive administrative overhead to synchronize customer inquiries, inventory capacity, and payment statuses.</p>
-      <h3>The Engineering Solution</h3>
-      <p>I engineered a centralized, full-stack application that unifies the booking pipeline. The system enforces real-time capacity constraints at the database level to prevent overbooking, automates personalized e-ticket generation via PDFKit, and integrates a custom-trained AI concierge to handle immediate customer inquiries based on live database context.</p>
-    </td>
-    <td width="40%" align="center" valign="middle">
-      <img src="https://via.placeholder.com/400x400/1e6b38/ffffff?text=System+Architecture+Diagram" width="100%" alt="Architecture Diagram"/>
-      <br/>
-      <i>High-level data flow diagram</i>
-    </td>
-  </tr>
-</table>
+**The Problem:** Traditional travel booking systems suffer from fragmented data, requiring excessive administrative overhead to synchronize customer inquiries, inventory capacity, and payment statuses. 
 
-## ⚡ Interactive Feature Breakdown
+**The Solution:** A centralized, full-stack application was architected to unify the booking pipeline. The system automates e-ticket generation, enforces real-time capacity constraints to prevent overbooking, and integrates a custom-trained AI concierge to handle immediate customer inquiries, reducing manual support requirements.
+
+## ⚡ Core Features
 
 <details>
   <summary><b>🤖 1. Intelligent AI Concierge ("Casi")</b> <i>(Click to expand)</i></summary>
   <br/>
-  Integrated the <b>Gemini AI API</b>, injecting real-time PostgreSQL context (tour availability, user booking history) into the prompt matrix. This constrains the LLM to provide hyper-relevant, hallucinatory-free customer support and personalized tour recommendations based on live pricing.
+  The Gemini AI API was integrated by injecting real-time PostgreSQL context (tour availability, user booking history) into the prompt matrix. This constrains the LLM to provide hyper-relevant, hallucinatory-free customer support and personalized tour recommendations based on live pricing.
 </details>
 
 <details>
   <summary><b>🛡️ 2. Deterministic Booking Engine</b> <i>(Click to expand)</i></summary>
   <br/>
-  Engineered a robust transaction system that calculates live availability against dynamic capacities. Includes custom webhook integrations for PayFast and automated PDF e-ticket generation complete with QR code placeholders and bespoke user configurations.
+  A robust transaction system was engineered to calculate live availability against dynamic capacities. It includes custom webhook integrations for PayFast and automated PDF e-ticket generation complete with QR code placeholders and bespoke user configurations.
 </details>
 
 <details>
-  <summary><b>📊 3. Data-Driven Admin Dashboard</b> <i>(Click to expand)</i></summary>
+  <summary><b>📊 3. Zero-Filled Analytics Dashboard</b> <i>(Click to expand)</i></summary>
   <br/>
-  Developed an analytics pipeline utilizing raw SQL <code>generate_series</code> for zero-filled revenue mapping, tracking the complete user funnel from visitor, to favorited tour, to confirmed booking.
+  An analytics pipeline was developed utilizing raw SQL <code>generate_series</code> for zero-filled revenue mapping, tracking the complete user funnel from visitor, to favorited tour, to confirmed booking.
 </details>
 
 <br/>
@@ -118,15 +111,24 @@
   </tr>
 </table>
 
-## 🚧 Engineering Challenges Overcome
+## 📐 Architectural Decisions ("The Why")
+
+* **Relational Database Over NoSQL:** PostgreSQL was selected over document stores to enforce strict data integrity. Features like booking capacity limits and revenue analytics require complex `JOIN` operations and aggregate functions that are significantly more performant and reliable in a structured relational model.
+* **Strict Separation of Concerns:** The architecture heavily utilizes a modular `views/`, `routes/`, `public/`, and `database/` folder structure. This pattern ensures that routing logic, business logic, and presentation layers remain entirely decoupled for scalable feature iteration.
+* **Server-Side Rendering (SSR):** EJS was chosen to ensure high SEO performance for public-facing tour pages and to maintain absolute control over the initial payload speed, eliminating the "loading spinner" fatigue common in heavy Client-Side Rendered applications.
+
+## 🚧 Technical Challenge Overcome
 
 > **Asynchronous Network Bottlenecks in Production**
-> **The Roadblock:** During cloud deployment, the application experienced indefinite hangs during user registration. Implicit SSL (Port 465) connections were being blocked by the hosting provider's firewall.
-> **The Fix:** Refactored the Nodemailer architecture to force IPv4 routing via Port 587 (Explicit SSL/STARTTLS). Implemented strict `connectionTimeout` and `socketTimeout` parameters, wrapping the service in a fail-safe `try/catch` block to ensure PostgreSQL database transactions (user creation) succeeded seamlessly even if the third-party SMTP server experienced latency.
+> 
+> **The Roadblock:** During cloud deployment, the application experienced indefinite hangs during user registration. Implicit SSL (Port 465) connections were being blocked by the hosting provider's firewall, causing the Node event loop to halt.
+> 
+> **The Fix:** The Nodemailer architecture was refactored to force IPv4 routing via Port 587 (Explicit SSL/STARTTLS). Strict `connectionTimeout` and `socketTimeout` parameters were implemented, wrapping the service in a fail-safe `try/catch` block. This ensured that PostgreSQL database transactions (user creation) succeeded seamlessly and provided a fallback UI state even if the third-party SMTP server experienced severe latency.
 
----
-<div align="center">
-  <p><i>Engineered by Theophilus Thobejane</i></p>
-  <a href="https://linkedin.com/in/yourprofile"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin"/></a>
-  <a href="mailto:thobejanetheo@gmail.com"><img src="https://img.shields.io/badge/Email-Contact_Me-EA4335?style=for-the-badge&logo=gmail"/></a>
-</div>
+## ⚙️ Setup & Installation Guide
+
+**Step 1: Clone & Install**
+```bash
+git clone [https://github.com/USERNAME/casalinga-tours.git](https://github.com/USERNAME/casalinga-tours.git)
+cd casalinga-tours
+npm install
